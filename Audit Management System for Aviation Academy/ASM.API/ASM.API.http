@@ -1,0 +1,6 @@
+@ASM.API_HostAddress = http://localhost:5073
+
+GET {{ASM.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

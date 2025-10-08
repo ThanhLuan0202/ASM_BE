@@ -1,0 +1,130 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "AuditManagementSystemForAviationAcademyContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "MinimumProductVersion": "2.6.1186",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Entities",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "ASM_Repositories",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[ams].[Action]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[ActionStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Attachment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AttachmentEntityType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Audit]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditChecklistItem]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditTeam]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[ChecklistItem]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[ChecklistTemplate]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Department]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Finding]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[FindingSeverity]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[FindingStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Notification]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[ReportRequest]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[Role]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[RootCause]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[auth].[UserAccount]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[log].[AuditLog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[vw_FindingHistory]",
+         "ObjectType": 3
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false
+}
