@@ -16,6 +16,7 @@ namespace ASM_Repositories.DependencyInjection
             //service.AddTransient<Ixxx, yyy>();
 
             service.AddTransient<IAuthRepository, AuthRepository>();
+            service.AddTransient<IDepartmentRepository, DepartmentRepository>();
 
 
 

@@ -21,5 +21,10 @@ namespace ASM_Services.Services
         {
             return await _authRepository.LoginAsync(loginRequest);
         }
+
+        public Task<LoginResponse> RegisterAsync(RegisterRequest request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

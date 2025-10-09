@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ASM_Services.Interfaces
 {
-    public interface  IAuthService
+    public interface IAuthService
     {
         Task<LoginResponse?> LoginAsync(LoginRequest loginRequest);
-
+        Task<LoginResponse> RegisterAsync(RegisterRequest request);
     }
 }

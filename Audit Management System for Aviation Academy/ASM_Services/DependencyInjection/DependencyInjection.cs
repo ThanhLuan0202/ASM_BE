@@ -16,6 +16,7 @@ namespace ASM_Services.DependencyInjection
             //service.AddTransient<xxxx, yyyy>();
 
             service.AddTransient<IAuthService, AuthService>();
+            service.AddTransient<IDepartmentService, DepartmentService>();
 
 
 

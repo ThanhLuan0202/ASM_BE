@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\luan\\final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj": {}
+    "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj": {}
   },
   "projects": {
-    "D:\\luan\\final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj": {
+    "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\luan\\final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
+        "projectUniqueName": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
         "projectName": "ASM_Repositories",
-        "projectPath": "D:\\luan\\final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
-        "packagesPath": "C:\\Users\\An\\.nuget\\packages\\",
-        "outputPath": "D:\\luan\\final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\obj\\",
+        "projectPath": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
+        "packagesPath": "C:\\Users\\Khanh Hung\\.nuget\\packages\\",
+        "outputPath": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\An\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Khanh Hung\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
