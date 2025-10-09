@@ -24,7 +24,31 @@ namespace ASM.API.Controllers
             if (result == null)
                 return Unauthorized(new { message = "Invalid email or password" });
 
+            // Set JWT to cookie for subsequent requests
+            Response.Cookies.Append("authToken", result.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddHours(6),
+                Path = "/"
+            });
+
             return Ok(result);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            try
+            {
+                var result = await _service.RegisterAsync(request);
+                return CreatedAtAction(nameof(Register), new { id = result.UserId }, result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
     }
 }
