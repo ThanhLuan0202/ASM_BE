@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\asm.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\asm.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -75,10 +87,6 @@
       "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\models\\logindto\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm_repositories\\efpt.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\efpt.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -103,10 +111,6 @@
       "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B1D76922-E897-469D-BB10-0427764B1EFA}|ASM.API\\ASM.API.csproj|solutionrelative:asm.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm_repositories\\entities\\action.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\entities\\action.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -121,6 +125,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm_repositories\\asm_repositories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\asm_repositories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm_repositories\\migrations\\20251010075629_databaseasm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\migrations\\20251010075629_databaseasm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|d:\\luan\\final\\bev1\\asm_be\\audit management system for aviation academy\\asm_repositories\\migrations\\20251010075817_databaseasmm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A36C1EE5-CB4B-4380-B927-5CC93DB5BEFD}|ASM_Repositories\\ASM_Repositories.csproj|solutionrelative:asm_repositories\\migrations\\20251010075817_databaseasmm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -130,37 +142,35 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "IAuthService.cs",
-              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Interfaces\\IAuthService.cs",
-              "RelativeDocumentMoniker": "ASM_Services\\Interfaces\\IAuthService.cs",
-              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Interfaces\\IAuthService.cs",
-              "RelativeToolTip": "ASM_Services\\Interfaces\\IAuthService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA8AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 31,
+              "Title": "20251010075629_databaseasm.cs",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Migrations\\20251010075629_databaseasm.cs",
+              "RelativeDocumentMoniker": "ASM_Repositories\\Migrations\\20251010075629_databaseasm.cs",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Migrations\\20251010075629_databaseasm.cs",
+              "RelativeToolTip": "ASM_Repositories\\Migrations\\20251010075629_databaseasm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T21:39:21.555Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "DepartmentService.cs",
-              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Services\\DepartmentService.cs",
-              "RelativeDocumentMoniker": "ASM_Services\\Services\\DepartmentService.cs",
-              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Services\\DepartmentService.cs",
-              "RelativeToolTip": "ASM_Services\\Services\\DepartmentService.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAIwGQAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T15:21:47.478Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-10T07:56:29.24Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "ASM.API.http",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\ASM.API.http",
+              "RelativeDocumentMoniker": "ASM.API\\ASM.API.http",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\ASM.API.http",
+              "RelativeToolTip": "ASM.API\\ASM.API.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-10-10T07:54:52.091Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "AuthService.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "ASM_Services\\Services\\AuthService.cs",
@@ -168,12 +178,11 @@
               "RelativeToolTip": "ASM_Services\\Services\\AuthService.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAYwAsAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T21:39:55.966Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T21:39:55.966Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "AuthRepository.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Repositories\\AuthRepository.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Repositories\\AuthRepository.cs",
@@ -181,25 +190,23 @@
               "RelativeToolTip": "ASM_Repositories\\Repositories\\AuthRepository.cs",
               "ViewState": "AgIAAC4AAAAAAAAAAAAgwE4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T21:27:58.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T21:27:58.579Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "ASM.API\\Controllers\\AuthController.cs",
               "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Controllers\\AuthController.cs",
               "RelativeToolTip": "ASM.API\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAiwBMAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T21:42:50.711Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T21:42:50.711Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "AutoMapperProfile.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Mapping\\AutoMapperProfile.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Mapping\\AutoMapperProfile.cs",
@@ -207,12 +214,11 @@
               "RelativeToolTip": "ASM_Repositories\\Mapping\\AutoMapperProfile.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAADwvxAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T20:47:52.146Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T20:47:52.146Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "IAuthRepository.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Interfaces\\IAuthRepository.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Interfaces\\IAuthRepository.cs",
@@ -220,12 +226,61 @@
               "RelativeToolTip": "ASM_Repositories\\Interfaces\\IAuthRepository.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAUwAwAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T21:27:14.929Z",
+              "WhenOpened": "2025-10-08T21:27:14.929Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\appsettings.json",
+              "RelativeDocumentMoniker": "ASM.API\\appsettings.json",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\appsettings.json",
+              "RelativeToolTip": "ASM.API\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-08T20:43:45.683Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Program.cs",
+              "RelativeDocumentMoniker": "ASM.API\\Program.cs",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Program.cs",
+              "RelativeToolTip": "ASM.API\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-08T20:39:08.187Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "20251010075817_databaseasmm.cs",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Migrations\\20251010075817_databaseasmm.cs",
+              "RelativeDocumentMoniker": "ASM_Repositories\\Migrations\\20251010075817_databaseasmm.cs",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Migrations\\20251010075817_databaseasmm.cs",
+              "RelativeToolTip": "ASM_Repositories\\Migrations\\20251010075817_databaseasmm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T07:58:17.863Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DepartmentService.cs",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Services\\DepartmentService.cs",
+              "RelativeDocumentMoniker": "ASM_Services\\Services\\DepartmentService.cs",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Services\\DepartmentService.cs",
+              "RelativeToolTip": "ASM_Services\\Services\\DepartmentService.cs",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAIwGQAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-09T15:21:47.478Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "IDepartmentService.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Interfaces\\IDepartmentService.cs",
               "RelativeDocumentMoniker": "ASM_Services\\Interfaces\\IDepartmentService.cs",
@@ -233,12 +288,23 @@
               "RelativeToolTip": "ASM_Services\\Interfaces\\IDepartmentService.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAAkwBEAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-09T15:21:31.616Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-09T15:21:31.616Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 4,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Interfaces\\IAuthService.cs",
+              "RelativeDocumentMoniker": "ASM_Services\\Interfaces\\IAuthService.cs",
+              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\Interfaces\\IAuthService.cs",
+              "RelativeToolTip": "ASM_Services\\Interfaces\\IAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-08T21:39:21.555Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "DepartmentsController.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Controllers\\DepartmentsController.cs",
               "RelativeDocumentMoniker": "ASM.API\\Controllers\\DepartmentsController.cs",
@@ -250,7 +316,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "DepartmentRepository.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Repositories\\DepartmentRepository.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Repositories\\DepartmentRepository.cs",
@@ -262,7 +328,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "ASM_Services.csproj",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\ASM_Services.csproj",
               "RelativeDocumentMoniker": "ASM_Services\\ASM_Services.csproj",
@@ -274,7 +340,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "IDepartmentRepository.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Interfaces\\IDepartmentRepository.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Interfaces\\IDepartmentRepository.cs",
@@ -286,7 +352,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "DependencyInjection.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Services\\DependencyInjection\\DependencyInjection.cs",
               "RelativeDocumentMoniker": "ASM_Services\\DependencyInjection\\DependencyInjection.cs",
@@ -298,7 +364,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "DependencyInjection.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\DependencyInjection\\DependencyInjection.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\DependencyInjection\\DependencyInjection.cs",
@@ -310,7 +376,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "UpdateDepartment.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\DepartmentDTO\\UpdateDepartment.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\DepartmentDTO\\UpdateDepartment.cs",
@@ -322,7 +388,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "CreateDepartment.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\DepartmentDTO\\CreateDepartment.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\DepartmentDTO\\CreateDepartment.cs",
@@ -334,7 +400,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "LoginRequest.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\LoginDTO\\LoginRequest.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\LoginDTO\\LoginRequest.cs",
@@ -346,7 +412,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "LoginResponse.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\LoginDTO\\LoginResponse.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\LoginDTO\\LoginResponse.cs",
@@ -358,7 +424,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 22,
               "Title": "AuditManagementSystemForAviationAcademyContext.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\DBContext\\AuditManagementSystemForAviationAcademyContext.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\DBContext\\AuditManagementSystemForAviationAcademyContext.cs",
@@ -370,19 +436,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\appsettings.json",
-              "RelativeDocumentMoniker": "ASM.API\\appsettings.json",
-              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\appsettings.json",
-              "RelativeToolTip": "ASM.API\\appsettings.json",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-10-08T20:43:45.683Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 24,
               "Title": "RegisterResponse.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\LoginDTO\\RegisterResponse.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\LoginDTO\\RegisterResponse.cs",
@@ -394,7 +448,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 23,
               "Title": "Department.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Entities\\Department.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Entities\\Department.cs",
@@ -406,7 +460,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 21,
               "Title": "efpt.config.json",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\efpt.config.json",
               "RelativeDocumentMoniker": "ASM_Repositories\\efpt.config.json",
@@ -418,7 +472,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 25,
               "Title": "RegisterRequest.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Models\\LoginDTO\\RegisterRequest.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Models\\LoginDTO\\RegisterRequest.cs",
@@ -430,7 +484,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 26,
               "Title": "WeatherForecastController.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Controllers\\WeatherForecastController.cs",
               "RelativeDocumentMoniker": "ASM.API\\Controllers\\WeatherForecastController.cs",
@@ -442,19 +496,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Program.cs",
-              "RelativeDocumentMoniker": "ASM.API\\Program.cs",
-              "ToolTip": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM.API\\Program.cs",
-              "RelativeToolTip": "ASM.API\\Program.cs",
-              "ViewState": "AgIAAHMAAAAAAAAAAAAowJQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-08T20:39:08.187Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "Action.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Entities\\Action.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Entities\\Action.cs",
@@ -466,7 +508,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "ActionStatus.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Entities\\ActionStatus.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Entities\\ActionStatus.cs",
@@ -478,7 +520,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "Attachment.cs",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\Entities\\Attachment.cs",
               "RelativeDocumentMoniker": "ASM_Repositories\\Entities\\Attachment.cs",
@@ -490,7 +532,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "ASM_Repositories.csproj",
               "DocumentMoniker": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
               "RelativeDocumentMoniker": "ASM_Repositories\\ASM_Repositories.csproj",

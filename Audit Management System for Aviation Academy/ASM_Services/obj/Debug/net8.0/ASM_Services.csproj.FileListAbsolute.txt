@@ -30,3 +30,19 @@ E:\Code Final\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\o
 E:\Code Final\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\refint\ASM_Services.dll
 E:\Code Final\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.pdb
 E:\Code Final\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ref\ASM_Services.dll
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\bin\Debug\net8.0\ASM_Services.deps.json
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\bin\Debug\net8.0\ASM_Services.dll
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\bin\Debug\net8.0\ASM_Services.pdb
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\bin\Debug\net8.0\ASM_Repositories.dll
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\bin\Debug\net8.0\ASM_Repositories.pdb
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.csproj.AssemblyReference.cache
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.GeneratedMSBuildEditorConfig.editorconfig
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.AssemblyInfoInputs.cache
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.AssemblyInfo.cs
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.csproj.CoreCompileInputs.cache
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.sourcelink.json
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Serv.A5C5943E.Up2Date
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.dll
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\refint\ASM_Services.dll
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ASM_Services.pdb
+D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Services\obj\Debug\net8.0\ref\ASM_Services.dll
