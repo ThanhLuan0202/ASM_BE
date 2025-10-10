@@ -10,6 +10,6 @@ namespace ASM_Services.Interfaces
     public interface IAuthService
     {
         Task<LoginResponse?> LoginAsync(LoginRequest loginRequest);
-        Task<LoginResponse> RegisterAsync(RegisterRequest request);
+        Task<RegisterResponse> RegisterAsync(RegisterRequest request);
     }
 }

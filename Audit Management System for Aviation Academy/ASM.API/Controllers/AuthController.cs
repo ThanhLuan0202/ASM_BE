@@ -36,7 +36,7 @@ namespace ASM.API.Controllers
 
             return Ok(result);
         }
-        /*
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
@@ -50,6 +50,6 @@ namespace ASM.API.Controllers
                 return Conflict(new { message = ex.Message });
             }
         }
-        */
+        
     }
 }

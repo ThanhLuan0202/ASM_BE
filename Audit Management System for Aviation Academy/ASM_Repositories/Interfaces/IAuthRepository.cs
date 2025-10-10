@@ -11,5 +11,7 @@ namespace ASM_Repositories.Interfaces
     public interface IAuthRepository
     {
         Task<LoginResponse?> LoginAsync(LoginRequest loginRequest);
+        Task<RegisterResponse> RegisterAsync(RegisterRequest request);
+
     }
 }

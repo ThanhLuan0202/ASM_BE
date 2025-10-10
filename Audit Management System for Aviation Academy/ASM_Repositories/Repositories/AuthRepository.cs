@@ -47,7 +47,49 @@ namespace ASM_Repositories.Repositories
                 Email = user.Email
             };
         }
+        public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
+        {
+            var existing = await _DbContext.UserAccounts.AsNoTracking().FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existing != null)
+            {
+                throw new InvalidOperationException("Email already registered");
+            }
 
+            byte[] salt = new byte[32];
+            RandomNumberGenerator.Fill(salt); // DB column allows 32 bytes for PasswordSalt
+            byte[] hash;
+            using (var hmac = new HMACSHA512(salt))
+            {
+                hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
+            }
+
+            var user = new UserAccount
+            {
+                UserId = Guid.NewGuid(),
+                Email = request.Email,
+                FullName = request.FullName,
+                RoleName = request.RoleName,
+                DeptId = request.DeptId,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                FailedLoginCount = 0
+            };
+
+            _DbContext.ChangeTracker.Clear();
+            await _DbContext.UserAccounts.AddAsync(user);
+            await _DbContext.SaveChangesAsync();
+
+            return new RegisterResponse
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                FullName = user.FullName,
+                Role = user.RoleName,
+                DeptId = user.DeptId
+            };
+        }
         private bool VerifyPassword(string password, byte[] hash, byte[] salt)
         {
             using var hmac = new HMACSHA512(salt);

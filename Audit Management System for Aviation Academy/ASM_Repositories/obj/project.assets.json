@@ -9236,23 +9236,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Khanh Hung\\.nuget\\packages\\": {},
+    "C:\\Users\\An\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
+      "projectUniqueName": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
       "projectName": "ASM_Repositories",
-      "projectPath": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
-      "packagesPath": "C:\\Users\\Khanh Hung\\.nuget\\packages\\",
-      "outputPath": "E:\\Code Final\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\obj\\",
+      "projectPath": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\ASM_Repositories.csproj",
+      "packagesPath": "C:\\Users\\An\\.nuget\\packages\\",
+      "outputPath": "D:\\luan\\final\\bev1\\ASM_BE\\Audit Management System for Aviation Academy\\ASM_Repositories\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Khanh Hung\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\An\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
