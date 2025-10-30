@@ -5,15 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ASM.API.Controllers
+namespace ASM.API.AdminControllers
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
-    public class DepartmentsController : ControllerBase
+    public class AdminDepartmentsController : ControllerBase
     {
         private readonly IDepartmentServices _service;
 
-        public DepartmentsController(IDepartmentServices service)
+        public AdminDepartmentsController(IDepartmentServices service)
         {
             _service = service;
         }

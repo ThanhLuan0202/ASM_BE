@@ -43,3 +43,18 @@ D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Repos
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.pdb
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.genruntimeconfig.cache
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ref\ASM_Repositories.dll
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\bin\Debug\net8.0\ASM_Repositories.deps.json
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\bin\Debug\net8.0\ASM_Repositories.runtimeconfig.json
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\bin\Debug\net8.0\ASM_Repositories.dll
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\bin\Debug\net8.0\ASM_Repositories.pdb
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.csproj.AssemblyReference.cache
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.GeneratedMSBuildEditorConfig.editorconfig
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.AssemblyInfoInputs.cache
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.AssemblyInfo.cs
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.csproj.CoreCompileInputs.cache
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.sourcelink.json
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.dll
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\refint\ASM_Repositories.dll
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.pdb
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ASM_Repositories.genruntimeconfig.cache
+E:\Code Final\ASM_BE\ASM_BE\Audit Management System for Aviation Academy\ASM_Repositories\obj\Debug\net8.0\ref\ASM_Repositories.dll

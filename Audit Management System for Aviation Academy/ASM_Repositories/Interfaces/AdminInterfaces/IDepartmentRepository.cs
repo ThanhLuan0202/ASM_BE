@@ -10,11 +10,11 @@ namespace ASM_Repositories.Interfaces.AdminInterfaces.AdminRepositories
 {
     public interface IDepartmentRepository
     {
-        Task<IEnumerable<Department>> GetAllAsync();
-        Task<Department?> GetByIdAsync(int id);
-        Task AddAsync(Department department);
-        Task UpdateAsync(Department department);
-        Task DeleteAsync(int id);
+        Task<IEnumerable<ViewDepartment>> GetAllDepartmentsAsync();
+        Task<ViewDepartment?> GetDepartmentByIdAsync(int id);
+        Task<ViewDepartment> CreateDepartmentAsync(CreateDepartment dto);
+        Task<ViewDepartment?> UpdateDepartmentAsync(int id, UpdateDepartment dto);
+        Task<bool> DeleteDepartmentAsync(int id);
         Task<bool> ExistsAsync(int id);
     }
 }
