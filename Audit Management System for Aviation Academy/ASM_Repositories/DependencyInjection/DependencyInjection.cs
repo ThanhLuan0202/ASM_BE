@@ -1,8 +1,10 @@
 ﻿using ASM_Repositories.AdminRepositories.Repositories.AdminRepositories;
 using ASM_Repositories.AuthRepositories.Repositories.AuthRepositories;
+using ASM_Repositories.Interfaces.AdminInterfaces;
 using ASM_Repositories.Interfaces.AdminInterfaces.AdminRepositories;
 using ASM_Repositories.Interfaces.AuthInterfaces.AuthRepositories;
 using ASM_Repositories.Interfaces.SQAStaffInterfaces;
+using ASM_Repositories.Repositories.AdminRepositories;
 using ASM_Repositories.Repositories.SQAStaffRepositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -22,6 +24,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IAuthRepository, AuthRepository>();
             service.AddTransient<IDepartmentRepository, DepartmentRepository>();
             service.AddTransient<IFindingRepository, FindingRepository>();
+            service.AddTransient<IUsersRepository, UsersRepository>();
 
 
 

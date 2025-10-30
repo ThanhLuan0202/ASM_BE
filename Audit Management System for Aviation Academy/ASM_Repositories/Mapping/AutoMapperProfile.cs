@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.DepartmentDTO;
+using ASM_Repositories.Models.UsersDTO;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
 
-
+            CreateMap<UserAccount, ViewUsers>().ReverseMap();
 
         }
     }
