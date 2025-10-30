@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+
 namespace ASM_Repositories.DBContext;
 
 public partial class AuditManagementSystemForAviationAcademyContext : DbContext
@@ -58,8 +59,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
-    public virtual DbSet<VwFindingHistory> VwFindingHistories { get; set; }
-
     //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
     //        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-OVUB2BP\\LUANNE;Initial Catalog=AuditManagementSystemForAviationAcademy;Persist Security Info=True;User ID=sa;Password=12345");
@@ -74,16 +73,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
         return connectionString;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity< ASM_Repositories.Entities.Action >(entity =>
+        modelBuilder.Entity<ASM_Repositories.Entities.Action>(entity =>
         {
-            entity.HasKey(e => e.ActionId).HasName("PK__Action__FFE3F4B969F73F89");
+            entity.HasKey(e => e.ActionId).HasName("PK__Action__FFE3F4B97624C6F7");
 
-            entity.ToTable("Action", "ams", tb => tb.HasTrigger("trg_Log_Action"));
+            entity.ToTable("Action", "ams");
 
             entity.HasIndex(e => new { e.AssignedTo, e.Status }, "IX_Action_AssignedTo_Status");
 
@@ -96,38 +92,34 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.FindingId).HasColumnName("FindingID");
             entity.Property(e => e.ProgressPercent).HasDefaultValue((byte)0);
-            entity.Property(e => e.RowVersion)
-                .IsRequired()
-                .IsRowVersion()
-                .IsConcurrencyToken();
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(300);
 
             entity.HasOne(d => d.AssignedByNavigation).WithMany(p => p.ActionAssignedByNavigations)
                 .HasForeignKey(d => d.AssignedBy)
-                .HasConstraintName("FK__Action__Assigned__7F2BE32F");
+                .HasConstraintName("FK__Action__Assigned__09A971A2");
 
             entity.HasOne(d => d.AssignedDept).WithMany(p => p.Actions)
                 .HasForeignKey(d => d.AssignedDeptId)
-                .HasConstraintName("FK__Action__Assigned__01142BA1");
+                .HasConstraintName("FK__Action__Assigned__0B91BA14");
 
             entity.HasOne(d => d.AssignedToNavigation).WithMany(p => p.ActionAssignedToNavigations)
                 .HasForeignKey(d => d.AssignedTo)
-                .HasConstraintName("FK__Action__Assigned__00200768");
+                .HasConstraintName("FK__Action__Assigned__0A9D95DB");
 
             entity.HasOne(d => d.Finding).WithMany(p => p.Actions)
                 .HasForeignKey(d => d.FindingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Action__FindingI__7E37BEF6");
+                .HasConstraintName("FK__Action__FindingI__08B54D69");
 
             entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Actions)
                 .HasForeignKey(d => d.Status)
-                .HasConstraintName("FK__Action__Status__02084FDA");
+                .HasConstraintName("FK__Action__Status__0C85DE4D");
         });
 
         modelBuilder.Entity<ActionStatus>(entity =>
         {
-            entity.HasKey(e => e.ActionStatus1).HasName("PK__ActionSt__7B3DC58E4712C633");
+            entity.HasKey(e => e.ActionStatus1).HasName("PK__ActionSt__7B3DC58E3E19CDB1");
 
             entity.ToTable("ActionStatus", "ams");
 
@@ -138,7 +130,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Attachment>(entity =>
         {
-            entity.HasKey(e => e.AttachmentId).HasName("PK__Attachme__442C64DEB00D1A32");
+            entity.HasKey(e => e.AttachmentId).HasName("PK__Attachme__442C64DE82B43343");
 
             entity.ToTable("Attachment", "ams");
 
@@ -164,16 +156,16 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.EntityTypeNavigation).WithMany(p => p.Attachments)
                 .HasForeignKey(d => d.EntityType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Attachmen__Entit__07C12930");
+                .HasConstraintName("FK__Attachmen__Entit__123EB7A3");
 
             entity.HasOne(d => d.UploadedByNavigation).WithMany(p => p.Attachments)
                 .HasForeignKey(d => d.UploadedBy)
-                .HasConstraintName("FK__Attachmen__Uploa__08B54D69");
+                .HasConstraintName("FK__Attachmen__Uploa__1332DBDC");
         });
 
         modelBuilder.Entity<AttachmentEntityType>(entity =>
         {
-            entity.HasKey(e => e.EntityType).HasName("PK__Attachme__F21D4CA20B367E90");
+            entity.HasKey(e => e.EntityType).HasName("PK__Attachme__F21D4CA2E08247FB");
 
             entity.ToTable("AttachmentEntityType", "ams");
 
@@ -182,14 +174,15 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Audit>(entity =>
         {
-            entity.HasKey(e => e.AuditId).HasName("PK__Audit__A17F23B8A84C25B5");
+            entity.HasKey(e => e.AuditId).HasName("PK__Audit__A17F23B8332B75C1");
 
-            entity.ToTable("Audit", "ams", tb => tb.HasTrigger("trg_Log_Audit"));
+            entity.ToTable("Audit", "ams");
 
             entity.Property(e => e.AuditId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("AuditID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Objective).HasMaxLength(1000);
             entity.Property(e => e.Scope).HasMaxLength(500);
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
@@ -198,26 +191,22 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasMaxLength(300);
             entity.Property(e => e.Type).HasMaxLength(50);
 
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.AuditApprovedByNavigations)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK__Audit__ApprovedB__5FB337D6");
-
-            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.AuditCreatedByNavigations)
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Audits)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Audit__CreatedBy__5EBF139D");
+                .HasConstraintName("FK__Audit__CreatedBy__6383C8BA");
 
             entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Audits)
                 .HasForeignKey(d => d.Status)
-                .HasConstraintName("FK__Audit__Status__5DCAEF64");
+                .HasConstraintName("FK__Audit__Status__628FA481");
 
             entity.HasOne(d => d.Template).WithMany(p => p.Audits)
                 .HasForeignKey(d => d.TemplateId)
-                .HasConstraintName("FK__Audit__TemplateI__5CD6CB2B");
+                .HasConstraintName("FK__Audit__TemplateI__619B8048");
         });
 
         modelBuilder.Entity<AuditChecklistItem>(entity =>
         {
-            entity.HasKey(e => e.AuditItemId).HasName("PK__AuditChe__E37F18C24E61F8E1");
+            entity.HasKey(e => e.AuditItemId).HasName("PK__AuditChe__E37F18C253EA74EC");
 
             entity.ToTable("AuditChecklistItem", "ams");
 
@@ -234,18 +223,14 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.Audit).WithMany(p => p.AuditChecklistItems)
                 .HasForeignKey(d => d.AuditId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__AuditChec__Audit__6C190EBB");
+                .HasConstraintName("FK__AuditChec__Audit__76969D2E");
         });
 
         modelBuilder.Entity<AuditLog>(entity =>
         {
-            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E5499A8DD92FB1C");
+            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E5499A8B18C18B4");
 
             entity.ToTable("AuditLog", "log");
-
-            entity.HasIndex(e => e.EntityId, "IX_AuditLog_EntityID");
-
-            entity.HasIndex(e => e.PerformedAt, "IX_AuditLog_PerformedAt").IsDescending();
 
             entity.Property(e => e.LogId)
                 .HasDefaultValueSql("(newid())")
@@ -254,16 +239,15 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
             entity.Property(e => e.EntityType).HasMaxLength(50);
             entity.Property(e => e.PerformedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.TableName).HasMaxLength(128);
 
             entity.HasOne(d => d.PerformedByNavigation).WithMany(p => p.AuditLogs)
                 .HasForeignKey(d => d.PerformedBy)
-                .HasConstraintName("FK__AuditLog__Perfor__151B244E");
+                .HasConstraintName("FK__AuditLog__Perfor__2645B050");
         });
 
         modelBuilder.Entity<AuditStatus>(entity =>
         {
-            entity.HasKey(e => e.AuditStatus1).HasName("PK__AuditSta__45D7E6369D4F51B0");
+            entity.HasKey(e => e.AuditStatus1).HasName("PK__AuditSta__45D7E6360F67DBD5");
 
             entity.ToTable("AuditStatus", "ams");
 
@@ -274,13 +258,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditTeam>(entity =>
         {
-            entity.HasKey(e => e.AuditTeamId).HasName("PK__AuditTea__7093F172898EA316");
+            entity.HasKey(e => e.AuditTeamId).HasName("PK__AuditTea__7093F172BA6E5B7E");
 
             entity.ToTable("AuditTeam", "ams");
 
             entity.HasIndex(e => e.AuditId, "IX_AuditTeam_AuditID");
 
-            entity.HasIndex(e => new { e.AuditId, e.UserId }, "UQ__AuditTea__7007AF731E5F25A8").IsUnique();
+            entity.HasIndex(e => new { e.AuditId, e.UserId }, "UQ__AuditTea__7007AF7310B133D4").IsUnique();
 
             entity.Property(e => e.AuditTeamId)
                 .HasDefaultValueSql("(newid())")
@@ -294,17 +278,17 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.Audit).WithMany(p => p.AuditTeams)
                 .HasForeignKey(d => d.AuditId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__AuditTeam__Audit__66603565");
+                .HasConstraintName("FK__AuditTeam__Audit__6A30C649");
 
             entity.HasOne(d => d.User).WithMany(p => p.AuditTeams)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__AuditTeam__UserI__6754599E");
+                .HasConstraintName("FK__AuditTeam__UserI__6B24EA82");
         });
 
         modelBuilder.Entity<ChecklistItem>(entity =>
         {
-            entity.HasKey(e => e.ItemId).HasName("PK__Checklis__727E83EBAC8657E6");
+            entity.HasKey(e => e.ItemId).HasName("PK__Checklis__727E83EBBC1B89A4");
 
             entity.ToTable("ChecklistItem", "ams");
 
@@ -321,17 +305,17 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
             entity.HasOne(d => d.SeverityDefaultNavigation).WithMany(p => p.ChecklistItems)
                 .HasForeignKey(d => d.SeverityDefault)
-                .HasConstraintName("FK__Checklist__Sever__59063A47");
+                .HasConstraintName("FK__Checklist__Sever__5DCAEF64");
 
             entity.HasOne(d => d.Template).WithMany(p => p.ChecklistItems)
                 .HasForeignKey(d => d.TemplateId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Checklist__Templ__571DF1D5");
+                .HasConstraintName("FK__Checklist__Templ__5BE2A6F2");
         });
 
         modelBuilder.Entity<ChecklistTemplate>(entity =>
         {
-            entity.HasKey(e => e.TemplateId).HasName("PK__Checklis__F87ADD07BFF290DB");
+            entity.HasKey(e => e.TemplateId).HasName("PK__Checklis__F87ADD07D90C7542");
 
             entity.ToTable("ChecklistTemplate", "ams");
 
@@ -348,12 +332,12 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ChecklistTemplates)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Checklist__Creat__5165187F");
+                .HasConstraintName("FK__Checklist__Creat__5629CD9C");
         });
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.DeptId).HasName("PK__Departme__0148818E12B2BECB");
+            entity.HasKey(e => e.DeptId).HasName("PK__Departme__0148818E4442DB30");
 
             entity.ToTable("Department", "ams");
 
@@ -368,9 +352,9 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Finding>(entity =>
         {
-            entity.HasKey(e => e.FindingId).HasName("PK__Finding__19D671C22DCDC03A");
+            entity.HasKey(e => e.FindingId).HasName("PK__Finding__19D671C2A9EB4310");
 
-            entity.ToTable("Finding", "ams", tb => tb.HasTrigger("trg_Log_Finding"));
+            entity.ToTable("Finding", "ams");
 
             entity.HasIndex(e => new { e.AuditId, e.Status }, "IX_Finding_AuditID_Status");
 
@@ -386,10 +370,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.ExternalAuditorName).HasMaxLength(200);
             entity.Property(e => e.ReviewerId).HasColumnName("ReviewerID");
             entity.Property(e => e.RootCauseId).HasColumnName("RootCauseID");
-            entity.Property(e => e.RowVersion)
-                .IsRequired()
-                .IsRowVersion()
-                .IsConcurrencyToken();
             entity.Property(e => e.Severity).HasMaxLength(20);
             entity.Property(e => e.Source).HasMaxLength(50);
             entity.Property(e => e.Status)
@@ -403,41 +383,41 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.Audit).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.AuditId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Finding__AuditID__71D1E811");
+                .HasConstraintName("FK__Finding__AuditID__7C4F7684");
 
             entity.HasOne(d => d.AuditItem).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.AuditItemId)
-                .HasConstraintName("FK__Finding__AuditIt__72C60C4A");
+                .HasConstraintName("FK__Finding__AuditIt__7D439ABD");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.FindingCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .HasConstraintName("FK__Finding__Created__76969D2E");
+                .HasConstraintName("FK__Finding__Created__01142BA1");
 
             entity.HasOne(d => d.Dept).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.DeptId)
-                .HasConstraintName("FK__Finding__DeptID__75A278F5");
+                .HasConstraintName("FK__Finding__DeptID__00200768");
 
             entity.HasOne(d => d.Reviewer).WithMany(p => p.FindingReviewers)
                 .HasForeignKey(d => d.ReviewerId)
-                .HasConstraintName("FK__Finding__Reviewe__7A672E12");
+                .HasConstraintName("FK__Finding__Reviewe__04E4BC85");
 
             entity.HasOne(d => d.RootCause).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.RootCauseId)
-                .HasConstraintName("FK__Finding__RootCau__74AE54BC");
+                .HasConstraintName("FK__Finding__RootCau__7F2BE32F");
 
             entity.HasOne(d => d.SeverityNavigation).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.Severity)
-                .HasConstraintName("FK__Finding__Severit__73BA3083");
+                .HasConstraintName("FK__Finding__Severit__7E37BEF6");
 
             entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.Status)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Finding__Status__797309D9");
+                .HasConstraintName("FK__Finding__Status__03F0984C");
         });
 
         modelBuilder.Entity<FindingSeverity>(entity =>
         {
-            entity.HasKey(e => e.Severity).HasName("PK__FindingS__96F5CD15C02AA915");
+            entity.HasKey(e => e.Severity).HasName("PK__FindingS__96F5CD15CD0FD094");
 
             entity.ToTable("FindingSeverity", "ams");
 
@@ -446,7 +426,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<FindingStatus>(entity =>
         {
-            entity.HasKey(e => e.FindingStatus1).HasName("PK__FindingS__B9A531DF5E4F114E");
+            entity.HasKey(e => e.FindingStatus1).HasName("PK__FindingS__B9A531DF96E2F5B9");
 
             entity.ToTable("FindingStatus", "ams");
 
@@ -457,7 +437,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E327A4D606D");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E324E66B45F");
 
             entity.ToTable("Notification", "ams");
 
@@ -472,17 +452,17 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
             entity.HasOne(d => d.EntityTypeNavigation).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.EntityType)
-                .HasConstraintName("FK__Notificat__Entit__0F624AF8");
+                .HasConstraintName("FK__Notificat__Entit__208CD6FA");
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Notificat__UserI__0E6E26BF");
+                .HasConstraintName("FK__Notificat__UserI__1F98B2C1");
         });
 
         modelBuilder.Entity<ReportRequest>(entity =>
         {
-            entity.HasKey(e => e.ReportRequestId).HasName("PK__ReportRe__1609F931C68D52FD");
+            entity.HasKey(e => e.ReportRequestId).HasName("PK__ReportRe__1609F931BBD73FFA");
 
             entity.ToTable("ReportRequest", "ams");
 
@@ -495,12 +475,12 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
             entity.HasOne(d => d.RequestedByNavigation).WithMany(p => p.ReportRequests)
                 .HasForeignKey(d => d.RequestedBy)
-                .HasConstraintName("FK__ReportReq__Reque__19DFD96B");
+                .HasConstraintName("FK__ReportReq__Reque__2B0A656D");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleName).HasName("PK__Role__8A2B616187FE0763");
+            entity.HasKey(e => e.RoleName).HasName("PK__Role__8A2B61616E265C1D");
 
             entity.ToTable("Role", "ams");
 
@@ -510,7 +490,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<RootCause>(entity =>
         {
-            entity.HasKey(e => e.RootCauseId).HasName("PK__RootCaus__EAE5E40E2FAE18E7");
+            entity.HasKey(e => e.RootCauseId).HasName("PK__RootCaus__EAE5E40EB1F5E87A");
 
             entity.ToTable("RootCause", "ams");
 
@@ -524,13 +504,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCAC24440160");
+            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCACA0FB7ABE");
 
-            entity.ToTable("UserAccount", "auth", tb => tb.HasTrigger("trg_UserAccount_Delete"));
+            entity.ToTable("UserAccount", "auth");
 
             entity.HasIndex(e => new { e.DeptId, e.RoleName }, "IX_User_Dept_Role");
 
-            entity.HasIndex(e => e.Email, "UQ__UserAcco__A9D105346D1562FC").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__UserAcco__A9D1053448E04E76").IsUnique();
 
             entity.Property(e => e.UserId)
                 .HasDefaultValueSql("(newid())")
@@ -549,10 +529,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.RoleName)
                 .IsRequired()
                 .HasMaxLength(50);
-            entity.Property(e => e.RowVersion)
-                .IsRequired()
-                .IsRowVersion()
-                .IsConcurrencyToken();
 
             entity.HasOne(d => d.Dept).WithMany(p => p.UserAccounts)
                 .HasForeignKey(d => d.DeptId)
@@ -562,17 +538,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.RoleName)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserAccou__RoleN__47DBAE45");
-        });
-
-        modelBuilder.Entity<VwFindingHistory>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vw_FindingHistory", "ams");
-
-            entity.Property(e => e.Action).HasMaxLength(100);
-            entity.Property(e => e.FindingId).HasColumnName("FindingID");
-            entity.Property(e => e.PerformedBy).HasMaxLength(200);
         });
 
         OnModelCreatingPartial(modelBuilder);

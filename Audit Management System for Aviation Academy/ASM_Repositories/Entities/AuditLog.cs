@@ -21,11 +21,5 @@ public partial class AuditLog
 
     public string Data { get; set; }
 
-    public string OldData { get; set; }
-
-    public string NewData { get; set; }
-
-    public string TableName { get; set; }
-
     public virtual UserAccount PerformedByNavigation { get; set; }
 }

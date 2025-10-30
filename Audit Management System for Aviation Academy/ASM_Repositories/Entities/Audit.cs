@@ -25,15 +25,11 @@ public partial class Audit
 
     public Guid? CreatedBy { get; set; }
 
-    public Guid? ApprovedBy { get; set; }
-
-    public DateTime? ApprovedAt { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public bool IsPublished { get; set; }
 
-    public virtual UserAccount ApprovedByNavigation { get; set; }
+    public string Objective { get; set; }
 
     public virtual ICollection<AuditChecklistItem> AuditChecklistItems { get; set; } = new List<AuditChecklistItem>();
 

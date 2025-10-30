@@ -37,8 +37,6 @@ public partial class Finding
 
     public string ExternalAuditorName { get; set; }
 
-    public byte[] RowVersion { get; set; }
-
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 
     public virtual Audit Audit { get; set; }

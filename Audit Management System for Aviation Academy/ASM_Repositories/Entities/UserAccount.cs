@@ -29,21 +29,17 @@ public partial class UserAccount
 
     public int FailedLoginCount { get; set; }
 
-    public byte[] RowVersion { get; set; }
-
     public virtual ICollection<Action> ActionAssignedByNavigations { get; set; } = new List<Action>();
 
     public virtual ICollection<Action> ActionAssignedToNavigations { get; set; } = new List<Action>();
 
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
-    public virtual ICollection<Audit> AuditApprovedByNavigations { get; set; } = new List<Audit>();
-
-    public virtual ICollection<Audit> AuditCreatedByNavigations { get; set; } = new List<Audit>();
-
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
     public virtual ICollection<AuditTeam> AuditTeams { get; set; } = new List<AuditTeam>();
+
+    public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
 
     public virtual ICollection<ChecklistTemplate> ChecklistTemplates { get; set; } = new List<ChecklistTemplate>();
 

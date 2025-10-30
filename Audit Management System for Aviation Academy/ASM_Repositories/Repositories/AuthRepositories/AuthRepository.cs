@@ -15,7 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Repositories.Repositories
+namespace ASM_Repositories.AuthRepositories.Repositories.AuthRepositories
 {
     public class AuthRepository : IAuthRepository
     {

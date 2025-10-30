@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Services.Services
+namespace ASM_Services.Services.AdminServices
 {
     public class DepartmentService : IDepartmentService
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Services.Services
+namespace ASM_Services.Services.AuthServices
 {
     public class AuthService : IAuthService
     {

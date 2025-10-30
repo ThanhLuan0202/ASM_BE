@@ -1,5 +1,6 @@
 ﻿using ASM_Services.Interfaces;
-using ASM_Services.Services;
+using ASM_Services.Services.AdminServices;
+using ASM_Services.Services.AuthServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

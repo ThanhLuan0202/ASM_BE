@@ -94,10 +94,6 @@
       {
          "Name": "[log].[AuditLog]",
          "ObjectType": 0
-      },
-      {
-         "Name": "[ams].[vw_FindingHistory]",
-         "ObjectType": 3
       }
    ],
    "UiHint": null,

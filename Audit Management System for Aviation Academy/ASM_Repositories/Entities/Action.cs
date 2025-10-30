@@ -33,8 +33,6 @@ public partial class Action
 
     public string ReviewFeedback { get; set; }
 
-    public byte[] RowVersion { get; set; }
-
     public virtual UserAccount AssignedByNavigation { get; set; }
 
     public virtual Department AssignedDept { get; set; }

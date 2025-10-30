@@ -1,5 +1,6 @@
-﻿using ASM_Repositories.Interfaces;
-using ASM_Repositories.Repositories;
+﻿using ASM_Repositories.AdminRepositories.Repositories.AdminRepositories;
+using ASM_Repositories.AuthRepositories.Repositories.AuthRepositories;
+using ASM_Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

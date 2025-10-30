@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Repositories.Repositories
+namespace ASM_Repositories.AdminRepositories.Repositories.AdminRepositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
