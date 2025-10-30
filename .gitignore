@@ -1,8 +1,15 @@
+# Visual Studio
 .vs/
-bin/
-obj/
 *.user
 *.suo
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Others
 *.cache
 *.pdb
 *.db-shm
