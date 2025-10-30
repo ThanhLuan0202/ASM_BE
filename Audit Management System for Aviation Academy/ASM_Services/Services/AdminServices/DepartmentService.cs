@@ -1,17 +1,17 @@
 ﻿using ASM_Repositories.Entities;
-using ASM_Repositories.Interfaces;
+using ASM_Repositories.Interfaces.AdminInterfaces.AdminRepositories;
 using ASM_Repositories.Models;
 using ASM_Repositories.Models.DepartmentDTO;
-using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Services.Services.AdminServices
+namespace ASM_Services.Interfaces.AdminInterfaces.AdminServices
 {
-    public class DepartmentService : IDepartmentService
+    public class DepartmentService : IDepartmentServices
     {
         private readonly IDepartmentRepository _repo;
 

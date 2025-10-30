@@ -1,5 +1,5 @@
-﻿using ASM_Services.Interfaces;
-using ASM_Services.Services.AdminServices;
+﻿using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
+using ASM_Services.Interfaces.AuthInterfaces.AuthServices;
 using ASM_Services.Services.AuthServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -17,7 +17,7 @@ namespace ASM_Services.DependencyInjection
             //service.AddTransient<xxxx, yyyy>();
 
             service.AddTransient<IAuthService, AuthService>();
-            service.AddTransient<IDepartmentService, DepartmentService>();
+            service.AddTransient<IDepartmentServices, DepartmentService>();
 
 
 

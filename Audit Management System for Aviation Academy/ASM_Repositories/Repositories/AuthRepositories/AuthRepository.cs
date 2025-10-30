@@ -1,6 +1,6 @@
 ﻿using ASM_Repositories.DBContext;
 using ASM_Repositories.Entities;
-using ASM_Repositories.Interfaces;
+using ASM_Repositories.Interfaces.AuthInterfaces.AuthRepositories;
 using ASM_Repositories.Models.LoginDTO;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

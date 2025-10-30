@@ -1,6 +1,6 @@
 ﻿using ASM_Repositories.Models;
 using ASM_Repositories.Models.DepartmentDTO;
-using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,9 +11,9 @@ namespace ASM.API.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private readonly IDepartmentService _service;
+        private readonly IDepartmentServices _service;
 
-        public DepartmentsController(IDepartmentService service)
+        public DepartmentsController(IDepartmentServices service)
         {
             _service = service;
         }

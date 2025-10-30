@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Repositories.Interfaces
+namespace ASM_Repositories.Interfaces.AuthInterfaces.AuthRepositories
 {
     public interface IAuthRepository
     {

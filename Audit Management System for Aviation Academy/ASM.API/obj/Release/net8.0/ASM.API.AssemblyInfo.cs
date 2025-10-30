@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ASM.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f7b7756b79d55b223e6d5fe52e6d47f75d78ccea")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47ed03a78e7dc2bf268239c6c06a07d05220860a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ASM.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ASM.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

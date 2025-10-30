@@ -466,7 +466,6 @@ D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\o
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.AssemblyInfoInputs.cache
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.AssemblyInfo.cs
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.csproj.CoreCompileInputs.cache
-D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.MvcApplicationPartsAssemblyInfo.cs
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.MvcApplicationPartsAssemblyInfo.cache
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\ASM.API.sourcelink.json
 D:\luan\final\bev1\ASM_BE\Audit Management System for Aviation Academy\ASM.API\obj\Debug\net8.0\rjimswa.dswa.cache.json

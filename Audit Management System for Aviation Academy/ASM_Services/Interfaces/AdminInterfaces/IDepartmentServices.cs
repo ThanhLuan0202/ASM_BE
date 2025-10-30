@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Services.Interfaces
+namespace ASM_Services.Interfaces.AdminInterfaces.AdminServices
 {
-    public interface IDepartmentService
+    public interface IDepartmentServices
     {
         Task<IEnumerable<ViewDepartment>> GetAllDepartmentsAsync();
         Task<ViewDepartment?> GetDepartmentByIdAsync(int id);

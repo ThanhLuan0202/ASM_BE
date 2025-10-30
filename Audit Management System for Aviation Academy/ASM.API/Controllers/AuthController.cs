@@ -1,5 +1,5 @@
 ﻿using ASM_Repositories.Models.LoginDTO;
-using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AuthInterfaces.AuthServices;
 using ASM_Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

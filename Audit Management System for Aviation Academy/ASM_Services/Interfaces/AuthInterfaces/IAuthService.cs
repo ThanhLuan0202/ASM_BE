@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ASM_Services.Interfaces
+namespace ASM_Services.Interfaces.AuthInterfaces.AuthServices
 {
     public interface IAuthService
     {

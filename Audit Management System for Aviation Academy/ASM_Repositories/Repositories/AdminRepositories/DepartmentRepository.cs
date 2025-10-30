@@ -1,6 +1,6 @@
 ﻿using ASM_Repositories.DBContext;
 using ASM_Repositories.Entities;
-using ASM_Repositories.Interfaces;
+using ASM_Repositories.Interfaces.AdminInterfaces.AdminRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

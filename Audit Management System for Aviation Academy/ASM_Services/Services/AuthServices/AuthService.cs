@@ -1,6 +1,6 @@
-﻿using ASM_Repositories.Interfaces;
+﻿using ASM_Repositories.Interfaces.AuthInterfaces.AuthRepositories;
 using ASM_Repositories.Models.LoginDTO;
-using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AuthInterfaces.AuthServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
