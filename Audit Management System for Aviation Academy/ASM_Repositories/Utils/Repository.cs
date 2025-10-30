@@ -8,96 +8,132 @@ using System.Threading.Tasks;
 
 namespace ASM_Repositories.Utils
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<T> where T : class
     {
-        private readonly AuditManagementSystemForAviationAcademyContext _dbContext;
-        public DbSet<TEntity> Entities { get; }
-        public Repository(AuditManagementSystemForAviationAcademyContext dbContext)
-        {
-            _dbContext = dbContext;
-            Entities = _dbContext.Set<TEntity>();
-        }
-        public async Task Add(TEntity entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+        protected AuditManagementSystemForAviationAcademyContext _context;
 
-            Entities.Add(entity);
-            await _dbContext.SaveChangesAsync();
+        public Repository()
+        {
+            _context ??= new AuditManagementSystemForAviationAcademyContext();
         }
 
-        public async Task Add(IEnumerable<TEntity> entities)
+        public Repository(AuditManagementSystemForAviationAcademyContext context)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            Entities.AddRange(entities);
-            await _dbContext.SaveChangesAsync();
+            _context = context;
         }
 
-        public IQueryable<TEntity> GetAll()
+        public List<T> GetAll()
         {
-            return Entities;
+            return _context.Set<T>().ToList();
+        }
+        public async Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+        public void Create(T entity)
+        {
+            _context.Add(entity);
+            _context.SaveChanges();
         }
 
-        public TEntity GetById(object id)
+        public async Task<int> CreateAsync(T entity)
         {
-            if (id == null)
-                throw new ArgumentNullException(nameof(id));
+            _context.Add(entity);
+            return await _context.SaveChangesAsync();
+        }
+        public void Update(T entity)
+        {
 
-            return Entities.Find(id);
+            _context.ChangeTracker.Clear();
+            var tracker = _context.Attach(entity);
+            tracker.State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public async Task<int> UpdateAsync(T entity)
+        {
+
+            _context.ChangeTracker.Clear();
+            var tracker = _context.Attach(entity);
+            tracker.State = EntityState.Modified;
+            return await _context.SaveChangesAsync();
+
 
         }
 
-        public void Remove(int id)
+        public bool Remove(T entity)
         {
-            var entity = GetById(id);
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            Entities.Remove(entity);
+            _context.Remove(entity);
+            _context.SaveChanges();
+            return true;
         }
 
-        public void Remove(TEntity entity)
+        public async Task<bool> RemoveAsync(T entity)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            Entities.Remove(entity);
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public void Remove(params TEntity[] entities)
+        public T GetById(int id)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            Entities.RemoveRange(entities);
+            return _context.Set<T>().Find(id);
         }
 
-        public void Remove(IEnumerable<TEntity> entities)
+        public async Task<T> GetByIdAsync(int id)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            Entities.RemoveRange(entities);
+            return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task Update(TEntity entity)
+        public T GetById(string code)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            Entities.Update(entity);
-            await _dbContext.SaveChangesAsync();
+            return _context.Set<T>().Find(code);
         }
 
-        public async Task Update(IEnumerable<TEntity> entities)
+        public async Task<T> GetByIdAsync(string code)
         {
-            if (entities == null)
-                throw new ArgumentNullException(nameof(entities));
-
-            Entities.UpdateRange(entities);
-            await _dbContext.SaveChangesAsync();
+            return await _context.Set<T>().FindAsync(code);
         }
+
+
+        public T GetById(Guid code)
+        {
+            return _context.Set<T>().Find(code);
+        }
+
+        public async Task<T> GetByIdAsync(Guid code)
+        {
+            return await _context.Set<T>().FindAsync(code);
+        }
+
+        #region Separating asigned entity and save operators        
+
+        public void PrepareCreate(T entity)
+        {
+            _context.Add(entity);
+        }
+
+        public void PrepareUpdate(T entity)
+        {
+            var tracker = _context.Attach(entity);
+            tracker.State = EntityState.Modified;
+        }
+
+        public void PrepareRemove(T entity)
+        {
+            _context.Remove(entity);
+        }
+
+        public int Save()
+        {
+            return _context.SaveChanges();
+        }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        #endregion Separating asign entity and save operators
     }
 }

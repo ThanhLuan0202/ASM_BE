@@ -1,6 +1,8 @@
 ﻿using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using ASM_Services.Interfaces.AuthInterfaces.AuthServices;
+using ASM_Services.Interfaces.SQAStaffInterfaces;
 using ASM_Services.Services.AuthServices;
+using ASM_Services.Services.SQAStaffServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace ASM_Services.DependencyInjection
 
             service.AddTransient<IAuthService, AuthService>();
             service.AddTransient<IDepartmentServices, DepartmentService>();
-
+            service.AddTransient<IFindingService, FindingService>();
 
 
 
