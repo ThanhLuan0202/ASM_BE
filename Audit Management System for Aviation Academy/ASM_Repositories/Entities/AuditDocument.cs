@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace ASM_Repositories.Entities;
 
-public partial class Attachment
+public partial class AuditDocument
 {
-    public Guid AttachmentId { get; set; }
+    public Guid DocId { get; set; }
 
-    public string EntityType { get; set; }
+    public Guid AuditId { get; set; }
 
-    public Guid EntityId { get; set; }
+    public string DocumentType { get; set; }
 
-    public string FileName { get; set; }
+    public string Title { get; set; }
 
     public string BlobPath { get; set; }
 
@@ -25,15 +25,11 @@ public partial class Attachment
 
     public DateTime UploadedAt { get; set; }
 
-    public byte[] ContentHash { get; set; }
-
-    public DateOnly? RetentionUntil { get; set; }
+    public bool IsFinalVersion { get; set; }
 
     public string Status { get; set; }
 
-    public bool IsArchived { get; set; }
-
-    public virtual AttachmentEntityType EntityTypeNavigation { get; set; }
+    public virtual Audit Audit { get; set; }
 
     public virtual UserAccount UploadedByNavigation { get; set; }
 }

@@ -31,7 +31,15 @@ public partial class Audit
 
     public string Objective { get; set; }
 
+    public virtual ICollection<AuditApproval> AuditApprovals { get; set; } = new List<AuditApproval>();
+
     public virtual ICollection<AuditChecklistItem> AuditChecklistItems { get; set; } = new List<AuditChecklistItem>();
+
+    public virtual ICollection<AuditCriteriaMap> AuditCriteriaMaps { get; set; } = new List<AuditCriteriaMap>();
+
+    public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();
+
+    public virtual ICollection<AuditScopeDepartment> AuditScopeDepartments { get; set; } = new List<AuditScopeDepartment>();
 
     public virtual ICollection<AuditTeam> AuditTeams { get; set; } = new List<AuditTeam>();
 

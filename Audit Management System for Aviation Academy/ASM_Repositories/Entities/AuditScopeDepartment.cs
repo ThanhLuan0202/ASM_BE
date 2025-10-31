@@ -5,21 +5,17 @@ using System.Collections.Generic;
 
 namespace ASM_Repositories.Entities;
 
-public partial class AuditTeam
+public partial class AuditScopeDepartment
 {
-    public Guid AuditTeamId { get; set; }
+    public Guid AuditScopeId { get; set; }
 
     public Guid AuditId { get; set; }
 
-    public Guid UserId { get; set; }
-
-    public string RoleInTeam { get; set; }
-
-    public bool IsLead { get; set; }
-
     public string Status { get; set; }
+
+    public int DeptId { get; set; }
 
     public virtual Audit Audit { get; set; }
 
-    public virtual UserAccount User { get; set; }
+    public virtual Department Dept { get; set; }
 }

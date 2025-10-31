@@ -29,7 +29,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__ActionSt__7B3DC58E3E19CDB1", x => x.ActionStatus);
+                    table.PrimaryKey("PK__ActionSt__7B3DC58EC9726C81", x => x.ActionStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,7 +41,25 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Attachme__F21D4CA2E08247FB", x => x.EntityType);
+                    table.PrimaryKey("PK__Attachme__F21D4CA2922583A4", x => x.EntityType);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditCriteria",
+                schema: "ams",
+                columns: table => new
+                {
+                    CriteriaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ReferenceCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PublishedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__AuditCri__FE6ADB2DA611FA2C", x => x.CriteriaID);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,7 +71,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditSta__45D7E6360F67DBD5", x => x.AuditStatus);
+                    table.PrimaryKey("PK__AuditSta__45D7E6365E6E9D5F", x => x.AuditStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,11 +84,12 @@ namespace ASM_Repositories.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Departme__0148818E4442DB30", x => x.DeptID);
+                    table.PrimaryKey("PK__Departme__0148818EC40042CD", x => x.DeptID);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,7 +101,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__FindingS__96F5CD15CD0FD094", x => x.Severity);
+                    table.PrimaryKey("PK__FindingS__96F5CD158AB2DB08", x => x.Severity);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,7 +113,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__FindingS__B9A531DF96E2F5B9", x => x.FindingStatus);
+                    table.PrimaryKey("PK__FindingS__B9A531DF589A3323", x => x.FindingStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -107,7 +126,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Role__8A2B61616E265C1D", x => x.RoleName);
+                    table.PrimaryKey("PK__Role__8A2B6161FA3AFAF9", x => x.RoleName);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,11 +138,12 @@ namespace ASM_Repositories.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__RootCaus__EAE5E40EB1F5E87A", x => x.RootCauseID);
+                    table.PrimaryKey("PK__RootCaus__EAE5E40E141DB7EE", x => x.RootCauseID);
                 });
 
             migrationBuilder.CreateTable(
@@ -141,11 +161,12 @@ namespace ASM_Repositories.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FailedLoginCount = table.Column<int>(type: "int", nullable: false)
+                    FailedLoginCount = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__UserAcco__1788CCACA0FB7ABE", x => x.UserID);
+                    table.PrimaryKey("PK__UserAcco__1788CCACF4537956", x => x.UserID);
                     table.ForeignKey(
                         name: "FK__UserAccou__DeptI__48CFD27E",
                         column: x => x.DeptID,
@@ -176,11 +197,12 @@ namespace ASM_Repositories.Migrations
                     UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
                     ContentHash = table.Column<byte[]>(type: "varbinary(32)", maxLength: 32, nullable: true),
                     RetentionUntil = table.Column<DateOnly>(type: "date", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     IsArchived = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Attachme__442C64DE82B43343", x => x.AttachmentID);
+                    table.PrimaryKey("PK__Attachme__442C64DEEF5BB30F", x => x.AttachmentID);
                     table.ForeignKey(
                         name: "FK__Attachmen__Entit__123EB7A3",
                         column: x => x.EntityType,
@@ -210,7 +232,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditLog__5E5499A8B18C18B4", x => x.LogID);
+                    table.PrimaryKey("PK__AuditLog__5E5499A840991FB9", x => x.LogID);
                     table.ForeignKey(
                         name: "FK__AuditLog__Perfor__2645B050",
                         column: x => x.PerformedBy,
@@ -230,14 +252,44 @@ namespace ASM_Repositories.Migrations
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Checklis__F87ADD07D90C7542", x => x.TemplateID);
+                    table.PrimaryKey("PK__Checklis__F87ADD07BBFA0B57", x => x.TemplateID);
                     table.ForeignKey(
                         name: "FK__Checklist__Creat__5629CD9C",
                         column: x => x.CreatedBy,
+                        principalSchema: "auth",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DepartmentHead",
+                schema: "ams",
+                columns: table => new
+                {
+                    DeptHeadID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    DeptID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Departme__04A19341CE4BC1D4", x => x.DeptHeadID);
+                    table.ForeignKey(
+                        name: "FK__Departmen__DeptI__5070F446",
+                        column: x => x.DeptID,
+                        principalSchema: "ams",
+                        principalTable: "Department",
+                        principalColumn: "DeptID");
+                    table.ForeignKey(
+                        name: "FK__Departmen__UserI__5165187F",
+                        column: x => x.UserID,
                         principalSchema: "auth",
                         principalTable: "UserAccount",
                         principalColumn: "UserID");
@@ -256,11 +308,12 @@ namespace ASM_Repositories.Migrations
                     EntityID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     ReadAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Notifica__20CF2E324E66B45F", x => x.NotificationID);
+                    table.PrimaryKey("PK__Notifica__20CF2E32D3D37E2C", x => x.NotificationID);
                     table.ForeignKey(
                         name: "FK__Notificat__Entit__208CD6FA",
                         column: x => x.EntityType,
@@ -290,7 +343,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__ReportRe__1609F931BBD73FFA", x => x.ReportRequestID);
+                    table.PrimaryKey("PK__ReportRe__1609F931C53C5848", x => x.ReportRequestID);
                     table.ForeignKey(
                         name: "FK__ReportReq__Reque__2B0A656D",
                         column: x => x.RequestedBy,
@@ -319,7 +372,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Audit__A17F23B8332B75C1", x => x.AuditID);
+                    table.PrimaryKey("PK__Audit__A17F23B89C9D3A29", x => x.AuditID);
                     table.ForeignKey(
                         name: "FK__Audit__CreatedBy__6383C8BA",
                         column: x => x.CreatedBy,
@@ -351,11 +404,12 @@ namespace ASM_Repositories.Migrations
                     Order = table.Column<int>(type: "int", nullable: false),
                     QuestionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AnswerType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     SeverityDefault = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Checklis__727E83EBBC1B89A4", x => x.ItemID);
+                    table.PrimaryKey("PK__Checklis__727E83EB1BF68FE1", x => x.ItemID);
                     table.ForeignKey(
                         name: "FK__Checklist__Sever__5DCAEF64",
                         column: x => x.SeverityDefault,
@@ -368,6 +422,63 @@ namespace ASM_Repositories.Migrations
                         principalSchema: "ams",
                         principalTable: "ChecklistTemplate",
                         principalColumn: "TemplateID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Audit_Criteria_Map",
+                schema: "ams",
+                columns: table => new
+                {
+                    AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CriteriaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Audit_Cr__6E998E0A225AF767", x => new { x.AuditID, x.CriteriaID });
+                    table.ForeignKey(
+                        name: "FK__Audit_Cri__Audit__37703C52",
+                        column: x => x.AuditID,
+                        principalSchema: "ams",
+                        principalTable: "Audit",
+                        principalColumn: "AuditID");
+                    table.ForeignKey(
+                        name: "FK__Audit_Cri__Crite__3864608B",
+                        column: x => x.CriteriaID,
+                        principalSchema: "ams",
+                        principalTable: "AuditCriteria",
+                        principalColumn: "CriteriaID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditApproval",
+                schema: "ams",
+                columns: table => new
+                {
+                    AuditApprovalID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApproverID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApprovalLevel = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__AuditApp__1C6F87158CF157F6", x => x.AuditApprovalID);
+                    table.ForeignKey(
+                        name: "FK__AuditAppr__Appro__71D1E811",
+                        column: x => x.ApproverID,
+                        principalSchema: "auth",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserID");
+                    table.ForeignKey(
+                        name: "FK__AuditAppr__Audit__70DDC3D8",
+                        column: x => x.AuditID,
+                        principalSchema: "ams",
+                        principalTable: "Audit",
+                        principalColumn: "AuditID");
                 });
 
             migrationBuilder.CreateTable(
@@ -385,13 +496,74 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditChe__E37F18C253EA74EC", x => x.AuditItemID);
+                    table.PrimaryKey("PK__AuditChe__E37F18C209B145A9", x => x.AuditItemID);
                     table.ForeignKey(
                         name: "FK__AuditChec__Audit__76969D2E",
                         column: x => x.AuditID,
                         principalSchema: "ams",
                         principalTable: "Audit",
                         principalColumn: "AuditID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditDocument",
+                schema: "ams",
+                columns: table => new
+                {
+                    DocID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DocumentType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    BlobPath = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    SizeBytes = table.Column<long>(type: "bigint", nullable: true),
+                    UploadedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
+                    IsFinalVersion = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__AuditDoc__3EF1888DFCF43C9F", x => x.DocID);
+                    table.ForeignKey(
+                        name: "FK__AuditDocu__Audit__18EBB532",
+                        column: x => x.AuditID,
+                        principalSchema: "ams",
+                        principalTable: "Audit",
+                        principalColumn: "AuditID");
+                    table.ForeignKey(
+                        name: "FK__AuditDocu__Uploa__19DFD96B",
+                        column: x => x.UploadedBy,
+                        principalSchema: "auth",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuditScopeDepartment",
+                schema: "ams",
+                columns: table => new
+                {
+                    AuditScopeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DeptID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__AuditSco__405679D3A645CC18", x => x.AuditScopeID);
+                    table.ForeignKey(
+                        name: "FK__AuditScop__Audit__2FCF1A8A",
+                        column: x => x.AuditID,
+                        principalSchema: "ams",
+                        principalTable: "Audit",
+                        principalColumn: "AuditID");
+                    table.ForeignKey(
+                        name: "FK__AuditScop__DeptI__30C33EC3",
+                        column: x => x.DeptID,
+                        principalSchema: "ams",
+                        principalTable: "Department",
+                        principalColumn: "DeptID");
                 });
 
             migrationBuilder.CreateTable(
@@ -403,11 +575,12 @@ namespace ASM_Repositories.Migrations
                     AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoleInTeam = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsLead = table.Column<bool>(type: "bit", nullable: false)
+                    IsLead = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditTea__7093F172BA6E5B7E", x => x.AuditTeamID);
+                    table.PrimaryKey("PK__AuditTea__7093F172CE7CC93A", x => x.AuditTeamID);
                     table.ForeignKey(
                         name: "FK__AuditTeam__Audit__6A30C649",
                         column: x => x.AuditID,
@@ -445,7 +618,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Finding__19D671C2A9EB4310", x => x.FindingID);
+                    table.PrimaryKey("PK__Finding__19D671C2547241BC", x => x.FindingID);
                     table.ForeignKey(
                         name: "FK__Finding__AuditID__7C4F7684",
                         column: x => x.AuditID,
@@ -517,7 +690,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Action__FFE3F4B97624C6F7", x => x.ActionID);
+                    table.PrimaryKey("PK__Action__FFE3F4B991421ECC", x => x.ActionID);
                     table.ForeignKey(
                         name: "FK__Action__Assigned__09A971A2",
                         column: x => x.AssignedBy,
@@ -617,16 +790,65 @@ namespace ASM_Repositories.Migrations
                 column: "TemplateID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Audit_Criteria_Map_CriteriaID",
+                schema: "ams",
+                table: "Audit_Criteria_Map",
+                column: "CriteriaID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditApproval_ApproverID",
+                schema: "ams",
+                table: "AuditApproval",
+                column: "ApproverID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditApproval_AuditID",
+                schema: "ams",
+                table: "AuditApproval",
+                column: "AuditID");
+
+            migrationBuilder.CreateIndex(
+                name: "UQ__AuditApp__592EA2A7366B9DD9",
+                schema: "ams",
+                table: "AuditApproval",
+                columns: new[] { "AuditID", "ApproverID", "ApprovalLevel" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Audit_AuditID",
                 schema: "ams",
                 table: "AuditChecklistItem",
                 column: "AuditID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuditDocument_AuditID",
+                schema: "ams",
+                table: "AuditDocument",
+                column: "AuditID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditDocument_UploadedBy",
+                schema: "ams",
+                table: "AuditDocument",
+                column: "UploadedBy");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AuditLog_PerformedBy",
                 schema: "log",
                 table: "AuditLog",
                 column: "PerformedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditScopeDepartment_AuditID",
+                schema: "ams",
+                table: "AuditScopeDepartment",
+                column: "AuditID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuditScopeDepartment_DeptID",
+                schema: "ams",
+                table: "AuditScopeDepartment",
+                column: "DeptID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditTeam_AuditID",
@@ -641,7 +863,7 @@ namespace ASM_Repositories.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__AuditTea__7007AF7310B133D4",
+                name: "UQ__AuditTea__7007AF733DCB199C",
                 schema: "ams",
                 table: "AuditTeam",
                 columns: new[] { "AuditID", "UserID" },
@@ -664,6 +886,25 @@ namespace ASM_Repositories.Migrations
                 schema: "ams",
                 table: "ChecklistTemplate",
                 column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DepartmentHead_UserID",
+                schema: "ams",
+                table: "DepartmentHead",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeptHead_DeptID",
+                schema: "ams",
+                table: "DepartmentHead",
+                column: "DeptID");
+
+            migrationBuilder.CreateIndex(
+                name: "UQ__Departme__D0300D45EA024CB1",
+                schema: "ams",
+                table: "DepartmentHead",
+                columns: new[] { "DeptID", "UserID" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Finding_AuditID_Status",
@@ -744,7 +985,7 @@ namespace ASM_Repositories.Migrations
                 column: "RoleName");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__UserAcco__A9D1053448E04E76",
+                name: "UQ__UserAcco__A9D1053420E1AC15",
                 schema: "auth",
                 table: "UserAccount",
                 column: "Email",
@@ -763,8 +1004,24 @@ namespace ASM_Repositories.Migrations
                 schema: "ams");
 
             migrationBuilder.DropTable(
+                name: "Audit_Criteria_Map",
+                schema: "ams");
+
+            migrationBuilder.DropTable(
+                name: "AuditApproval",
+                schema: "ams");
+
+            migrationBuilder.DropTable(
+                name: "AuditDocument",
+                schema: "ams");
+
+            migrationBuilder.DropTable(
                 name: "AuditLog",
                 schema: "log");
+
+            migrationBuilder.DropTable(
+                name: "AuditScopeDepartment",
+                schema: "ams");
 
             migrationBuilder.DropTable(
                 name: "AuditTeam",
@@ -772,6 +1029,10 @@ namespace ASM_Repositories.Migrations
 
             migrationBuilder.DropTable(
                 name: "ChecklistItem",
+                schema: "ams");
+
+            migrationBuilder.DropTable(
+                name: "DepartmentHead",
                 schema: "ams");
 
             migrationBuilder.DropTable(
@@ -788,6 +1049,10 @@ namespace ASM_Repositories.Migrations
 
             migrationBuilder.DropTable(
                 name: "ActionStatus",
+                schema: "ams");
+
+            migrationBuilder.DropTable(
+                name: "AuditCriteria",
                 schema: "ams");
 
             migrationBuilder.DropTable(

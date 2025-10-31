@@ -36,7 +36,27 @@
          "ObjectType": 0
       },
       {
+         "Name": "[ams].[Audit_Criteria_Map]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditApproval]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[ams].[AuditChecklistItem]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditCriteria]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditDocument]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[AuditScopeDepartment]",
          "ObjectType": 0
       },
       {
@@ -57,6 +77,10 @@
       },
       {
          "Name": "[ams].[Department]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[ams].[DepartmentHead]",
          "ObjectType": 0
       },
       {

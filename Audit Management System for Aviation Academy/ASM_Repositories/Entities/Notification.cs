@@ -23,6 +23,8 @@ public partial class Notification
 
     public DateTime CreatedAt { get; set; }
 
+    public string Status { get; set; }
+
     public DateTime? ReadAt { get; set; }
 
     public virtual AttachmentEntityType EntityTypeNavigation { get; set; }

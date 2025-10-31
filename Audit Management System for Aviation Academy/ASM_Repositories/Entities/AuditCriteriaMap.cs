@@ -5,21 +5,15 @@ using System.Collections.Generic;
 
 namespace ASM_Repositories.Entities;
 
-public partial class AuditTeam
+public partial class AuditCriteriaMap
 {
-    public Guid AuditTeamId { get; set; }
-
     public Guid AuditId { get; set; }
 
-    public Guid UserId { get; set; }
-
-    public string RoleInTeam { get; set; }
-
-    public bool IsLead { get; set; }
+    public Guid CriteriaId { get; set; }
 
     public string Status { get; set; }
 
     public virtual Audit Audit { get; set; }
 
-    public virtual UserAccount User { get; set; }
+    public virtual AuditCriterion Criteria { get; set; }
 }

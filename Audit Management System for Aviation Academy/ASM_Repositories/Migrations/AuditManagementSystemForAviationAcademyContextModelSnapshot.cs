@@ -75,7 +75,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.HasKey("ActionId")
-                        .HasName("PK__Action__FFE3F4B97624C6F7");
+                        .HasName("PK__Action__FFE3F4B991421ECC");
 
                     b.HasIndex("AssignedBy");
 
@@ -100,7 +100,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnName("ActionStatus");
 
                     b.HasKey("ActionStatus1")
-                        .HasName("PK__ActionSt__7B3DC58E3E19CDB1");
+                        .HasName("PK__ActionSt__7B3DC58EC9726C81");
 
                     b.ToTable("ActionStatus", "ams");
                 });
@@ -149,6 +149,10 @@ namespace ASM_Repositories.Migrations
                     b.Property<long?>("SizeBytes")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTime>("UploadedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -158,7 +162,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("AttachmentId")
-                        .HasName("PK__Attachme__442C64DE82B43343");
+                        .HasName("PK__Attachme__442C64DEEF5BB30F");
 
                     b.HasIndex("UploadedBy");
 
@@ -174,7 +178,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("EntityType")
-                        .HasName("PK__Attachme__F21D4CA2E08247FB");
+                        .HasName("PK__Attachme__F21D4CA2922583A4");
 
                     b.ToTable("AttachmentEntityType", "ams");
                 });
@@ -230,7 +234,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("AuditId")
-                        .HasName("PK__Audit__A17F23B8332B75C1");
+                        .HasName("PK__Audit__A17F23B89C9D3A29");
 
                     b.HasIndex("CreatedBy");
 
@@ -239,6 +243,56 @@ namespace ASM_Repositories.Migrations
                     b.HasIndex("TemplateId");
 
                     b.ToTable("Audit", "ams");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditApproval", b =>
+                {
+                    b.Property<Guid>("AuditApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditApprovalID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<string>("ApprovalLevel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ApproverId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ApproverID");
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditID");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("AuditApprovalId")
+                        .HasName("PK__AuditApp__1C6F87158CF157F6");
+
+                    b.HasIndex("ApproverId");
+
+                    b.HasIndex(new[] { "AuditId" }, "IX_AuditApproval_AuditID");
+
+                    b.HasIndex(new[] { "AuditId", "ApproverId", "ApprovalLevel" }, "UQ__AuditApp__592EA2A7366B9DD9")
+                        .IsUnique();
+
+                    b.ToTable("AuditApproval", "ams");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.AuditChecklistItem", b =>
@@ -272,11 +326,133 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("AuditItemId")
-                        .HasName("PK__AuditChe__E37F18C253EA74EC");
+                        .HasName("PK__AuditChe__E37F18C209B145A9");
 
                     b.HasIndex(new[] { "AuditId" }, "IX_Audit_AuditID");
 
                     b.ToTable("AuditChecklistItem", "ams");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditCriteriaMap", b =>
+                {
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditID");
+
+                    b.Property<Guid>("CriteriaId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CriteriaID");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("AuditId", "CriteriaId")
+                        .HasName("PK__Audit_Cr__6E998E0A225AF767");
+
+                    b.HasIndex("CriteriaId");
+
+                    b.ToTable("Audit_Criteria_Map", "ams");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditCriterion", b =>
+                {
+                    b.Property<Guid>("CriteriaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CriteriaID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PublishedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ReferenceCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("CriteriaId")
+                        .HasName("PK__AuditCri__FE6ADB2DA611FA2C");
+
+                    b.ToTable("AuditCriteria", "ams");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditDocument", b =>
+                {
+                    b.Property<Guid>("DocId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DocID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditID");
+
+                    b.Property<string>("BlobPath")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsFinalVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<long?>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<Guid?>("UploadedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("DocId")
+                        .HasName("PK__AuditDoc__3EF1888DFCF43C9F");
+
+                    b.HasIndex("UploadedBy");
+
+                    b.HasIndex(new[] { "AuditId" }, "IX_AuditDocument_AuditID");
+
+                    b.ToTable("AuditDocument", "ams");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.AuditLog", b =>
@@ -311,11 +487,41 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LogId")
-                        .HasName("PK__AuditLog__5E5499A8B18C18B4");
+                        .HasName("PK__AuditLog__5E5499A840991FB9");
 
                     b.HasIndex("PerformedBy");
 
                     b.ToTable("AuditLog", "log");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditScopeDepartment", b =>
+                {
+                    b.Property<Guid>("AuditScopeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditScopeID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditID");
+
+                    b.Property<int>("DeptId")
+                        .HasColumnType("int")
+                        .HasColumnName("DeptID");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("AuditScopeId")
+                        .HasName("PK__AuditSco__405679D3A645CC18");
+
+                    b.HasIndex("AuditId");
+
+                    b.HasIndex("DeptId");
+
+                    b.ToTable("AuditScopeDepartment", "ams");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.AuditStatus", b =>
@@ -326,7 +532,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnName("AuditStatus");
 
                     b.HasKey("AuditStatus1")
-                        .HasName("PK__AuditSta__45D7E6360F67DBD5");
+                        .HasName("PK__AuditSta__45D7E6365E6E9D5F");
 
                     b.ToTable("AuditStatus", "ams");
                 });
@@ -351,18 +557,22 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("UserID");
 
                     b.HasKey("AuditTeamId")
-                        .HasName("PK__AuditTea__7093F172BA6E5B7E");
+                        .HasName("PK__AuditTea__7093F172CE7CC93A");
 
                     b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "AuditId" }, "IX_AuditTeam_AuditID");
 
-                    b.HasIndex(new[] { "AuditId", "UserId" }, "UQ__AuditTea__7007AF7310B133D4")
+                    b.HasIndex(new[] { "AuditId", "UserId" }, "UQ__AuditTea__7007AF733DCB199C")
                         .IsUnique();
 
                     b.ToTable("AuditTeam", "ams");
@@ -395,12 +605,16 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<Guid>("TemplateId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TemplateID");
 
                     b.HasKey("ItemId")
-                        .HasName("PK__Checklis__727E83EBBC1B89A4");
+                        .HasName("PK__Checklis__727E83EB1BF68FE1");
 
                     b.HasIndex("SeverityDefault");
 
@@ -439,12 +653,16 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Version")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("TemplateId")
-                        .HasName("PK__Checklis__F87ADD07D90C7542");
+                        .HasName("PK__Checklis__F87ADD07BBFA0B57");
 
                     b.HasIndex("CreatedBy");
 
@@ -478,10 +696,55 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("DeptId")
-                        .HasName("PK__Departme__0148818E4442DB30");
+                        .HasName("PK__Departme__0148818EC40042CD");
 
                     b.ToTable("Department", "ams");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.DepartmentHead", b =>
+                {
+                    b.Property<Guid>("DeptHeadId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeptHeadID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<int>("DeptId")
+                        .HasColumnType("int")
+                        .HasColumnName("DeptID");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UserID");
+
+                    b.HasKey("DeptHeadId")
+                        .HasName("PK__Departme__04A19341CE4BC1D4");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex(new[] { "DeptId" }, "IX_DeptHead_DeptID");
+
+                    b.HasIndex(new[] { "DeptId", "UserId" }, "UQ__Departme__D0300D45EA024CB1")
+                        .IsUnique();
+
+                    b.ToTable("DepartmentHead", "ams");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.Finding", b =>
@@ -551,7 +814,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.HasKey("FindingId")
-                        .HasName("PK__Finding__19D671C2A9EB4310");
+                        .HasName("PK__Finding__19D671C2547241BC");
 
                     b.HasIndex("AuditItemId");
 
@@ -579,7 +842,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Severity")
-                        .HasName("PK__FindingS__96F5CD15CD0FD094");
+                        .HasName("PK__FindingS__96F5CD158AB2DB08");
 
                     b.ToTable("FindingSeverity", "ams");
                 });
@@ -592,7 +855,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnName("FindingStatus");
 
                     b.HasKey("FindingStatus1")
-                        .HasName("PK__FindingS__B9A531DF96E2F5B9");
+                        .HasName("PK__FindingS__B9A531DF589A3323");
 
                     b.ToTable("FindingStatus", "ams");
                 });
@@ -627,6 +890,10 @@ namespace ASM_Repositories.Migrations
                     b.Property<DateTime?>("ReadAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Title")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -636,7 +903,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnName("UserID");
 
                     b.HasKey("NotificationId")
-                        .HasName("PK__Notifica__20CF2E324E66B45F");
+                        .HasName("PK__Notifica__20CF2E32D3D37E2C");
 
                     b.HasIndex("EntityType");
 
@@ -676,7 +943,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ReportRequestId")
-                        .HasName("PK__ReportRe__1609F931BBD73FFA");
+                        .HasName("PK__ReportRe__1609F931C53C5848");
 
                     b.HasIndex("RequestedBy");
 
@@ -694,7 +961,7 @@ namespace ASM_Repositories.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("RoleName")
-                        .HasName("PK__Role__8A2B61616E265C1D");
+                        .HasName("PK__Role__8A2B6161FA3AFAF9");
 
                     b.ToTable("Role", "ams");
                 });
@@ -721,8 +988,12 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("RootCauseId")
-                        .HasName("PK__RootCaus__EAE5E40EB1F5E87A");
+                        .HasName("PK__RootCaus__EAE5E40E141DB7EE");
 
                     b.ToTable("RootCause", "ams");
                 });
@@ -778,14 +1049,18 @@ namespace ASM_Repositories.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("UserId")
-                        .HasName("PK__UserAcco__1788CCACA0FB7ABE");
+                        .HasName("PK__UserAcco__1788CCACF4537956");
 
                     b.HasIndex("RoleName");
 
                     b.HasIndex(new[] { "DeptId", "RoleName" }, "IX_User_Dept_Role");
 
-                    b.HasIndex(new[] { "Email" }, "UQ__UserAcco__A9D1053448E04E76")
+                    b.HasIndex(new[] { "Email" }, "UQ__UserAcco__A9D1053420E1AC15")
                         .IsUnique();
 
                     b.ToTable("UserAccount", "auth");
@@ -872,6 +1147,25 @@ namespace ASM_Repositories.Migrations
                     b.Navigation("Template");
                 });
 
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditApproval", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.UserAccount", "Approver")
+                        .WithMany("AuditApprovals")
+                        .HasForeignKey("ApproverId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditAppr__Appro__71D1E811");
+
+                    b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
+                        .WithMany("AuditApprovals")
+                        .HasForeignKey("AuditId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditAppr__Audit__70DDC3D8");
+
+                    b.Navigation("Approver");
+
+                    b.Navigation("Audit");
+                });
+
             modelBuilder.Entity("ASM_Repositories.Entities.AuditChecklistItem", b =>
                 {
                     b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
@@ -883,6 +1177,43 @@ namespace ASM_Repositories.Migrations
                     b.Navigation("Audit");
                 });
 
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditCriteriaMap", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
+                        .WithMany("AuditCriteriaMaps")
+                        .HasForeignKey("AuditId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Audit_Cri__Audit__37703C52");
+
+                    b.HasOne("ASM_Repositories.Entities.AuditCriterion", "Criteria")
+                        .WithMany("AuditCriteriaMaps")
+                        .HasForeignKey("CriteriaId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Audit_Cri__Crite__3864608B");
+
+                    b.Navigation("Audit");
+
+                    b.Navigation("Criteria");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditDocument", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
+                        .WithMany("AuditDocuments")
+                        .HasForeignKey("AuditId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditDocu__Audit__18EBB532");
+
+                    b.HasOne("ASM_Repositories.Entities.UserAccount", "UploadedByNavigation")
+                        .WithMany("AuditDocuments")
+                        .HasForeignKey("UploadedBy")
+                        .HasConstraintName("FK__AuditDocu__Uploa__19DFD96B");
+
+                    b.Navigation("Audit");
+
+                    b.Navigation("UploadedByNavigation");
+                });
+
             modelBuilder.Entity("ASM_Repositories.Entities.AuditLog", b =>
                 {
                     b.HasOne("ASM_Repositories.Entities.UserAccount", "PerformedByNavigation")
@@ -891,6 +1222,25 @@ namespace ASM_Repositories.Migrations
                         .HasConstraintName("FK__AuditLog__Perfor__2645B050");
 
                     b.Navigation("PerformedByNavigation");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditScopeDepartment", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
+                        .WithMany("AuditScopeDepartments")
+                        .HasForeignKey("AuditId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditScop__Audit__2FCF1A8A");
+
+                    b.HasOne("ASM_Repositories.Entities.Department", "Dept")
+                        .WithMany("AuditScopeDepartments")
+                        .HasForeignKey("DeptId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditScop__DeptI__30C33EC3");
+
+                    b.Navigation("Audit");
+
+                    b.Navigation("Dept");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.AuditTeam", b =>
@@ -938,6 +1288,25 @@ namespace ASM_Repositories.Migrations
                         .HasConstraintName("FK__Checklist__Creat__5629CD9C");
 
                     b.Navigation("CreatedByNavigation");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.DepartmentHead", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.Department", "Dept")
+                        .WithMany("DepartmentHeads")
+                        .HasForeignKey("DeptId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Departmen__DeptI__5070F446");
+
+                    b.HasOne("ASM_Repositories.Entities.UserAccount", "User")
+                        .WithMany("DepartmentHeads")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK__Departmen__UserI__5165187F");
+
+                    b.Navigation("Dept");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.Finding", b =>
@@ -1061,7 +1430,15 @@ namespace ASM_Repositories.Migrations
 
             modelBuilder.Entity("ASM_Repositories.Entities.Audit", b =>
                 {
+                    b.Navigation("AuditApprovals");
+
                     b.Navigation("AuditChecklistItems");
+
+                    b.Navigation("AuditCriteriaMaps");
+
+                    b.Navigation("AuditDocuments");
+
+                    b.Navigation("AuditScopeDepartments");
 
                     b.Navigation("AuditTeams");
 
@@ -1071,6 +1448,11 @@ namespace ASM_Repositories.Migrations
             modelBuilder.Entity("ASM_Repositories.Entities.AuditChecklistItem", b =>
                 {
                     b.Navigation("Findings");
+                });
+
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditCriterion", b =>
+                {
+                    b.Navigation("AuditCriteriaMaps");
                 });
 
             modelBuilder.Entity("ASM_Repositories.Entities.AuditStatus", b =>
@@ -1088,6 +1470,10 @@ namespace ASM_Repositories.Migrations
             modelBuilder.Entity("ASM_Repositories.Entities.Department", b =>
                 {
                     b.Navigation("Actions");
+
+                    b.Navigation("AuditScopeDepartments");
+
+                    b.Navigation("DepartmentHeads");
 
                     b.Navigation("Findings");
 
@@ -1129,6 +1515,10 @@ namespace ASM_Repositories.Migrations
 
                     b.Navigation("Attachments");
 
+                    b.Navigation("AuditApprovals");
+
+                    b.Navigation("AuditDocuments");
+
                     b.Navigation("AuditLogs");
 
                     b.Navigation("AuditTeams");
@@ -1136,6 +1526,8 @@ namespace ASM_Repositories.Migrations
                     b.Navigation("Audits");
 
                     b.Navigation("ChecklistTemplates");
+
+                    b.Navigation("DepartmentHeads");
 
                     b.Navigation("FindingCreatedByNavigations");
 

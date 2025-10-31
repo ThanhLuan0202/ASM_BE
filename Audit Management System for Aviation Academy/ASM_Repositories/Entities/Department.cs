@@ -15,9 +15,15 @@ public partial class Department
 
     public string Description { get; set; }
 
+    public string Status { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
+
+    public virtual ICollection<AuditScopeDepartment> AuditScopeDepartments { get; set; } = new List<AuditScopeDepartment>();
+
+    public virtual ICollection<DepartmentHead> DepartmentHeads { get; set; } = new List<DepartmentHead>();
 
     public virtual ICollection<Finding> Findings { get; set; } = new List<Finding>();
 

@@ -19,6 +19,8 @@ public partial class ChecklistTemplate
 
     public DateTime CreatedAt { get; set; }
 
+    public string Status { get; set; }
+
     public bool IsActive { get; set; }
 
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();

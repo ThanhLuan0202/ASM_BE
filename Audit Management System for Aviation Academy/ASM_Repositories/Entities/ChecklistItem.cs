@@ -19,6 +19,8 @@ public partial class ChecklistItem
 
     public string AnswerType { get; set; }
 
+    public string Status { get; set; }
+
     public string SeverityDefault { get; set; }
 
     public virtual FindingSeverity SeverityDefaultNavigation { get; set; }

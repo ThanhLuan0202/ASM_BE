@@ -29,11 +29,17 @@ public partial class UserAccount
 
     public int FailedLoginCount { get; set; }
 
+    public string Status { get; set; }
+
     public virtual ICollection<Action> ActionAssignedByNavigations { get; set; } = new List<Action>();
 
     public virtual ICollection<Action> ActionAssignedToNavigations { get; set; } = new List<Action>();
 
     public virtual ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+
+    public virtual ICollection<AuditApproval> AuditApprovals { get; set; } = new List<AuditApproval>();
+
+    public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
@@ -42,6 +48,8 @@ public partial class UserAccount
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
 
     public virtual ICollection<ChecklistTemplate> ChecklistTemplates { get; set; } = new List<ChecklistTemplate>();
+
+    public virtual ICollection<DepartmentHead> DepartmentHeads { get; set; } = new List<DepartmentHead>();
 
     public virtual Department Dept { get; set; }
 
