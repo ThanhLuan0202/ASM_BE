@@ -1,15 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ASM_Repositories.Models.FindingDTO
 {
-    public class CreateFinding
+    public class UpdateFinding
     {
-        [Required(ErrorMessage = "AuditId is required")]
-        public Guid AuditId { get; set; }
-
-        public Guid? AuditItemId { get; set; }
-
         [Required(ErrorMessage = "Title is required")]
         [MaxLength(300, ErrorMessage = "Title cannot exceed 300 characters")]
         public string Title { get; set; }
@@ -23,8 +18,6 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public int? DeptId { get; set; }
 
-        public Guid? CreatedBy { get; set; }
-
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters")]
         public string Status { get; set; }
 
@@ -37,5 +30,7 @@ namespace ASM_Repositories.Models.FindingDTO
 
         [MaxLength(200, ErrorMessage = "ExternalAuditorName cannot exceed 200 characters")]
         public string ExternalAuditorName { get; set; }
+
+        public Guid? AuditItemId { get; set; }
     }
 }

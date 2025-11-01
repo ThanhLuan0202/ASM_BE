@@ -1,16 +1,17 @@
-﻿using ASM_Repositories.Entities;
-using ASM_Repositories.Models.FindingDTO;
+﻿using ASM_Repositories.Models.FindingDTO;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ASM_Repositories.Interfaces.SQAStaffInterfaces
 {
     public interface IFindingRepository
     {
-        Task<IEnumerable<Finding>> GetAllFinding();
-        //Task<ViewFinding> CreateFinding(CreateFinding createFinding, string userId);
+        Task<IEnumerable<ViewFinding>> GetAllFindingAsync();
+        Task<ViewFinding?> GetFindingByIdAsync(Guid id);
+        Task<ViewFinding> CreateFindingAsync(CreateFinding dto);
+        Task<ViewFinding?> UpdateFindingAsync(Guid id, UpdateFinding dto);
+        Task<bool> DeleteFindingAsync(Guid id);
+        Task<bool> ExistsAsync(Guid id);
     }
 }
