@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditDTO;
+using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
@@ -61,6 +62,14 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+
+            // ChecklistItem mappings
+            CreateMap<ChecklistItem, ViewChecklistItem>().ReverseMap();
+            CreateMap<CreateChecklistItem, ChecklistItem>()
+                .ForMember(dest => dest.ItemId, opt => opt.Ignore()); 
+            CreateMap<UpdateChecklistItem, ChecklistItem>()
+                .ForMember(dest => dest.ItemId, opt => opt.Ignore())
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); // Không được update TemplateId
 
         }
     }
