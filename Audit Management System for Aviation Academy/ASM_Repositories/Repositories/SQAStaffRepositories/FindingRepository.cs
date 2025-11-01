@@ -124,7 +124,7 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
             finding.FindingId = Guid.NewGuid();
             finding.CreatedAt = DateTime.UtcNow;
             finding.Status = status;
-            finding.CreatedBy = createdByUserId; // Set from JWT token
+            finding.CreatedBy = createdByUserId; 
 
             _DbContext.Findings.Add(finding);
             await _DbContext.SaveChangesAsync();

@@ -25,6 +25,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IDepartmentRepository, DepartmentRepository>();
             service.AddTransient<IFindingRepository, FindingRepository>();
             service.AddTransient<IAuditRepository, AuditRepository>();
+            service.AddTransient<IChecklistTemplateRepository, ChecklistTemplateRepository>();
             service.AddTransient<IUsersRepository, UsersRepository>();
 
 

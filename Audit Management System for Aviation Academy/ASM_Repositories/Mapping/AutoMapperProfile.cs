@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditDTO;
+using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
 using ASM_Repositories.Models.UsersDTO;
@@ -31,7 +32,7 @@ namespace ASM_Repositories.Mapping
             CreateMap<CreateFinding, Finding>()
                 .ForMember(dest => dest.FindingId, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Set from JWT token parameter
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) 
                 .ForMember(dest => dest.AuditId, opt => opt.MapFrom(src => src.AuditId));
             CreateMap<UpdateFinding, Finding>()
                 .ForMember(dest => dest.FindingId, opt => opt.Ignore())
@@ -42,13 +43,24 @@ namespace ASM_Repositories.Mapping
             // Audit mappings
             CreateMap<Audit, ViewAudit>().ReverseMap();
             CreateMap<CreateAudit, Audit>()
-                .ForMember(dest => dest.AuditId, opt => opt.Ignore()) // ID do code tự tạo
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Set trong repository
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); // Set from JWT token parameter
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
             CreateMap<UpdateAudit, Audit>()
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); // Không được update CreatedBy
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+
+            // ChecklistTemplate mappings
+            CreateMap<ChecklistTemplate, ViewChecklistTemplate>().ReverseMap();
+            CreateMap<CreateChecklistTemplate, ChecklistTemplate>()
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+            CreateMap<UpdateChecklistTemplate, ChecklistTemplate>()
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
 
         }
     }

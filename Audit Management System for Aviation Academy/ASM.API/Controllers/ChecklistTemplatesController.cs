@@ -1,6 +1,5 @@
-﻿using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,57 +11,55 @@ namespace ASM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FindingsController : ControllerBase
+    public class ChecklistTemplatesController : ControllerBase
     {
-        private readonly IFindingService _service;
+        private readonly IChecklistTemplateService _service;
 
-        public FindingsController(IFindingService service)
+        public ChecklistTemplatesController(IChecklistTemplateService service)
         {
             _service = service;
         }
 
-       
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ViewChecklistTemplate>>> GetAll()
         {
             try
             {
-                var result = await _service.GetAllFindingAsync();
+                var result = await _service.GetAllChecklistTemplateAsync();
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving findings", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while retrieving checklist templates", error = ex.Message });
             }
         }
 
-        
         [HttpGet("{id}")]
-        public async Task<ActionResult<ViewFinding>> GetById(Guid id)
+        public async Task<ActionResult<ViewChecklistTemplate>> GetById(Guid id)
         {
             try
             {
                 if (id == Guid.Empty)
                 {
-                    return BadRequest(new { message = "Invalid finding ID" });
+                    return BadRequest(new { message = "Invalid template ID" });
                 }
 
-                var result = await _service.GetFindingByIdAsync(id);
+                var result = await _service.GetChecklistTemplateByIdAsync(id);
                 if (result == null)
                 {
-                    return NotFound(new { message = $"Finding with ID {id} not found" });
+                    return NotFound(new { message = $"Checklist template with ID {id} not found" });
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the finding", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while retrieving the checklist template", error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<ViewFinding>> Create([FromBody] CreateFinding dto)
+        public async Task<ActionResult<ViewChecklistTemplate>> Create([FromBody] CreateChecklistTemplate dto)
         {
             try
             {
@@ -84,14 +81,9 @@ namespace ASM.API.Controllers
                     });
                 }
 
-                if (string.IsNullOrWhiteSpace(dto.Title))
+                if (string.IsNullOrWhiteSpace(dto.Name))
                 {
-                    return BadRequest(new { message = "Title is required" });
-                }
-
-                if (dto.AuditId == Guid.Empty)
-                {
-                    return BadRequest(new { message = "AuditId is required" });
+                    return BadRequest(new { message = "Name is required" });
                 }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -101,8 +93,8 @@ namespace ASM.API.Controllers
                     userId = parsedUserId;
                 }
 
-                var result = await _service.CreateFindingAsync(dto, userId);
-                return CreatedAtAction(nameof(GetById), new { id = result.FindingId }, result);
+                var result = await _service.CreateChecklistTemplateAsync(dto, userId);
+                return CreatedAtAction(nameof(GetById), new { id = result.TemplateId }, result);
             }
             catch (InvalidOperationException ex)
             {
@@ -110,19 +102,18 @@ namespace ASM.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while creating the finding", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while creating the checklist template", error = ex.Message });
             }
         }
 
-    
         [HttpPut("{id}")]
-        public async Task<ActionResult<ViewFinding>> Update(Guid id, [FromBody] UpdateFinding dto)
+        public async Task<ActionResult<ViewChecklistTemplate>> Update(Guid id, [FromBody] UpdateChecklistTemplate dto)
         {
             try
             {
                 if (id == Guid.Empty)
                 {
-                    return BadRequest(new { message = "Invalid finding ID" });
+                    return BadRequest(new { message = "Invalid template ID" });
                 }
 
                 if (!ModelState.IsValid)
@@ -143,10 +134,10 @@ namespace ASM.API.Controllers
                     });
                 }
 
-                var result = await _service.UpdateFindingAsync(id, dto);
+                var result = await _service.UpdateChecklistTemplateAsync(id, dto);
                 if (result == null)
                 {
-                    return NotFound(new { message = $"Finding with ID {id} not found" });
+                    return NotFound(new { message = $"Checklist template with ID {id} not found" });
                 }
 
                 return Ok(result);
@@ -157,11 +148,10 @@ namespace ASM.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while updating the finding", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while updating the checklist template", error = ex.Message });
             }
         }
 
-        
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -169,25 +159,22 @@ namespace ASM.API.Controllers
             {
                 if (id == Guid.Empty)
                 {
-                    return BadRequest(new { message = "Invalid finding ID" });
+                    return BadRequest(new { message = "Invalid template ID" });
                 }
 
-                var result = await _service.DeleteFindingAsync(id);
+                var result = await _service.DeleteChecklistTemplateAsync(id);
                 if (!result)
                 {
-                    return NotFound(new { message = $"Finding with ID {id} not found" });
+                    return NotFound(new { message = $"Checklist template with ID {id} not found" });
                 }
 
-                return Ok(new { message = "Finding deleted successfully (status changed to Inactive)" });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
+                return Ok(new { message = "Checklist template deleted successfully (IsActive set to false)" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while deleting the finding", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while deleting the checklist template", error = ex.Message });
             }
         }
     }
 }
+
