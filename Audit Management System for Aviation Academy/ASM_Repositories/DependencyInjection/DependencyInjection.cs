@@ -3,8 +3,10 @@ using ASM_Repositories.AuthRepositories.Repositories.AuthRepositories;
 using ASM_Repositories.Interfaces.AdminInterfaces;
 using ASM_Repositories.Interfaces.AdminInterfaces.AdminRepositories;
 using ASM_Repositories.Interfaces.AuthInterfaces.AuthRepositories;
+using ASM_Repositories.Interfaces.DepartmentHeadInterfaces;
 using ASM_Repositories.Interfaces.SQAStaffInterfaces;
 using ASM_Repositories.Repositories.AdminRepositories;
+using ASM_Repositories.Repositories.DepartmentHeadRepositories;
 using ASM_Repositories.Repositories.SQAStaffRepositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -28,7 +30,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IChecklistTemplateRepository, ChecklistTemplateRepository>();
             service.AddTransient<IChecklistItemRepository, ChecklistItemRepository>();
             service.AddTransient<IUsersRepository, UsersRepository>();
-
+            service.AddTransient<IDepartmentHeadFindingRepository, DepartmentHeadFindingRepository>();
 
 
 

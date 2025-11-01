@@ -105,6 +105,7 @@ namespace ASM_Repositories.AuthRepositories.Repositories.AuthRepositories
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.RoleName),
+            new Claim("DeptId", user.DeptId.HasValue ? user.DeptId.ToString() : string.Empty),
             new Claim("FullName", user.FullName)
         };
 

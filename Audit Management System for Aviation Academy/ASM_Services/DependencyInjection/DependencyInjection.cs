@@ -1,9 +1,11 @@
 ﻿using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using ASM_Services.Interfaces.AuthInterfaces.AuthServices;
+using ASM_Services.Interfaces.DepartmentHeadInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using ASM_Services.Services.AdminServices;
 using ASM_Services.Services.AuthServices;
+using ASM_Services.Services.DepartmentHeadServices;
 using ASM_Services.Services.SQAStaffServices;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -27,7 +29,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IChecklistTemplateService, ChecklistTemplateService>();
             service.AddTransient<IChecklistItemService, ChecklistItemService>();
             service.AddTransient<IUsersService, UsersService>();
-
+            service.AddTransient<IDepartmentHeadFindingService, DepartmentHeadFindingService>();
 
 
 
