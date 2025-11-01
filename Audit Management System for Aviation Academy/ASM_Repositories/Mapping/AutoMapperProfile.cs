@@ -26,7 +26,20 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateDepartment, Department>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
-            CreateMap<UserAccount, ViewUsers>().ReverseMap();
+            CreateMap<UserAccount, ViewUser>().ReverseMap();
+            CreateMap<CreateUser, UserAccount>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.FailedLoginCount, opt => opt.MapFrom(_ => 0))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"))
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
+
+            CreateMap<UpdateUser, UserAccount>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
 
             // Finding mappings
             CreateMap<Finding, ViewFinding>().ReverseMap();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ASM_Services.Interfaces.AdminInterfaces.AdminServices
 {
-    public interface IDepartmentServices
+    public interface IDepartmentService
     {
         Task<IEnumerable<ViewDepartment>> GetAllDepartmentsAsync();
         Task<ViewDepartment?> GetDepartmentByIdAsync(int id);

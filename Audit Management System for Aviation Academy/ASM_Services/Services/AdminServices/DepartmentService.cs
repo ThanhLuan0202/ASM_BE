@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ASM_Services.Interfaces.AdminInterfaces.AdminServices
 {
-    public class DepartmentService : IDepartmentServices
+    public class DepartmentService : IDepartmentService
     {
         private readonly IDepartmentRepository _repo;
 
