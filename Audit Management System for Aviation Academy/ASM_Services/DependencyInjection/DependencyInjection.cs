@@ -23,6 +23,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuthService, AuthService>();
             service.AddTransient<IDepartmentServices, DepartmentService>();
             service.AddTransient<IFindingService, FindingService>();
+            service.AddTransient<IAuditService, AuditService>();
             service.AddTransient<IUsersService, UsersService>();
 
 

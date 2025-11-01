@@ -1,4 +1,5 @@
 ﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
 using ASM_Repositories.Models.UsersDTO;
@@ -25,7 +26,7 @@ namespace ASM_Repositories.Mapping
 
             CreateMap<UserAccount, ViewUsers>().ReverseMap();
 
-            // Findingg
+            // Finding mappings
             CreateMap<Finding, ViewFinding>().ReverseMap();
             CreateMap<CreateFinding, Finding>()
                 .ForMember(dest => dest.FindingId, opt => opt.Ignore()) 
@@ -36,6 +37,16 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+
+            // Audit mappings
+            CreateMap<Audit, ViewAudit>().ReverseMap();
+            CreateMap<CreateAudit, Audit>()
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore()) // ID do code tự tạo
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()); // Set trong repository
+            CreateMap<UpdateAudit, Audit>()
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); // Không được update CreatedBy
 
         }
     }
