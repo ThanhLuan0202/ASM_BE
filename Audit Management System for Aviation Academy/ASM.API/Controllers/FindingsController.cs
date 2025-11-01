@@ -1,9 +1,11 @@
 ﻿using ASM_Repositories.Models.FindingDTO;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASM.API.Controllers
@@ -92,7 +94,15 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "AuditId is required" });
                 }
 
-                var result = await _service.CreateFindingAsync(dto);
+                // Get UserId from JWT token claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                Guid? userId = null;
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
+                {
+                    userId = parsedUserId;
+                }
+
+                var result = await _service.CreateFindingAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { id = result.FindingId }, result);
             }
             catch (InvalidOperationException ex)

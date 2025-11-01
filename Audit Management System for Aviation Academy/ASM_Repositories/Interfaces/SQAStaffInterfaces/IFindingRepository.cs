@@ -9,7 +9,7 @@ namespace ASM_Repositories.Interfaces.SQAStaffInterfaces
     {
         Task<IEnumerable<ViewFinding>> GetAllFindingAsync();
         Task<ViewFinding?> GetFindingByIdAsync(Guid id);
-        Task<ViewFinding> CreateFindingAsync(CreateFinding dto);
+        Task<ViewFinding> CreateFindingAsync(CreateFinding dto, Guid? createdByUserId);
         Task<ViewFinding?> UpdateFindingAsync(Guid id, UpdateFinding dto);
         Task<bool> DeleteFindingAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);

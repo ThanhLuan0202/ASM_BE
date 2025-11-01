@@ -26,9 +26,9 @@ namespace ASM_Services.Services.SQAStaffServices
             return await _repo.GetAuditByIdAsync(id);
         }
 
-        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto)
+        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid? createdByUserId)
         {
-            return await _repo.CreateAuditAsync(dto);
+            return await _repo.CreateAuditAsync(dto, createdByUserId);
         }
 
         public async Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto)

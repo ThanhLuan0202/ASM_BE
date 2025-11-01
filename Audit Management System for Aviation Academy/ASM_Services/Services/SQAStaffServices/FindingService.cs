@@ -26,9 +26,9 @@ namespace ASM_Services.Services.SQAStaffServices
             return await _repo.GetFindingByIdAsync(id);
         }
 
-        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto)
+        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto, Guid? createdByUserId)
         {
-            return await _repo.CreateFindingAsync(dto);
+            return await _repo.CreateFindingAsync(dto, createdByUserId);
         }
 
         public async Task<ViewFinding?> UpdateFindingAsync(Guid id, UpdateFinding dto)

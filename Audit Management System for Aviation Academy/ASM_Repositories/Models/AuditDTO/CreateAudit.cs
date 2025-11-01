@@ -24,7 +24,7 @@ namespace ASM_Repositories.Models.AuditDTO
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters")]
         public string Status { get; set; }
 
-        public Guid? CreatedBy { get; set; }
+        // CreatedBy will be automatically set from JWT token in backend
 
         public bool IsPublished { get; set; }
 

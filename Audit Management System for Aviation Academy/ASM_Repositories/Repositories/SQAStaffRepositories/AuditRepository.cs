@@ -45,7 +45,7 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
             return audit == null ? null : _mapper.Map<ViewAudit>(audit);
         }
 
-        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto)
+        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid? createdByUserId)
         {
             if (dto.TemplateId.HasValue)
             {
@@ -56,12 +56,12 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
                 }
             }
 
-            if (dto.CreatedBy.HasValue)
+            if (createdByUserId.HasValue)
             {
-                var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == dto.CreatedBy.Value);
+                var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == createdByUserId.Value);
                 if (!userExists)
                 {
-                    throw new InvalidOperationException($"User with ID {dto.CreatedBy} does not exist");
+                    throw new InvalidOperationException($"User with ID {createdByUserId} does not exist");
                 }
             }
 
@@ -84,6 +84,7 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
             audit.AuditId = Guid.NewGuid();
             audit.CreatedAt = DateTime.UtcNow;
             audit.Status = status;
+            audit.CreatedBy = createdByUserId; 
 
             _DbContext.Audits.Add(audit);
             await _DbContext.SaveChangesAsync();

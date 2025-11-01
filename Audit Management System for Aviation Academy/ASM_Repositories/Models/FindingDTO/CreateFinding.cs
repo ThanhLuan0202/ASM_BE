@@ -23,7 +23,7 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public int? DeptId { get; set; }
 
-        public Guid? CreatedBy { get; set; }
+        // CreatedBy will be automatically set from JWT token in backend
 
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters")]
         public string Status { get; set; }

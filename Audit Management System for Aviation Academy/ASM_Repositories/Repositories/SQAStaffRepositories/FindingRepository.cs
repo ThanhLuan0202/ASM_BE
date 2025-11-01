@@ -47,7 +47,7 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
             return finding == null ? null : _mapper.Map<ViewFinding>(finding);
         }
 
-        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto)
+        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto, Guid? createdByUserId)
         {
             var auditExists = await _DbContext.Audits.AnyAsync(a => a.AuditId == dto.AuditId);
             if (!auditExists)
@@ -74,12 +74,12 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
                 }
             }
 
-            if (dto.CreatedBy.HasValue)
+            if (createdByUserId.HasValue)
             {
-                var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == dto.CreatedBy.Value);
+                var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == createdByUserId.Value);
                 if (!userExists)
                 {
-                    throw new InvalidOperationException($"User with ID {dto.CreatedBy} does not exist");
+                    throw new InvalidOperationException($"User with ID {createdByUserId} does not exist");
                 }
             }
 
@@ -124,6 +124,7 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
             finding.FindingId = Guid.NewGuid();
             finding.CreatedAt = DateTime.UtcNow;
             finding.Status = status;
+            finding.CreatedBy = createdByUserId; // Set from JWT token
 
             _DbContext.Findings.Add(finding);
             await _DbContext.SaveChangesAsync();
