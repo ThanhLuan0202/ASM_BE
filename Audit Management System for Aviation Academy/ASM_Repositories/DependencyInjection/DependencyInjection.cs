@@ -34,6 +34,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IDepartmentHeadFindingRepository, DepartmentHeadFindingRepository>();
             service.AddTransient<IActionRepository, ActionRepository>();
             service.AddTransient<IAuditApprovalRepository, AuditApprovalRepository>();
+            service.AddTransient<IAuditCriterionRepository, AuditCriterionRepository>();
 
 
 

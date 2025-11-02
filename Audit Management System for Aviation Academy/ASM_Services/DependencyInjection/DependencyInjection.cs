@@ -32,6 +32,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IDepartmentHeadFindingService, DepartmentHeadFindingService>();
             service.AddTransient<IActionService, ActionService>();
             service.AddTransient<IAuditApprovalService, AuditApprovalService>();
+            service.AddTransient<IAuditCriterionService, AuditCriterionService>();
 
 
 
