@@ -30,7 +30,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IChecklistItemService, ChecklistItemService>();
             service.AddTransient<IUsersService, UsersService>();
             service.AddTransient<IDepartmentHeadFindingService, DepartmentHeadFindingService>();
-
+            service.AddTransient<IActionService, ActionService>();
 
 
 

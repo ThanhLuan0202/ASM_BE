@@ -1,4 +1,5 @@
 ﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
@@ -83,6 +84,20 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateChecklistItem, ChecklistItem>()
                 .ForMember(dest => dest.ItemId, opt => opt.Ignore())
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); // Không được update TemplateId
+
+            // Action
+            CreateMap<ASM_Repositories.Entities.Action, ViewAction>().ReverseMap();
+            CreateMap<CreateAction, ASM_Repositories.Entities.Action>()
+                .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+                .ForMember(dest => dest.ClosedAt, opt => opt.Ignore()); 
+            CreateMap<UpdateAction, ASM_Repositories.Entities.Action>()
+                .ForMember(dest => dest.ActionId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedBy, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
         }
     }
