@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ASM_Repositories.Models.AuditApprovalDTO
+{
+    public class CreateAuditApproval
+    {
+        public Guid AuditId { get; set; }
+        public Guid ApproverId { get; set; }
+        public string ApprovalLevel { get; set; }
+        public string Status { get; set; }
+        public string Comment { get; set; }
+    }
+}

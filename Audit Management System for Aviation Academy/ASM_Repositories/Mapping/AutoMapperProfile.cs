@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.ActionDTO;
+using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
@@ -98,6 +99,22 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.Status, opt => opt.Ignore())
                 .ForMember(dest => dest.AssignedBy, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditApproval 
+            CreateMap<AuditApproval, ViewAuditApproval>().ReverseMap();
+            CreateMap<CreateAuditApproval, AuditApproval>()
+                .ForMember(dest => dest.AuditApprovalId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.ApprovedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
+                .ForMember(dest => dest.Approver, opt => opt.Ignore());  
+            CreateMap<UpdateAuditApproval, AuditApproval>()
+                .ForMember(dest => dest.AuditApprovalId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.ApproverId, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovalLevel, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedAt, opt => opt.Ignore());
 
         }
     }
