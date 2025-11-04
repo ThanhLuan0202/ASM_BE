@@ -1,9 +1,15 @@
 ﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.ActionDTO;
+using ASM_Repositories.Models.AuditApprovalDTO;
+using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
+using ASM_Repositories.Models.AuditScopeDepartmentDTO;
+using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.RootCauseDTO;
 using ASM_Repositories.Models.UsersDTO;
 using AutoMapper;
 using System;
@@ -26,7 +32,20 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateDepartment, Department>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
-            CreateMap<UserAccount, ViewUsers>().ReverseMap();
+            CreateMap<UserAccount, ViewUser>().ReverseMap();
+            CreateMap<CreateUser, UserAccount>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.FailedLoginCount, opt => opt.MapFrom(_ => 0))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"))
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
+
+            CreateMap<UpdateUser, UserAccount>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
 
             // Finding mappings
             CreateMap<Finding, ViewFinding>().ReverseMap();
@@ -70,6 +89,68 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateChecklistItem, ChecklistItem>()
                 .ForMember(dest => dest.ItemId, opt => opt.Ignore())
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); 
+
+            // Action
+            CreateMap<ASM_Repositories.Entities.Action, ViewAction>().ReverseMap();
+            CreateMap<CreateAction, ASM_Repositories.Entities.Action>()
+                .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+                .ForMember(dest => dest.ClosedAt, opt => opt.Ignore()); 
+            CreateMap<UpdateAction, ASM_Repositories.Entities.Action>()
+                .ForMember(dest => dest.ActionId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedBy, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditApproval 
+            CreateMap<AuditApproval, ViewAuditApproval>().ReverseMap();
+            CreateMap<CreateAuditApproval, AuditApproval>()
+                .ForMember(dest => dest.AuditApprovalId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.ApprovedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
+                .ForMember(dest => dest.Approver, opt => opt.Ignore());  
+            CreateMap<UpdateAuditApproval, AuditApproval>()
+                .ForMember(dest => dest.AuditApprovalId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.ApproverId, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovalLevel, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedAt, opt => opt.Ignore());
+
+            // AuditCriterion 
+            CreateMap<AuditCriterion, ViewAuditCriterion>().ReverseMap();
+            CreateMap<CreateAuditCriterion, AuditCriterion>()
+                .ForMember(dest => dest.CriteriaId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"));
+            CreateMap<UpdateAuditCriterion, AuditCriterion>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditScopeDepartment
+            CreateMap<AuditScopeDepartment, ViewAuditScopeDepartment>().ReverseMap();
+            CreateMap<CreateAuditScopeDepartment, AuditScopeDepartment>()
+                .ForMember(dest => dest.AuditScopeId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"));
+            CreateMap<UpdateAuditScopeDepartment, AuditScopeDepartment>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditTeam
+            CreateMap<AuditTeam, ViewAuditTeam>().ReverseMap();
+            CreateMap<CreateAuditTeam, AuditTeam>()
+                .ForMember(dest => dest.AuditTeamId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"));
+            CreateMap<UpdateAuditTeam, AuditTeam>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // RootCause
+            CreateMap<RootCause, ViewRootCause>().ReverseMap();
+            CreateMap<CreateRootCause, RootCause>()
+                .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
+            CreateMap<UpdateRootCause, RootCause>()
+                .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
 
         }
     }

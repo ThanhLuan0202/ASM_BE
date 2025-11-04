@@ -11,9 +11,9 @@ namespace ASM.API.AdminControllers
     [ApiController]
     public class AdminDepartmentsController : ControllerBase
     {
-        private readonly IDepartmentServices _service;
+        private readonly IDepartmentService _service;
 
-        public AdminDepartmentsController(IDepartmentServices service)
+        public AdminDepartmentsController(IDepartmentService service)
         {
             _service = service;
         }

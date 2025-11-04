@@ -10,6 +10,10 @@ namespace ASM_Repositories.Interfaces.AdminInterfaces
 {
     public interface IUsersRepository
     {
-        Task<IEnumerable<ViewUsers>> GetAllUsersAsync();
+        Task<IEnumerable<ViewUser>> GetAllAsync();
+        Task<ViewUser> GetByIdAsync(Guid id);
+        Task<ViewUser> CreateAsync(CreateUser dto);
+        Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

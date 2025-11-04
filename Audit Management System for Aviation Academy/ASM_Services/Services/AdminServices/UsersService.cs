@@ -18,7 +18,10 @@ namespace ASM_Services.Services.AdminServices
         {
             _repo = repo;
         }
-        public Task<IEnumerable<ViewUsers>> GetAllUsersAsync() => _repo.GetAllUsersAsync();
-        
+        public Task<IEnumerable<ViewUser>> GetAllAsync() => _repo.GetAllAsync();
+        public Task<ViewUser> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
+        public Task<ViewUser> CreateAsync(CreateUser dto) => _repo.CreateAsync(dto);
+        public Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto) => _repo.UpdateAsync(id, dto);
+        public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
     }
 }
