@@ -2,6 +2,7 @@
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
+using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
@@ -128,6 +129,10 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"));
             CreateMap<UpdateAuditCriterion, AuditCriterion>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditCriteriaMap mappings
+            CreateMap<AuditCriteriaMap, ViewAuditCriteriaMap>().ReverseMap();
+            CreateMap<CreateAuditCriteriaMap, AuditCriteriaMap>();
 
             // AuditScopeDepartment
             CreateMap<AuditScopeDepartment, ViewAuditScopeDepartment>().ReverseMap();
