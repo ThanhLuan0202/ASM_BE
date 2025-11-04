@@ -69,7 +69,7 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.ItemId, opt => opt.Ignore()); 
             CreateMap<UpdateChecklistItem, ChecklistItem>()
                 .ForMember(dest => dest.ItemId, opt => opt.Ignore())
-                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); // Không được update TemplateId
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); 
 
         }
     }
