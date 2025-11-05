@@ -37,7 +37,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditScopeDepartmentService, AuditScopeDepartmentService>();
             service.AddTransient<IAuditTeamService, AuditTeamService>();
             service.AddTransient<IRoleService, RoleService>();
-
+            service.AddTransient<IReportRequestService, ReportRequestService>();
 
 
 

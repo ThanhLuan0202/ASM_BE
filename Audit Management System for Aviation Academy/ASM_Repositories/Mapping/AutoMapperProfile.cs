@@ -10,6 +10,7 @@ using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.ReportRequestDTO;
 using ASM_Repositories.Models.RoleDTO;
 using ASM_Repositories.Models.RootCauseDTO;
 using ASM_Repositories.Models.UsersDTO;
@@ -164,6 +165,19 @@ namespace ASM_Repositories.Mapping
             CreateMap<Role, ViewRole>().ReverseMap();
             CreateMap<Role, CreateRole>().ReverseMap();
             CreateMap<Role, UpdateRole>().ReverseMap();
+
+            // ReportRequest
+            CreateMap<ReportRequest, ViewReportRequest>();
+            CreateMap<CreateReportRequest, ReportRequest>()
+                .ForMember(dest => dest.ReportRequestId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"))
+                .ForMember(dest => dest.CompletedAt, opt => opt.Ignore()); 
+            CreateMap<UpdateReportRequest, ReportRequest>()
+                .ForMember(dest => dest.CompletedAt, opt => opt.Condition(src => src.CompletedAt != null));
+
+
+
 
         }
     }
