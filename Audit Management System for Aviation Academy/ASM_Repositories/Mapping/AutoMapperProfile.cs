@@ -10,6 +10,7 @@ using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.FindingSeverityDTO;
 using ASM_Repositories.Models.FindingStatusDTO;
 using ASM_Repositories.Models.ReportRequestDTO;
 using ASM_Repositories.Models.RoleDTO;
@@ -182,7 +183,10 @@ namespace ASM_Repositories.Mapping
             CreateMap<CreateFindingStatus, FindingStatus>();
             CreateMap<UpdateFindingStatus, FindingStatus>();
 
-
+            // FindingSeverity
+            CreateMap<FindingSeverity, ViewFindingSeverity>().ReverseMap();
+            CreateMap<CreateFindingSeverity, FindingSeverity>();
+            CreateMap<UpdateFindingSeverity, FindingSeverity>();
 
         }
     }

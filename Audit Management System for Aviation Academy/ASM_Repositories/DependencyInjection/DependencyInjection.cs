@@ -41,6 +41,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IRoleRepository, RoleRepository>();
             service.AddTransient<IReportRequestRepository, ReportRequestRepository>();
             service.AddTransient<IFindingStatusRepository, FindingStatusRepository>();
+            service.AddTransient<IFindingSeverityRepository, FindingSeverityRepository>();
 
 
 
