@@ -10,6 +10,7 @@ using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.FindingStatusDTO;
 using ASM_Repositories.Models.ReportRequestDTO;
 using ASM_Repositories.Models.RoleDTO;
 using ASM_Repositories.Models.RootCauseDTO;
@@ -176,6 +177,10 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateReportRequest, ReportRequest>()
                 .ForMember(dest => dest.CompletedAt, opt => opt.Condition(src => src.CompletedAt != null));
 
+            // FindingStatus
+            CreateMap<FindingStatus, ViewFindingStatus>().ReverseMap();
+            CreateMap<CreateFindingStatus, FindingStatus>();
+            CreateMap<UpdateFindingStatus, FindingStatus>();
 
 
 
