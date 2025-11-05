@@ -1,8 +1,8 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
-using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
+using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
@@ -10,6 +10,7 @@ using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
+using ASM_Repositories.Models.RoleDTO;
 using ASM_Repositories.Models.RootCauseDTO;
 using ASM_Repositories.Models.UsersDTO;
 using AutoMapper;
@@ -26,6 +27,8 @@ namespace ASM_Repositories.Mapping
         public AutoMapperProfile()
         {
             //CreateMap<xxx, yyy>().ReverseMap();
+
+            // Department 
             CreateMap<Department, ViewDepartment>().ReverseMap();
             CreateMap<CreateDepartment, Department>()
                 .ForMember(dest => dest.DeptId, opt => opt.Ignore()) 
@@ -33,6 +36,7 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateDepartment, Department>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
 
+            // User 
             CreateMap<UserAccount, ViewUser>().ReverseMap();
             CreateMap<CreateUser, UserAccount>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(_ => Guid.NewGuid()))
@@ -42,7 +46,6 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"))
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
-
             CreateMap<UpdateUser, UserAccount>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
@@ -156,6 +159,11 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
             CreateMap<UpdateRootCause, RootCause>()
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
+
+            // Role
+            CreateMap<Role, ViewRole>().ReverseMap();
+            CreateMap<Role, CreateRole>().ReverseMap();
+            CreateMap<Role, UpdateRole>().ReverseMap();
 
         }
     }
