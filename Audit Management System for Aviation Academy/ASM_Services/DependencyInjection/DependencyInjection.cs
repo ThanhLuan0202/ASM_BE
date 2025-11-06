@@ -28,6 +28,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditService, AuditService>();
             service.AddTransient<IChecklistTemplateService, ChecklistTemplateService>();
             service.AddTransient<IChecklistItemService, ChecklistItemService>();
+            service.AddTransient<IAuditChecklistItemService, AuditChecklistItemService>();
             service.AddTransient<IRootCauseService, RootCauseService>();
             service.AddTransient<IUsersService, UsersService>();
             service.AddTransient<IDepartmentHeadFindingService, DepartmentHeadFindingService>();
@@ -40,6 +41,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IReportRequestService, ReportRequestService>();
             service.AddTransient<IFindingStatusService, FindingStatusService>();
             service.AddTransient<IFindingSeverityService, FindingSeverityService>();
+
 
 
 

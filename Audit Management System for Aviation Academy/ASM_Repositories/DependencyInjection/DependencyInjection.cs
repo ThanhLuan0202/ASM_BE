@@ -30,6 +30,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IAuditRepository, AuditRepository>();
             service.AddTransient<IChecklistTemplateRepository, ChecklistTemplateRepository>();
             service.AddTransient<IChecklistItemRepository, ChecklistItemRepository>();
+            service.AddTransient<IAuditChecklistItemRepository, AuditChecklistItemRepository>();
             service.AddTransient<IRootCauseRepository, RootCauseRepository>();
             service.AddTransient<IUsersRepository, UsersRepository>();
             service.AddTransient<IDepartmentHeadFindingRepository, DepartmentHeadFindingRepository>();

@@ -6,6 +6,7 @@ using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
+using ASM_Repositories.Models.AuditChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
@@ -188,6 +189,13 @@ namespace ASM_Repositories.Mapping
             CreateMap<CreateFindingSeverity, FindingSeverity>();
             CreateMap<UpdateFindingSeverity, FindingSeverity>();
 
+            // AuditChecklistItem
+            CreateMap<AuditChecklistItem, ViewAuditChecklistItem>().ReverseMap();
+            CreateMap<CreateAuditChecklistItem, AuditChecklistItem>()
+                .ForMember(dest => dest.AuditItemId, opt => opt.Ignore());
+            CreateMap<UpdateAuditChecklistItem, AuditChecklistItem>()
+                .ForMember(dest => dest.AuditItemId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore());
         }
     }
 }
