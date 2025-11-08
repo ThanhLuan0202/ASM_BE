@@ -5,6 +5,7 @@ using ASM_Repositories.Models.AttachmentEntityTypeDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditStatusDTO;
 using ASM_Repositories.Models.DepartmentHeadDTO;
+using ASM_Repositories.Models.NotificationDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
@@ -226,6 +227,21 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.DeptHeadId, opt => opt.Ignore())
                 .ForMember(dest => dest.Dept, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore());
+
+            // Notification
+            CreateMap<Notification, ViewNotification>().ReverseMap();
+            CreateMap<CreateNotification, Notification>()
+                .ForMember(dest => dest.NotificationId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ReadAt, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore());
+            CreateMap<UpdateNotification, Notification>()
+                .ForMember(dest => dest.NotificationId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ReadAt, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore());
         }
     }
 }

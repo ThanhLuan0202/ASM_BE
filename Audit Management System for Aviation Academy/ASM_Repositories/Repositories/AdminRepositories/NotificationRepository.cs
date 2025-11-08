@@ -1,0 +1,121 @@
+using ASM_Repositories.DBContext;
+using ASM_Repositories.Entities;
+using ASM_Repositories.Interfaces.AdminInterfaces;
+using ASM_Repositories.Models.NotificationDTO;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ASM_Repositories.Repositories.AdminRepositories
+{
+    public class NotificationRepository : INotificationRepository
+    {
+        private readonly AuditManagementSystemForAviationAcademyContext _context;
+        private readonly IMapper _mapper;
+
+        public NotificationRepository(AuditManagementSystemForAviationAcademyContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<ViewNotification>> GetAllAsync()
+        {
+            var data = await _context.Notifications
+                .Include(x => x.User)
+                .Include(x => x.EntityTypeNavigation)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<ViewNotification>>(data);
+        }
+
+        public async Task<ViewNotification?> GetByIdAsync(Guid notificationId)
+        {
+            var entity = await _context.Notifications
+                .Include(x => x.User)
+                .Include(x => x.EntityTypeNavigation)
+                .FirstOrDefaultAsync(x => x.NotificationId == notificationId);
+            return entity == null ? null : _mapper.Map<ViewNotification>(entity);
+        }
+
+        public async Task<ViewNotification> CreateAsync(CreateNotification dto)
+        {
+            var userExists = await _context.UserAccounts.AnyAsync(u => u.UserId == dto.UserId);
+            if (!userExists)
+                throw new InvalidOperationException($"User with ID {dto.UserId} does not exist.");
+
+            var entityTypeExists = await _context.AttachmentEntityTypes.AnyAsync(e => e.EntityType == dto.EntityType);
+            if (!entityTypeExists)
+                throw new InvalidOperationException($"EntityType '{dto.EntityType}' does not exist.");
+
+            var entity = _mapper.Map<Notification>(dto);
+            entity.NotificationId = Guid.NewGuid();
+            entity.CreatedAt = DateTime.UtcNow;
+            
+            if (string.IsNullOrWhiteSpace(entity.Status))
+                entity.Status = "Active";
+
+            if (entity.IsRead && entity.ReadAt == null)
+                entity.ReadAt = DateTime.UtcNow;
+
+            _context.Notifications.Add(entity);
+            await _context.SaveChangesAsync();
+
+            var created = await _context.Notifications
+                .Include(x => x.User)
+                .Include(x => x.EntityTypeNavigation)
+                .FirstOrDefaultAsync(x => x.NotificationId == entity.NotificationId);
+
+            return _mapper.Map<ViewNotification>(created);
+        }
+
+        public async Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto)
+        {
+            var entity = await _context.Notifications
+                .FirstOrDefaultAsync(x => x.NotificationId == notificationId);
+
+            if (entity == null) return null;
+
+            var userExists = await _context.UserAccounts.AnyAsync(u => u.UserId == dto.UserId);
+            if (!userExists)
+                throw new InvalidOperationException($"User with ID {dto.UserId} does not exist.");
+
+            var entityTypeExists = await _context.AttachmentEntityTypes.AnyAsync(e => e.EntityType == dto.EntityType);
+            if (!entityTypeExists)
+                throw new InvalidOperationException($"EntityType '{dto.EntityType}' does not exist.");
+
+            if (dto.IsRead && !entity.IsRead)
+            {
+                entity.ReadAt = DateTime.UtcNow;
+            }
+            else if (!dto.IsRead && entity.IsRead)
+            {
+                entity.ReadAt = null;
+            }
+
+            _mapper.Map(dto, entity);
+            await _context.SaveChangesAsync();
+
+            var updated = await _context.Notifications
+                .Include(x => x.User)
+                .Include(x => x.EntityTypeNavigation)
+                .FirstOrDefaultAsync(x => x.NotificationId == notificationId);
+
+            return _mapper.Map<ViewNotification>(updated);
+        }
+
+        public async Task<bool> DeleteAsync(Guid notificationId)
+        {
+            var entity = await _context.Notifications.FindAsync(notificationId);
+            if (entity == null) return false;
+
+            entity.Status = "Inactive";
+            await _context.SaveChangesAsync();
+            return true;
+        }
+    }
+}
+
