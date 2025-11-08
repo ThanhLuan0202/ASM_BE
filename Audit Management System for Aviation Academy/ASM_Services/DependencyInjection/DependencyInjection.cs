@@ -47,6 +47,8 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IDepartmentHeadService, DepartmentHeadService>();
             service.AddTransient<INotificationService, NotificationService>();
             service.AddTransient<IAuditLogService, AuditLogService>();
+            service.AddTransient<IAttachmentService, AttachmentService>();
+            service.AddTransient<IFirebaseUploadService, FirebaseUploadService>();
 
 
 

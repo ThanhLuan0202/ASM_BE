@@ -1,6 +1,7 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.ActionStatusDTO;
+using ASM_Repositories.Models.AttachmentDTO;
 using ASM_Repositories.Models.AttachmentEntityTypeDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditLogDTO;
@@ -254,6 +255,33 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.LogId, opt => opt.Ignore())
                 .ForMember(dest => dest.PerformedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.PerformedByNavigation, opt => opt.Ignore());
+
+            // Attachment
+            CreateMap<Attachment, ViewAttachment>().ReverseMap();
+            CreateMap<CreateAttachment, Attachment>()
+                .ForMember(dest => dest.AttachmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.FileName, opt => opt.Ignore())
+                .ForMember(dest => dest.BlobPath, opt => opt.Ignore())
+                .ForMember(dest => dest.ContentType, opt => opt.Ignore())
+                .ForMember(dest => dest.SizeBytes, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ContentHash, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedByNavigation, opt => opt.Ignore());
+            CreateMap<UpdateAttachment, Attachment>()
+                .ForMember(dest => dest.AttachmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityType, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityId, opt => opt.Ignore())
+                .ForMember(dest => dest.FileName, opt => opt.Ignore())
+                .ForMember(dest => dest.BlobPath, opt => opt.Ignore())
+                .ForMember(dest => dest.ContentType, opt => opt.Ignore())
+                .ForMember(dest => dest.SizeBytes, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ContentHash, opt => opt.Ignore())
+                .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore())
+                .ForMember(dest => dest.UploadedByNavigation, opt => opt.Ignore());
         }
     }
 }

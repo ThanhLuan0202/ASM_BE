@@ -1,11 +1,14 @@
-﻿using ASM_Repositories.DBContext;
+﻿using ASM.API.Swagger;
+using ASM_Repositories.DBContext;
 using ASM_Repositories.DependencyInjection;
 using ASM_Repositories.Mapping;
 using ASM_Services.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -65,6 +68,32 @@ builder.Services.AddSwaggerGen(option =>
 
                     }
                 });
+    // Map DateOnly to string for Swagger
+    option.MapType<DateOnly>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "date"
+    });
+    option.MapType<DateOnly?>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "date",
+        Nullable = true
+    });
+    // Map byte[] to string for Swagger
+    option.MapType<byte[]>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "byte"
+    });
+    // Map IFormFile for Swagger
+    option.MapType<IFormFile>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
+    });
+    // Add custom operation filter for file uploads
+    option.OperationFilter<FileUploadOperationFilter>();
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
