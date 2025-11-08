@@ -43,6 +43,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IFindingSeverityService, FindingSeverityService>();
             service.AddTransient<IActionStatusService, ActionStatusService>();
             service.AddTransient<IAttachmentEntityTypeService, AttachmentEntityTypeService>();
+            service.AddTransient<IAuditStatusService, AuditStatusService>();
 
 
 

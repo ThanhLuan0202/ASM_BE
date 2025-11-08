@@ -57,7 +57,6 @@ namespace ASM_Repositories.Repositories.AdminRepositories
 
             if (entity == null) return null;
 
-            // Check if new entity type name already exists (excluding current one)
             bool isExist = await _context.AttachmentEntityTypes
                 .AnyAsync(x => x.EntityType == dto.EntityType && dto.EntityType != entityType);
 
@@ -79,7 +78,6 @@ namespace ASM_Repositories.Repositories.AdminRepositories
 
             if (entity == null) return false;
 
-            // Check if entity type is being used
             if (entity.Attachments.Any())
                 throw new InvalidOperationException("Cannot delete this AttachmentEntityType because it is being used by one or more Attachments!");
 

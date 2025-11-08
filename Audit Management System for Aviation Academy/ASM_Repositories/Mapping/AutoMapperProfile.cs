@@ -3,6 +3,7 @@ using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AttachmentEntityTypeDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
+using ASM_Repositories.Models.AuditStatusDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
@@ -208,6 +209,11 @@ namespace ASM_Repositories.Mapping
             CreateMap<AttachmentEntityType, ViewAttachmentEntityType>().ReverseMap();
             CreateMap<CreateAttachmentEntityType, AttachmentEntityType>();
             CreateMap<UpdateAttachmentEntityType, AttachmentEntityType>();
+
+            // AuditStatus
+            CreateMap<AuditStatus, ViewAuditStatus>().ReverseMap();
+            CreateMap<CreateAuditStatus, AuditStatus>();
+            CreateMap<UpdateAuditStatus, AuditStatus>();
         }
     }
 }
