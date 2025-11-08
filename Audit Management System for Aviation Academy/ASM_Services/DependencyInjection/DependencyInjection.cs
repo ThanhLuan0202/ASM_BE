@@ -41,6 +41,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IReportRequestService, ReportRequestService>();
             service.AddTransient<IFindingStatusService, FindingStatusService>();
             service.AddTransient<IFindingSeverityService, FindingSeverityService>();
+            service.AddTransient<IActionStatusService, ActionStatusService>();
 
 
 

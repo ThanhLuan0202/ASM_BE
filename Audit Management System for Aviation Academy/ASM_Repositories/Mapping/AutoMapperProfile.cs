@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.ActionDTO;
+using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
@@ -196,6 +197,11 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateAuditChecklistItem, AuditChecklistItem>()
                 .ForMember(dest => dest.AuditItemId, opt => opt.Ignore())
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore());
+
+            // ActionStatus
+            CreateMap<ActionStatus, ViewActionStatus>().ReverseMap();
+            CreateMap<CreateActionStatus, ActionStatus>();
+            CreateMap<UpdateActionStatus, ActionStatus>();
         }
     }
 }
