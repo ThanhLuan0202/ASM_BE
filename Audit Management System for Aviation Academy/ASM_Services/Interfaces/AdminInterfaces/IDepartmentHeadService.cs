@@ -1,0 +1,17 @@
+using ASM_Repositories.Models.DepartmentHeadDTO;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace ASM_Services.Interfaces.AdminInterfaces
+{
+    public interface IDepartmentHeadService
+    {
+        Task<IEnumerable<ViewDepartmentHead>> GetAllAsync();
+        Task<ViewDepartmentHead?> GetByIdAsync(Guid deptHeadId);
+        Task<ViewDepartmentHead> CreateAsync(CreateDepartmentHead dto);
+        Task<ViewDepartmentHead?> UpdateAsync(Guid deptHeadId, UpdateDepartmentHead dto);
+        Task<bool> DeleteAsync(Guid deptHeadId);
+    }
+}
+

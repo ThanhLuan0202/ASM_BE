@@ -44,6 +44,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IActionStatusService, ActionStatusService>();
             service.AddTransient<IAttachmentEntityTypeService, AttachmentEntityTypeService>();
             service.AddTransient<IAuditStatusService, AuditStatusService>();
+            service.AddTransient<IDepartmentHeadService, DepartmentHeadService>();
 
 
 

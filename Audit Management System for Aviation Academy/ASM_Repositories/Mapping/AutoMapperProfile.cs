@@ -4,6 +4,7 @@ using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AttachmentEntityTypeDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
 using ASM_Repositories.Models.AuditStatusDTO;
+using ASM_Repositories.Models.DepartmentHeadDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
@@ -214,6 +215,17 @@ namespace ASM_Repositories.Mapping
             CreateMap<AuditStatus, ViewAuditStatus>().ReverseMap();
             CreateMap<CreateAuditStatus, AuditStatus>();
             CreateMap<UpdateAuditStatus, AuditStatus>();
+
+            // DepartmentHead
+            CreateMap<DepartmentHead, ViewDepartmentHead>().ReverseMap();
+            CreateMap<CreateDepartmentHead, DepartmentHead>()
+                .ForMember(dest => dest.DeptHeadId, opt => opt.Ignore())
+                .ForMember(dest => dest.Dept, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore());
+            CreateMap<UpdateDepartmentHead, DepartmentHead>()
+                .ForMember(dest => dest.DeptHeadId, opt => opt.Ignore())
+                .ForMember(dest => dest.Dept, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore());
         }
     }
 }

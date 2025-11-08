@@ -46,6 +46,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IActionStatusRepository, ActionStatusRepository>();
             service.AddTransient<IAttachmentEntityTypeRepository, AttachmentEntityTypeRepository>();
             service.AddTransient<IAuditStatusRepository, AuditStatusRepository>();
+            service.AddTransient<IDepartmentHeadRepository, DepartmentHeadRepository>();
 
 
 
