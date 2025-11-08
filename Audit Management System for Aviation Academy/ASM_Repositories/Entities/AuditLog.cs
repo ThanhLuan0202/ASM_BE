@@ -15,11 +15,15 @@ public partial class AuditLog
 
     public string Action { get; set; }
 
+    public string OldValue { get; set; }
+
+    public string NewValue { get; set; }
+
+    public string Role { get; set; }
+
     public Guid? PerformedBy { get; set; }
 
     public DateTime PerformedAt { get; set; }
-
-    public string Data { get; set; }
 
     public virtual UserAccount PerformedByNavigation { get; set; }
 }

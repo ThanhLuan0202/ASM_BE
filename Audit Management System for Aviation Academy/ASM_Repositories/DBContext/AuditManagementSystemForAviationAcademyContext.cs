@@ -71,6 +71,10 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
+    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+    //        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-OVUB2BP\\LUANNE;Initial Catalog=AuditManagementSystemForAviationAcademy;Persist Security Info=True;User ID=sa;Password=12345");
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -86,7 +90,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
     {
         modelBuilder.Entity<ASM_Repositories.Entities.Action>(entity =>
         {
-            entity.HasKey(e => e.ActionId).HasName("PK__Action__FFE3F4B991421ECC");
+            entity.HasKey(e => e.ActionId).HasName("PK__Action__FFE3F4B9A4603102");
 
             entity.ToTable("Action", "ams");
 
@@ -128,7 +132,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<ActionStatus>(entity =>
         {
-            entity.HasKey(e => e.ActionStatus1).HasName("PK__ActionSt__7B3DC58EC9726C81");
+            entity.HasKey(e => e.ActionStatus1).HasName("PK__ActionSt__7B3DC58E4DAFA866");
 
             entity.ToTable("ActionStatus", "ams");
 
@@ -139,7 +143,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Attachment>(entity =>
         {
-            entity.HasKey(e => e.AttachmentId).HasName("PK__Attachme__442C64DEEF5BB30F");
+            entity.HasKey(e => e.AttachmentId).HasName("PK__Attachme__442C64DE512B798F");
 
             entity.ToTable("Attachment", "ams");
 
@@ -175,7 +179,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AttachmentEntityType>(entity =>
         {
-            entity.HasKey(e => e.EntityType).HasName("PK__Attachme__F21D4CA2922583A4");
+            entity.HasKey(e => e.EntityType).HasName("PK__Attachme__F21D4CA2580E4F9D");
 
             entity.ToTable("AttachmentEntityType", "ams");
 
@@ -184,7 +188,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Audit>(entity =>
         {
-            entity.HasKey(e => e.AuditId).HasName("PK__Audit__A17F23B89C9D3A29");
+            entity.HasKey(e => e.AuditId).HasName("PK__Audit__A17F23B854AA04E5");
 
             entity.ToTable("Audit", "ams");
 
@@ -216,13 +220,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditApproval>(entity =>
         {
-            entity.HasKey(e => e.AuditApprovalId).HasName("PK__AuditApp__1C6F87158CF157F6");
+            entity.HasKey(e => e.AuditApprovalId).HasName("PK__AuditApp__1C6F87158FA8BD28");
 
             entity.ToTable("AuditApproval", "ams");
 
             entity.HasIndex(e => e.AuditId, "IX_AuditApproval_AuditID");
 
-            entity.HasIndex(e => new { e.AuditId, e.ApproverId, e.ApprovalLevel }, "UQ__AuditApp__592EA2A7366B9DD9").IsUnique();
+            entity.HasIndex(e => new { e.AuditId, e.ApproverId, e.ApprovalLevel }, "UQ__AuditApp__592EA2A7168E30A8").IsUnique();
 
             entity.Property(e => e.AuditApprovalId)
                 .HasDefaultValueSql("(newid())")
@@ -250,7 +254,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditChecklistItem>(entity =>
         {
-            entity.HasKey(e => e.AuditItemId).HasName("PK__AuditChe__E37F18C209B145A9");
+            entity.HasKey(e => e.AuditItemId).HasName("PK__AuditChe__E37F18C217B7CDF3");
 
             entity.ToTable("AuditChecklistItem", "ams");
 
@@ -272,7 +276,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditCriteriaMap>(entity =>
         {
-            entity.HasKey(e => new { e.AuditId, e.CriteriaId }).HasName("PK__Audit_Cr__6E998E0A225AF767");
+            entity.HasKey(e => new { e.AuditId, e.CriteriaId }).HasName("PK__Audit_Cr__6E998E0ABFC90124");
 
             entity.ToTable("Audit_Criteria_Map", "ams");
 
@@ -293,7 +297,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditCriterion>(entity =>
         {
-            entity.HasKey(e => e.CriteriaId).HasName("PK__AuditCri__FE6ADB2DA611FA2C");
+            entity.HasKey(e => e.CriteriaId).HasName("PK__AuditCri__FE6ADB2D1E0300D4");
 
             entity.ToTable("AuditCriteria", "ams");
 
@@ -312,7 +316,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditDocument>(entity =>
         {
-            entity.HasKey(e => e.DocId).HasName("PK__AuditDoc__3EF1888DFCF43C9F");
+            entity.HasKey(e => e.DocId).HasName("PK__AuditDoc__3EF1888DB890BF0C");
 
             entity.ToTable("AuditDocument", "ams");
 
@@ -346,7 +350,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditLog>(entity =>
         {
-            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E5499A840991FB9");
+            entity.HasKey(e => e.LogId).HasName("PK__AuditLog__5E5499A86BF1FE20");
 
             entity.ToTable("AuditLog", "log");
 
@@ -357,6 +361,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
             entity.Property(e => e.EntityType).HasMaxLength(50);
             entity.Property(e => e.PerformedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Role).HasMaxLength(50);
 
             entity.HasOne(d => d.PerformedByNavigation).WithMany(p => p.AuditLogs)
                 .HasForeignKey(d => d.PerformedBy)
@@ -365,7 +370,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditScopeDepartment>(entity =>
         {
-            entity.HasKey(e => e.AuditScopeId).HasName("PK__AuditSco__405679D3A645CC18");
+            entity.HasKey(e => e.AuditScopeId).HasName("PK__AuditSco__405679D3D34BF00B");
 
             entity.ToTable("AuditScopeDepartment", "ams");
 
@@ -389,7 +394,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditStatus>(entity =>
         {
-            entity.HasKey(e => e.AuditStatus1).HasName("PK__AuditSta__45D7E6365E6E9D5F");
+            entity.HasKey(e => e.AuditStatus1).HasName("PK__AuditSta__45D7E636730CC5AF");
 
             entity.ToTable("AuditStatus", "ams");
 
@@ -400,13 +405,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditTeam>(entity =>
         {
-            entity.HasKey(e => e.AuditTeamId).HasName("PK__AuditTea__7093F172CE7CC93A");
+            entity.HasKey(e => e.AuditTeamId).HasName("PK__AuditTea__7093F172AF8F2CEE");
 
             entity.ToTable("AuditTeam", "ams");
 
             entity.HasIndex(e => e.AuditId, "IX_AuditTeam_AuditID");
 
-            entity.HasIndex(e => new { e.AuditId, e.UserId }, "UQ__AuditTea__7007AF733DCB199C").IsUnique();
+            entity.HasIndex(e => new { e.AuditId, e.UserId }, "UQ__AuditTea__7007AF73218720A0").IsUnique();
 
             entity.Property(e => e.AuditTeamId)
                 .HasDefaultValueSql("(newid())")
@@ -431,7 +436,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<ChecklistItem>(entity =>
         {
-            entity.HasKey(e => e.ItemId).HasName("PK__Checklis__727E83EB1BF68FE1");
+            entity.HasKey(e => e.ItemId).HasName("PK__Checklis__727E83EB0D9B4F88");
 
             entity.ToTable("ChecklistItem", "ams");
 
@@ -459,7 +464,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<ChecklistTemplate>(entity =>
         {
-            entity.HasKey(e => e.TemplateId).HasName("PK__Checklis__F87ADD07BBFA0B57");
+            entity.HasKey(e => e.TemplateId).HasName("PK__Checklis__F87ADD07572BA702");
 
             entity.ToTable("ChecklistTemplate", "ams");
 
@@ -482,7 +487,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.DeptId).HasName("PK__Departme__0148818EC40042CD");
+            entity.HasKey(e => e.DeptId).HasName("PK__Departme__0148818E083A3CEC");
 
             entity.ToTable("Department", "ams");
 
@@ -498,13 +503,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<DepartmentHead>(entity =>
         {
-            entity.HasKey(e => e.DeptHeadId).HasName("PK__Departme__04A19341CE4BC1D4");
+            entity.HasKey(e => e.DeptHeadId).HasName("PK__Departme__04A193417906A8B4");
 
             entity.ToTable("DepartmentHead", "ams");
 
             entity.HasIndex(e => e.DeptId, "IX_DeptHead_DeptID");
 
-            entity.HasIndex(e => new { e.DeptId, e.UserId }, "UQ__Departme__D0300D45EA024CB1").IsUnique();
+            entity.HasIndex(e => new { e.DeptId, e.UserId }, "UQ__Departme__D0300D454B9884C0").IsUnique();
 
             entity.Property(e => e.DeptHeadId)
                 .HasDefaultValueSql("(newid())")
@@ -527,7 +532,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Finding>(entity =>
         {
-            entity.HasKey(e => e.FindingId).HasName("PK__Finding__19D671C2547241BC");
+            entity.HasKey(e => e.FindingId).HasName("PK__Finding__19D671C271F1A8F1");
 
             entity.ToTable("Finding", "ams");
 
@@ -592,7 +597,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<FindingSeverity>(entity =>
         {
-            entity.HasKey(e => e.Severity).HasName("PK__FindingS__96F5CD158AB2DB08");
+            entity.HasKey(e => e.Severity).HasName("PK__FindingS__96F5CD159FC0754C");
 
             entity.ToTable("FindingSeverity", "ams");
 
@@ -601,7 +606,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<FindingStatus>(entity =>
         {
-            entity.HasKey(e => e.FindingStatus1).HasName("PK__FindingS__B9A531DF589A3323");
+            entity.HasKey(e => e.FindingStatus1).HasName("PK__FindingS__B9A531DFE9BD16DD");
 
             entity.ToTable("FindingStatus", "ams");
 
@@ -612,7 +617,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32D3D37E2C");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32DACF1590");
 
             entity.ToTable("Notification", "ams");
 
@@ -638,7 +643,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<ReportRequest>(entity =>
         {
-            entity.HasKey(e => e.ReportRequestId).HasName("PK__ReportRe__1609F931C53C5848");
+            entity.HasKey(e => e.ReportRequestId).HasName("PK__ReportRe__1609F931CB3E84AE");
 
             entity.ToTable("ReportRequest", "ams");
 
@@ -656,7 +661,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleName).HasName("PK__Role__8A2B6161FA3AFAF9");
+            entity.HasKey(e => e.RoleName).HasName("PK__Role__8A2B6161E48C8F2C");
 
             entity.ToTable("Role", "ams");
 
@@ -666,7 +671,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<RootCause>(entity =>
         {
-            entity.HasKey(e => e.RootCauseId).HasName("PK__RootCaus__EAE5E40E141DB7EE");
+            entity.HasKey(e => e.RootCauseId).HasName("PK__RootCaus__EAE5E40EC3D9468A");
 
             entity.ToTable("RootCause", "ams");
 
@@ -681,13 +686,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<UserAccount>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCACF4537956");
+            entity.HasKey(e => e.UserId).HasName("PK__UserAcco__1788CCAC78E72EFF");
 
             entity.ToTable("UserAccount", "auth");
 
             entity.HasIndex(e => new { e.DeptId, e.RoleName }, "IX_User_Dept_Role");
 
-            entity.HasIndex(e => e.Email, "UQ__UserAcco__A9D1053420E1AC15").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__UserAcco__A9D10534D42B0AFC").IsUnique();
 
             entity.Property(e => e.UserId)
                 .HasDefaultValueSql("(newid())")

@@ -3,6 +3,7 @@ using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AttachmentEntityTypeDTO;
 using ASM_Repositories.Models.AuditApprovalDTO;
+using ASM_Repositories.Models.AuditLogDTO;
 using ASM_Repositories.Models.AuditStatusDTO;
 using ASM_Repositories.Models.DepartmentHeadDTO;
 using ASM_Repositories.Models.NotificationDTO;
@@ -242,6 +243,17 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.ReadAt, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore());
+
+            // AuditLog
+            CreateMap<AuditLog, ViewAuditLog>().ReverseMap();
+            CreateMap<CreateAuditLog, AuditLog>()
+                .ForMember(dest => dest.LogId, opt => opt.Ignore())
+                .ForMember(dest => dest.PerformedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.PerformedByNavigation, opt => opt.Ignore());
+            CreateMap<UpdateAuditLog, AuditLog>()
+                .ForMember(dest => dest.LogId, opt => opt.Ignore())
+                .ForMember(dest => dest.PerformedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.PerformedByNavigation, opt => opt.Ignore());
         }
     }
 }
