@@ -57,7 +57,6 @@ namespace ASM_Repositories.Repositories.AdminRepositories
 
             if (entity == null) return null;
 
-            // Check if new status name already exists (excluding current one)
             bool isExist = await _context.ActionStatuses
                 .AnyAsync(x => x.ActionStatus1 == dto.ActionStatus1 && dto.ActionStatus1 != actionStatus);
 
@@ -78,7 +77,6 @@ namespace ASM_Repositories.Repositories.AdminRepositories
 
             if (entity == null) return false;
 
-            // Check if status is being used
             if (entity.Actions.Any())
                 throw new InvalidOperationException("Cannot delete this ActionStatus because it is being used by one or more Actions!");
 
