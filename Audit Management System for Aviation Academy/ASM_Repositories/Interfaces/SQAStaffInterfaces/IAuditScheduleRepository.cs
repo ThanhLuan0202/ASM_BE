@@ -1,0 +1,19 @@
+using ASM_Repositories.Models.AuditScheduleDTO;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace ASM_Repositories.Interfaces.SQAStaffInterfaces
+{
+    public interface IAuditScheduleRepository
+    {
+        Task<IEnumerable<ViewAuditSchedule>> GetAllAsync();
+        Task<ViewAuditSchedule?> GetByIdAsync(Guid scheduleId);
+        Task<IEnumerable<ViewAuditSchedule>> GetByAuditIdAsync(Guid auditId);
+        Task<ViewAuditSchedule> CreateAsync(CreateAuditSchedule dto);
+        Task<ViewAuditSchedule?> UpdateAsync(Guid scheduleId, UpdateAuditSchedule dto);
+        Task<bool> DeleteAsync(Guid scheduleId);
+        Task<bool> ExistsAsync(Guid scheduleId);
+    }
+}
+

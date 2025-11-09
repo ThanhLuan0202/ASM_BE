@@ -56,6 +56,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[ams].[AuditSchedule]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[ams].[AuditScopeDepartment]",
          "ObjectType": 0
       },

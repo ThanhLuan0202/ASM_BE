@@ -49,6 +49,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditLogService, AuditLogService>();
             service.AddTransient<IAttachmentService, AttachmentService>();
             service.AddTransient<IFirebaseUploadService, FirebaseUploadService>();
+            service.AddTransient<IAuditScheduleService, AuditScheduleService>();
 
 
 

@@ -39,6 +39,8 @@ public partial class Audit
 
     public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();
 
+    public virtual ICollection<AuditSchedule> AuditSchedules { get; set; } = new List<AuditSchedule>();
+
     public virtual ICollection<AuditScopeDepartment> AuditScopeDepartments { get; set; } = new List<AuditScopeDepartment>();
 
     public virtual ICollection<AuditTeam> AuditTeams { get; set; } = new List<AuditTeam>();

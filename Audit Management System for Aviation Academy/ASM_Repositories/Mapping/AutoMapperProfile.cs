@@ -11,6 +11,7 @@ using ASM_Repositories.Models.NotificationDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDTO;
+using ASM_Repositories.Models.AuditScheduleDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Repositories.Models.AuditChecklistItemDTO;
@@ -282,6 +283,19 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.ContentHash, opt => opt.Ignore())
                 .ForMember(dest => dest.EntityTypeNavigation, opt => opt.Ignore())
                 .ForMember(dest => dest.UploadedByNavigation, opt => opt.Ignore());
+
+            // AuditSchedule
+            CreateMap<AuditSchedule, ViewAuditSchedule>().ReverseMap();
+            CreateMap<CreateAuditSchedule, AuditSchedule>()
+                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.Audit, opt => opt.Ignore());
+            CreateMap<UpdateAuditSchedule, AuditSchedule>()
+                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Audit, opt => opt.Ignore());
         }
     }
 }

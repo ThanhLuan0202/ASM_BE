@@ -41,6 +41,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
+    public virtual DbSet<AuditSchedule> AuditSchedules { get; set; }
+
     public virtual DbSet<AuditScopeDepartment> AuditScopeDepartments { get; set; }
 
     public virtual DbSet<AuditStatus> AuditStatuses { get; set; }
@@ -74,7 +76,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
     //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
     //        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-OVUB2BP\\LUANNE;Initial Catalog=AuditManagementSystemForAviationAcademy;Persist Security Info=True;User ID=sa;Password=12345");
-
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -366,6 +367,31 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.PerformedByNavigation).WithMany(p => p.AuditLogs)
                 .HasForeignKey(d => d.PerformedBy)
                 .HasConstraintName("FK__AuditLog__Perfor__2645B050");
+        });
+
+        modelBuilder.Entity<AuditSchedule>(entity =>
+        {
+            entity.HasKey(e => e.ScheduleId).HasName("PK__AuditSch__9C8A5B698B88D86C");
+
+            entity.ToTable("AuditSchedule", "ams");
+
+            entity.HasIndex(e => new { e.AuditId, e.MilestoneName }, "UQ_AuditSchedule").IsUnique();
+
+            entity.Property(e => e.ScheduleId)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("ScheduleID");
+            entity.Property(e => e.AuditId).HasColumnName("AuditID");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.MilestoneName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(50);
+
+            entity.HasOne(d => d.Audit).WithMany(p => p.AuditSchedules)
+                .HasForeignKey(d => d.AuditId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AuditSche__Audit__51300E55");
         });
 
         modelBuilder.Entity<AuditScopeDepartment>(entity =>
