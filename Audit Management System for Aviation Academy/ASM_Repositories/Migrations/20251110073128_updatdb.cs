@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ASM_Repositories.Migrations
 {
     /// <inheritdoc />
-    public partial class updateDatabase : Migration
+    public partial class updatdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__ActionSt__7B3DC58EC9726C81", x => x.ActionStatus);
+                    table.PrimaryKey("PK__ActionSt__7B3DC58E4DAFA866", x => x.ActionStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,7 +41,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Attachme__F21D4CA2922583A4", x => x.EntityType);
+                    table.PrimaryKey("PK__Attachme__F21D4CA2580E4F9D", x => x.EntityType);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,7 +59,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditCri__FE6ADB2DA611FA2C", x => x.CriteriaID);
+                    table.PrimaryKey("PK__AuditCri__FE6ADB2D1E0300D4", x => x.CriteriaID);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,7 +71,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditSta__45D7E6365E6E9D5F", x => x.AuditStatus);
+                    table.PrimaryKey("PK__AuditSta__45D7E636730CC5AF", x => x.AuditStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,7 +89,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Departme__0148818EC40042CD", x => x.DeptID);
+                    table.PrimaryKey("PK__Departme__0148818E083A3CEC", x => x.DeptID);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,7 +101,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__FindingS__96F5CD158AB2DB08", x => x.Severity);
+                    table.PrimaryKey("PK__FindingS__96F5CD159FC0754C", x => x.Severity);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,7 +113,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__FindingS__B9A531DF589A3323", x => x.FindingStatus);
+                    table.PrimaryKey("PK__FindingS__B9A531DFE9BD16DD", x => x.FindingStatus);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +126,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Role__8A2B6161FA3AFAF9", x => x.RoleName);
+                    table.PrimaryKey("PK__Role__8A2B6161E48C8F2C", x => x.RoleName);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,7 +143,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__RootCaus__EAE5E40E141DB7EE", x => x.RootCauseID);
+                    table.PrimaryKey("PK__RootCaus__EAE5E40EC3D9468A", x => x.RootCauseID);
                 });
 
             migrationBuilder.CreateTable(
@@ -166,7 +166,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__UserAcco__1788CCACF4537956", x => x.UserID);
+                    table.PrimaryKey("PK__UserAcco__1788CCAC78E72EFF", x => x.UserID);
                     table.ForeignKey(
                         name: "FK__UserAccou__DeptI__48CFD27E",
                         column: x => x.DeptID,
@@ -202,7 +202,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Attachme__442C64DEEF5BB30F", x => x.AttachmentID);
+                    table.PrimaryKey("PK__Attachme__442C64DE512B798F", x => x.AttachmentID);
                     table.ForeignKey(
                         name: "FK__Attachmen__Entit__123EB7A3",
                         column: x => x.EntityType,
@@ -226,13 +226,15 @@ namespace ASM_Repositories.Migrations
                     EntityType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     EntityID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    OldValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     PerformedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PerformedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
-                    Data = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PerformedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditLog__5E5499A840991FB9", x => x.LogID);
+                    table.PrimaryKey("PK__AuditLog__5E5499A86BF1FE20", x => x.LogID);
                     table.ForeignKey(
                         name: "FK__AuditLog__Perfor__2645B050",
                         column: x => x.PerformedBy,
@@ -257,7 +259,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Checklis__F87ADD07BBFA0B57", x => x.TemplateID);
+                    table.PrimaryKey("PK__Checklis__F87ADD07572BA702", x => x.TemplateID);
                     table.ForeignKey(
                         name: "FK__Checklist__Creat__5629CD9C",
                         column: x => x.CreatedBy,
@@ -280,7 +282,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Departme__04A19341CE4BC1D4", x => x.DeptHeadID);
+                    table.PrimaryKey("PK__Departme__04A193417906A8B4", x => x.DeptHeadID);
                     table.ForeignKey(
                         name: "FK__Departmen__DeptI__5070F446",
                         column: x => x.DeptID,
@@ -313,7 +315,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Notifica__20CF2E32D3D37E2C", x => x.NotificationID);
+                    table.PrimaryKey("PK__Notifica__20CF2E32DACF1590", x => x.NotificationID);
                     table.ForeignKey(
                         name: "FK__Notificat__Entit__208CD6FA",
                         column: x => x.EntityType,
@@ -343,7 +345,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__ReportRe__1609F931C53C5848", x => x.ReportRequestID);
+                    table.PrimaryKey("PK__ReportRe__1609F931CB3E84AE", x => x.ReportRequestID);
                     table.ForeignKey(
                         name: "FK__ReportReq__Reque__2B0A656D",
                         column: x => x.RequestedBy,
@@ -372,7 +374,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Audit__A17F23B89C9D3A29", x => x.AuditID);
+                    table.PrimaryKey("PK__Audit__A17F23B854AA04E5", x => x.AuditID);
                     table.ForeignKey(
                         name: "FK__Audit__CreatedBy__6383C8BA",
                         column: x => x.CreatedBy,
@@ -409,7 +411,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Checklis__727E83EB1BF68FE1", x => x.ItemID);
+                    table.PrimaryKey("PK__Checklis__727E83EB0D9B4F88", x => x.ItemID);
                     table.ForeignKey(
                         name: "FK__Checklist__Sever__5DCAEF64",
                         column: x => x.SeverityDefault,
@@ -435,7 +437,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Audit_Cr__6E998E0A225AF767", x => new { x.AuditID, x.CriteriaID });
+                    table.PrimaryKey("PK__Audit_Cr__6E998E0ABFC90124", x => new { x.AuditID, x.CriteriaID });
                     table.ForeignKey(
                         name: "FK__Audit_Cri__Audit__37703C52",
                         column: x => x.AuditID,
@@ -466,7 +468,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditApp__1C6F87158CF157F6", x => x.AuditApprovalID);
+                    table.PrimaryKey("PK__AuditApp__1C6F87158FA8BD28", x => x.AuditApprovalID);
                     table.ForeignKey(
                         name: "FK__AuditAppr__Appro__71D1E811",
                         column: x => x.ApproverID,
@@ -496,7 +498,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditChe__E37F18C209B145A9", x => x.AuditItemID);
+                    table.PrimaryKey("PK__AuditChe__E37F18C217B7CDF3", x => x.AuditItemID);
                     table.ForeignKey(
                         name: "FK__AuditChec__Audit__76969D2E",
                         column: x => x.AuditID,
@@ -524,7 +526,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditDoc__3EF1888DFCF43C9F", x => x.DocID);
+                    table.PrimaryKey("PK__AuditDoc__3EF1888DB890BF0C", x => x.DocID);
                     table.ForeignKey(
                         name: "FK__AuditDocu__Audit__18EBB532",
                         column: x => x.AuditID,
@@ -540,6 +542,30 @@ namespace ASM_Repositories.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AuditSchedule",
+                schema: "ams",
+                columns: table => new
+                {
+                    ScheduleID = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newid())"),
+                    AuditID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MilestoneName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "(sysutcdatetime())"),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__AuditSch__9C8A5B698B88D86C", x => x.ScheduleID);
+                    table.ForeignKey(
+                        name: "FK__AuditSche__Audit__51300E55",
+                        column: x => x.AuditID,
+                        principalSchema: "ams",
+                        principalTable: "Audit",
+                        principalColumn: "AuditID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AuditScopeDepartment",
                 schema: "ams",
                 columns: table => new
@@ -551,7 +577,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditSco__405679D3A645CC18", x => x.AuditScopeID);
+                    table.PrimaryKey("PK__AuditSco__405679D3D34BF00B", x => x.AuditScopeID);
                     table.ForeignKey(
                         name: "FK__AuditScop__Audit__2FCF1A8A",
                         column: x => x.AuditID,
@@ -580,7 +606,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__AuditTea__7093F172CE7CC93A", x => x.AuditTeamID);
+                    table.PrimaryKey("PK__AuditTea__7093F172AF8F2CEE", x => x.AuditTeamID);
                     table.ForeignKey(
                         name: "FK__AuditTeam__Audit__6A30C649",
                         column: x => x.AuditID,
@@ -618,7 +644,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Finding__19D671C2547241BC", x => x.FindingID);
+                    table.PrimaryKey("PK__Finding__19D671C271F1A8F1", x => x.FindingID);
                     table.ForeignKey(
                         name: "FK__Finding__AuditID__7C4F7684",
                         column: x => x.AuditID,
@@ -690,7 +716,7 @@ namespace ASM_Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Action__FFE3F4B991421ECC", x => x.ActionID);
+                    table.PrimaryKey("PK__Action__FFE3F4B9A4603102", x => x.ActionID);
                     table.ForeignKey(
                         name: "FK__Action__Assigned__09A971A2",
                         column: x => x.AssignedBy,
@@ -808,7 +834,7 @@ namespace ASM_Repositories.Migrations
                 column: "AuditID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__AuditApp__592EA2A7366B9DD9",
+                name: "UQ__AuditApp__592EA2A7168E30A8",
                 schema: "ams",
                 table: "AuditApproval",
                 columns: new[] { "AuditID", "ApproverID", "ApprovalLevel" },
@@ -839,6 +865,13 @@ namespace ASM_Repositories.Migrations
                 column: "PerformedBy");
 
             migrationBuilder.CreateIndex(
+                name: "UQ_AuditSchedule",
+                schema: "ams",
+                table: "AuditSchedule",
+                columns: new[] { "AuditID", "MilestoneName" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AuditScopeDepartment_AuditID",
                 schema: "ams",
                 table: "AuditScopeDepartment",
@@ -863,7 +896,7 @@ namespace ASM_Repositories.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__AuditTea__7007AF733DCB199C",
+                name: "UQ__AuditTea__7007AF73218720A0",
                 schema: "ams",
                 table: "AuditTeam",
                 columns: new[] { "AuditID", "UserID" },
@@ -900,7 +933,7 @@ namespace ASM_Repositories.Migrations
                 column: "DeptID");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Departme__D0300D45EA024CB1",
+                name: "UQ__Departme__D0300D454B9884C0",
                 schema: "ams",
                 table: "DepartmentHead",
                 columns: new[] { "DeptID", "UserID" },
@@ -985,7 +1018,7 @@ namespace ASM_Repositories.Migrations
                 column: "RoleName");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__UserAcco__A9D1053420E1AC15",
+                name: "UQ__UserAcco__A9D10534D42B0AFC",
                 schema: "auth",
                 table: "UserAccount",
                 column: "Email",
@@ -1018,6 +1051,10 @@ namespace ASM_Repositories.Migrations
             migrationBuilder.DropTable(
                 name: "AuditLog",
                 schema: "log");
+
+            migrationBuilder.DropTable(
+                name: "AuditSchedule",
+                schema: "ams");
 
             migrationBuilder.DropTable(
                 name: "AuditScopeDepartment",

@@ -501,6 +501,48 @@ namespace ASM_Repositories.Migrations
                     b.ToTable("AuditLog", "log");
                 });
 
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditSchedule", b =>
+                {
+                    b.Property<Guid>("ScheduleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ScheduleID")
+                        .HasDefaultValueSql("(newid())");
+
+                    b.Property<Guid>("AuditId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("AuditID");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MilestoneName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ScheduleId")
+                        .HasName("PK__AuditSch__9C8A5B698B88D86C");
+
+                    b.HasIndex(new[] { "AuditId", "MilestoneName" }, "UQ_AuditSchedule")
+                        .IsUnique();
+
+                    b.ToTable("AuditSchedule", "ams");
+                });
+
             modelBuilder.Entity("ASM_Repositories.Entities.AuditScopeDepartment", b =>
                 {
                     b.Property<Guid>("AuditScopeId")
@@ -1231,6 +1273,17 @@ namespace ASM_Repositories.Migrations
                     b.Navigation("PerformedByNavigation");
                 });
 
+            modelBuilder.Entity("ASM_Repositories.Entities.AuditSchedule", b =>
+                {
+                    b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
+                        .WithMany("AuditSchedules")
+                        .HasForeignKey("AuditId")
+                        .IsRequired()
+                        .HasConstraintName("FK__AuditSche__Audit__51300E55");
+
+                    b.Navigation("Audit");
+                });
+
             modelBuilder.Entity("ASM_Repositories.Entities.AuditScopeDepartment", b =>
                 {
                     b.HasOne("ASM_Repositories.Entities.Audit", "Audit")
@@ -1444,6 +1497,8 @@ namespace ASM_Repositories.Migrations
                     b.Navigation("AuditCriteriaMaps");
 
                     b.Navigation("AuditDocuments");
+
+                    b.Navigation("AuditSchedules");
 
                     b.Navigation("AuditScopeDepartments");
 

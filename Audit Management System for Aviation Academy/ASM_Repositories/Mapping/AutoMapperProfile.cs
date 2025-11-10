@@ -78,6 +78,12 @@ namespace ASM_Repositories.Mapping
 
             // Audit mappings
             CreateMap<Audit, ViewAudit>().ReverseMap();
+            CreateMap<Audit, ViewAuditPlan>()
+                .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByNavigation))
+                .ForMember(dest => dest.ScopeDepartments, opt => opt.MapFrom(src => src.AuditScopeDepartments))
+                .ForMember(dest => dest.Criteria, opt => opt.MapFrom(src => src.AuditCriteriaMaps))
+                .ForMember(dest => dest.AuditTeams, opt => opt.MapFrom(src => src.AuditTeams))
+                .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.AuditSchedules));
             CreateMap<CreateAudit, Audit>()
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 

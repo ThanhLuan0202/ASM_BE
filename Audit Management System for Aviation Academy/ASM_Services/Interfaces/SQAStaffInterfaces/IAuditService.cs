@@ -12,5 +12,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid? createdByUserId);
         Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto);
         Task<bool> DeleteAuditAsync(Guid id);
+        Task<List<ViewAuditPlan>> GetAuditPlansAsync();
+        Task<ViewAuditPlan?> GetAuditPlanDetailsAsync(Guid auditId);
     }
 }

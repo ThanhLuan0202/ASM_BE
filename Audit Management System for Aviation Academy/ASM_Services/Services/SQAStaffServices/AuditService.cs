@@ -1,5 +1,6 @@
 using ASM_Repositories.Interfaces.SQAStaffInterfaces;
 using ASM_Repositories.Models.AuditDTO;
+using ASM_Repositories.Repositories.SQAStaffRepositories;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using System;
 using System.Collections.Generic;
@@ -40,5 +41,9 @@ namespace ASM_Services.Services.SQAStaffServices
         {
             return await _repo.DeleteAuditAsync(id);
         }
+
+        public Task<List<ViewAuditPlan>> GetAuditPlansAsync()  => _repo.GetAllAuditPlansAsync();
+
+        public Task<ViewAuditPlan?> GetAuditPlanDetailsAsync(Guid auditId)  => _repo.GetAuditPlanByIdAsync(auditId);
     }
 }

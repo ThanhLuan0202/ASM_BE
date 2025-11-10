@@ -4,6 +4,7 @@ using ASM_Repositories.Interfaces.SQAStaffInterfaces;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Utils;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -163,6 +164,32 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _DbContext.Audits.AnyAsync(a => a.AuditId == id);
+        }
+
+        public async Task<List<ViewAuditPlan>> GetAllAuditPlansAsync()
+        {
+            var audits = await _DbContext.Audits
+                .Include(a => a.CreatedByNavigation)
+                .Include(a => a.AuditScopeDepartments).ThenInclude(x => x.Dept)
+                .Include(a => a.AuditCriteriaMaps).ThenInclude(x => x.Criteria)
+                .Include(a => a.AuditTeams).ThenInclude(x => x.User)
+                .Include(a => a.AuditSchedules)
+                .ToListAsync();
+
+            return _mapper.Map<List<ViewAuditPlan>>(audits);
+        }
+
+        public async Task<ViewAuditPlan?> GetAuditPlanByIdAsync(Guid auditId)
+        {
+            var audit = await _DbContext.Audits
+                .Include(a => a.CreatedByNavigation)
+                .Include(a => a.AuditScopeDepartments).ThenInclude(x => x.Dept)
+                .Include(a => a.AuditCriteriaMaps).ThenInclude(x => x.Criteria)
+                .Include(a => a.AuditTeams).ThenInclude(x => x.User)
+                .Include(a => a.AuditSchedules)
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            return audit == null ? null : _mapper.Map<ViewAuditPlan>(audit);
         }
     }
 }

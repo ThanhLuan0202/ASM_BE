@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditDTO;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,7 @@ namespace ASM_Repositories.Interfaces.SQAStaffInterfaces
         Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto);
         Task<bool> DeleteAuditAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
+        Task<List<ViewAuditPlan>> GetAllAuditPlansAsync();
+        Task<ViewAuditPlan?> GetAuditPlanByIdAsync(Guid auditId);
     }
 }
