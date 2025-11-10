@@ -31,5 +31,26 @@ namespace ASM.API.DepartmentHeadControllers
 
             return Ok(result);
         }
+        [HttpGet("{deptId}")]
+        public async Task<IActionResult> GetFindingsByMyDepartment(int deptId)
+        {
+            try
+            {
+                var result = await _service.GetFindingsByDepartmentAsync(deptId);
+
+                if (result == null || !result.Any())
+                {
+                    return NotFound(new { message = "No tasks found for DepartmentId: " + deptId });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+
     }
 }
