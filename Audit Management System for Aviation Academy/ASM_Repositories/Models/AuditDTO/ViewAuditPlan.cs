@@ -1,4 +1,5 @@
-﻿using ASM_Repositories.Models.AuditCriterionDTO;
+﻿using ASM_Repositories.Models.AuditCriteriaMapDTO;
+using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditScheduleDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
@@ -39,7 +40,7 @@ namespace ASM_Repositories.Models.AuditDTO
 
         public ViewUser CreatedByUser { get; set; }
         public List<ViewAuditScopeDepartment> ScopeDepartments { get; set; }
-        public List<ViewAuditCriterion> Criteria { get; set; }
+        public List<ViewAuditCriteriaMap> Criteria { get; set; }
         public List<ViewAuditTeam> AuditTeams { get; set; }
         public List<ViewAuditSchedule> Schedules { get; set; }
 
