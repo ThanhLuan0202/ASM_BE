@@ -258,7 +258,6 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
 
             audit.Status = "Rejected";
 
-            // Upsert AuditApproval at the unique key (AuditId, ApproverId, ApprovalLevel)
             var existingApproval = await _DbContext.AuditApprovals
                 .FirstOrDefaultAsync(a =>
                     a.AuditId == auditId &&
@@ -280,6 +279,60 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
                     ApproverId = approverId,
                     ApprovalLevel = "Lead Auditor",
                     Status = "Rejected Plan",
+                    Comment = comment,
+                    CreatedAt = DateTime.UtcNow,
+                    ApprovedAt = DateTime.UtcNow
+                };
+                _DbContext.AuditApprovals.Add(approval);
+            }
+
+            await _DbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (audit == null)
+            {
+                return false;
+            }
+
+            var approverExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == approverId);
+            if (!approverExists)
+            {
+                throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
+            }
+
+            var pendingDirExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "PendingDirectorApproval");
+            if (!pendingDirExists)
+            {
+                throw new InvalidOperationException("Status 'PendingDirectorApproval' does not exist in AuditStatus");
+            }
+
+            audit.Status = "PendingDirectorApproval";
+
+            var existingApproval = await _DbContext.AuditApprovals
+                .FirstOrDefaultAsync(a =>
+                    a.AuditId == auditId &&
+                    a.ApproverId == approverId &&
+                    a.ApprovalLevel == "Lead Auditor");
+
+            if (existingApproval != null)
+            {
+                existingApproval.Status = "PendingDirectorApproval";
+                existingApproval.Comment = comment;
+                existingApproval.ApprovedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                var approval = new AuditApproval
+                {
+                    AuditApprovalId = Guid.NewGuid(),
+                    AuditId = auditId,
+                    ApproverId = approverId,
+                    ApprovalLevel = "Lead Auditor",
+                    Status = "PendingDirectorApproval",
                     Comment = comment,
                     CreatedAt = DateTime.UtcNow,
                     ApprovedAt = DateTime.UtcNow

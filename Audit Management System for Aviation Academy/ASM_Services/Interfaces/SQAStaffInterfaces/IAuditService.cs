@@ -17,5 +17,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<bool> UpdateStatusAsync(Guid auditId, string status);
         Task<bool> SubmitToLeadAuditorAsync(Guid auditId);
         Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment);
+        Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment);
     }
 }

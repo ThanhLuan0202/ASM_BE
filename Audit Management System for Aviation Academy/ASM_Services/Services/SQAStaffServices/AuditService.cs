@@ -53,5 +53,8 @@ namespace ASM_Services.Services.SQAStaffServices
 
         public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
             => _repo.RejectPlanContentAsync(auditId, approverId, comment);
+
+        public Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
     }
 }
