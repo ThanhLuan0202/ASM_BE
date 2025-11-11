@@ -45,5 +45,10 @@ namespace ASM_Services.Services.SQAStaffServices
         public Task<List<ViewAuditPlan>> GetAuditPlansAsync()  => _repo.GetAllAuditPlansAsync();
 
         public Task<ViewAuditPlan?> GetAuditPlanDetailsAsync(Guid auditId)  => _repo.GetAuditPlanByIdAsync(auditId);
+
+        public Task<bool> UpdateStatusAsync(Guid auditId, string status) => _repo.UpdateStatusAsync(auditId, status);
+
+        public Task<bool> SubmitToLeadAuditorAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.SubmitToLeadAuditorAsync(auditId, approverId, comment);
     }
 }

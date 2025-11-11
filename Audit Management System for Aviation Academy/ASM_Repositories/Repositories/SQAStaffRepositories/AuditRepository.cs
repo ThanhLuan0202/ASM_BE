@@ -191,6 +191,70 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
 
             return audit == null ? null : _mapper.Map<ViewAuditPlan>(audit);
         }
+
+        public async Task<bool> UpdateStatusAsync(Guid auditId, string status)
+        {
+            var existing = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (existing == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(status))
+            {
+                throw new ArgumentException("Status is required");
+            }
+
+            var statusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == status);
+            if (!statusExists)
+            {
+                throw new InvalidOperationException($"Status '{status}' does not exist");
+            }
+
+            existing.Status = status;
+            await _DbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> SubmitToLeadAuditorAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (audit == null)
+            {
+                return false;
+            }
+
+            var approverExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == approverId);
+            if (!approverExists)
+            {
+                throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
+            }
+
+            var statusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "PendingReview");
+            if (!statusExists)
+            {
+                throw new InvalidOperationException("Status 'PendingReview' does not exist in AuditStatus");
+            }
+
+            audit.Status = "PendingReview";
+
+            var approval = new AuditApproval
+            {
+                AuditApprovalId = Guid.NewGuid(),
+                AuditId = auditId,
+                ApproverId = approverId,
+                ApprovalLevel = "Lead Auditor",
+                Status = "PendingReview",
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow,
+                ApprovedAt = DateTime.UtcNow
+            };
+
+            _DbContext.AuditApprovals.Add(approval);
+
+            await _DbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }
 

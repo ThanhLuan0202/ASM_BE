@@ -179,6 +179,45 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the audit", error = ex.Message });
             }
         }
+
+        public class SubmitToLeadAuditorRequest
+        {
+            public string Comment { get; set; }
+        }
+
+        [HttpPost("{id}/submit-to-lead-auditor")]
+        public async Task<ActionResult> SubmitToLeadAuditor(Guid id, [FromBody] SubmitToLeadAuditorRequest request)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid approverId))
+                {
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+                }
+
+                var ok = await _service.SubmitToLeadAuditorAsync(id, approverId, request?.Comment);
+                if (!ok)
+                {
+                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                }
+
+                return Ok(new { message = "Submitted to Lead Auditor successfully. Audit status set to PendingReview." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while submitting the audit", error = ex.Message });
+            }
+        }
     }
 }
 

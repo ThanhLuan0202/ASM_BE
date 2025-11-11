@@ -46,12 +46,15 @@ namespace ASM_Repositories.Repositories.DepartmentHeadRepositories
                     throw new ArgumentException($"ApproverId '{dto.ApproverId}' does not exist.");
 
                 var exists = await _context.AuditApprovals.AnyAsync(a =>
-                    a.AuditId == dto.AuditId);
+                    a.AuditId == dto.AuditId && a.ApprovalLevel == dto.ApprovalLevel && a.ApproverId == dto.ApproverId && a.Status == dto.Status);
 
                 if (exists)
-                    throw new ArgumentException($"An approval record for this AuditId already exists.");
+                    throw new ArgumentException($"An approval record with the same audit, approver and level already exists with status '{dto.Status}'.");
 
                 var entity = _mapper.Map<AuditApproval>(dto);
+                // set timestamps at creation time
+                entity.CreatedAt = DateTime.UtcNow;
+                entity.ApprovedAt = DateTime.UtcNow;
 
                 _context.AuditApprovals.Add(entity);
                 await _context.SaveChangesAsync();

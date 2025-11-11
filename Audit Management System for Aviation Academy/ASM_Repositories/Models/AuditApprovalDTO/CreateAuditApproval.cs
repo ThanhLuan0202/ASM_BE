@@ -13,5 +13,8 @@ namespace ASM_Repositories.Models.AuditApprovalDTO
         public string ApprovalLevel { get; set; }
         public string Status { get; set; }
         public string Comment { get; set; }
+        public DateTime? ApprovedAt { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }
