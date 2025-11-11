@@ -17,6 +17,7 @@ namespace ASM_Repositories.Interfaces.SQAStaffInterfaces
         Task<List<ViewAuditPlan>> GetAllAuditPlansAsync();
         Task<ViewAuditPlan?> GetAuditPlanByIdAsync(Guid auditId);
         Task<bool> UpdateStatusAsync(Guid auditId, string status);
-        Task<bool> SubmitToLeadAuditorAsync(Guid auditId, Guid approverId, string comment);
+        Task<bool> SubmitToLeadAuditorAsync(Guid auditId);
+        Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment);
     }
 }

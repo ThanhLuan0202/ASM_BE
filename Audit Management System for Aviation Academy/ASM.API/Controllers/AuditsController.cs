@@ -180,13 +180,13 @@ namespace ASM.API.Controllers
             }
         }
 
-        public class SubmitToLeadAuditorRequest
+        public class RejectPlanRequest
         {
             public string Comment { get; set; }
         }
 
         [HttpPost("{id}/submit-to-lead-auditor")]
-        public async Task<ActionResult> SubmitToLeadAuditor(Guid id, [FromBody] SubmitToLeadAuditorRequest request)
+        public async Task<ActionResult> SubmitToLeadAuditor(Guid id)
         {
             try
             {
@@ -195,13 +195,7 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Invalid audit ID" });
                 }
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid approverId))
-                {
-                    return Unauthorized(new { message = "Invalid or missing user token" });
-                }
-
-                var ok = await _service.SubmitToLeadAuditorAsync(id, approverId, request?.Comment);
+                var ok = await _service.SubmitToLeadAuditorAsync(id);
                 if (!ok)
                 {
                     return NotFound(new { message = $"Audit with ID {id} not found" });
@@ -216,6 +210,40 @@ namespace ASM.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while submitting the audit", error = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/reject-plan-content")]
+        public async Task<ActionResult> RejectPlanContent(Guid id, [FromBody] RejectPlanRequest request)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid approverId))
+                {
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+                }
+
+                var ok = await _service.RejectPlanContentAsync(id, approverId, request?.Comment);
+                if (!ok)
+                {
+                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                }
+
+                return Ok(new { message = "Plan content rejected. Audit status set to Rejected." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while rejecting the plan content", error = ex.Message });
             }
         }
     }

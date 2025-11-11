@@ -48,7 +48,10 @@ namespace ASM_Services.Services.SQAStaffServices
 
         public Task<bool> UpdateStatusAsync(Guid auditId, string status) => _repo.UpdateStatusAsync(auditId, status);
 
-        public Task<bool> SubmitToLeadAuditorAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.SubmitToLeadAuditorAsync(auditId, approverId, comment);
+        public Task<bool> SubmitToLeadAuditorAsync(Guid auditId)
+            => _repo.SubmitToLeadAuditorAsync(auditId);
+
+        public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.RejectPlanContentAsync(auditId, approverId, comment);
     }
 }
