@@ -190,6 +190,11 @@ namespace ASM.API.Controllers
             public string Comment { get; set; }
         }
 
+        public class ApprovePlanRequest
+        {
+            public string Comment { get; set; }
+        }
+
         [HttpPost("{id}/submit-to-lead-auditor")]
         public async Task<ActionResult> SubmitToLeadAuditor(Guid id)
         {
@@ -283,6 +288,40 @@ namespace ASM.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while approving and forwarding the audit", error = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/approve-plan")]
+        public async Task<ActionResult> ApprovePlan(Guid id, [FromBody] ApprovePlanRequest request)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid approverId))
+                {
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+                }
+
+                var ok = await _service.ApprovePlanAsync(id, approverId, request?.Comment);
+                if (!ok)
+                {
+                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                }
+
+                return Ok(new { message = "Plan approved. Audit status set to Approve." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while approving the plan", error = ex.Message });
             }
         }
     }

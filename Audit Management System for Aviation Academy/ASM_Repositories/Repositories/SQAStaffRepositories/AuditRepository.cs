@@ -258,33 +258,18 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
 
             audit.Status = "Rejected";
 
-            var existingApproval = await _DbContext.AuditApprovals
-                .FirstOrDefaultAsync(a =>
-                    a.AuditId == auditId &&
-                    a.ApproverId == approverId &&
-                    a.ApprovalLevel == "Lead Auditor");
-
-            if (existingApproval != null)
+            var approval = new AuditApproval
             {
-                existingApproval.Status = "Rejected Plan";
-                existingApproval.Comment = comment;
-                existingApproval.ApprovedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                var approval = new AuditApproval
-                {
-                    AuditApprovalId = Guid.NewGuid(),
-                    AuditId = auditId,
-                    ApproverId = approverId,
-                    ApprovalLevel = "Lead Auditor",
-                    Status = "Rejected Plan",
-                    Comment = comment,
-                    CreatedAt = DateTime.UtcNow,
-                    ApprovedAt = DateTime.UtcNow
-                };
-                _DbContext.AuditApprovals.Add(approval);
-            }
+                AuditApprovalId = Guid.NewGuid(),
+                AuditId = auditId,
+                ApproverId = approverId,
+                ApprovalLevel = "Lead Auditor",
+                Status = "Rejected Plan",
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow,
+                ApprovedAt = DateTime.UtcNow
+            };
+            _DbContext.AuditApprovals.Add(approval);
 
             await _DbContext.SaveChangesAsync();
             return true;
@@ -312,33 +297,57 @@ namespace ASM_Repositories.Repositories.SQAStaffRepositories
 
             audit.Status = "PendingDirectorApproval";
 
-            var existingApproval = await _DbContext.AuditApprovals
-                .FirstOrDefaultAsync(a =>
-                    a.AuditId == auditId &&
-                    a.ApproverId == approverId &&
-                    a.ApprovalLevel == "Lead Auditor");
+            var approval = new AuditApproval
+            {
+                AuditApprovalId = Guid.NewGuid(),
+                AuditId = auditId,
+                ApproverId = approverId,
+                ApprovalLevel = "Lead Auditor",
+                Status = "PendingDirectorApproval",
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow,
+                ApprovedAt = DateTime.UtcNow
+            };
+            _DbContext.AuditApprovals.Add(approval);
 
-            if (existingApproval != null)
+            await _DbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (audit == null)
             {
-                existingApproval.Status = "PendingDirectorApproval";
-                existingApproval.Comment = comment;
-                existingApproval.ApprovedAt = DateTime.UtcNow;
+                return false;
             }
-            else
+
+            var approverExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == approverId);
+            if (!approverExists)
             {
-                var approval = new AuditApproval
-                {
-                    AuditApprovalId = Guid.NewGuid(),
-                    AuditId = auditId,
-                    ApproverId = approverId,
-                    ApprovalLevel = "Lead Auditor",
-                    Status = "PendingDirectorApproval",
-                    Comment = comment,
-                    CreatedAt = DateTime.UtcNow,
-                    ApprovedAt = DateTime.UtcNow
-                };
-                _DbContext.AuditApprovals.Add(approval);
+                throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
             }
+
+            var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Approve");
+            if (!approveStatusExists)
+            {
+                throw new InvalidOperationException("Status 'Approve' does not exist in AuditStatus");
+            }
+
+            audit.Status = "Approve";
+
+            var approval = new AuditApproval
+            {
+                AuditApprovalId = Guid.NewGuid(),
+                AuditId = auditId,
+                ApproverId = approverId,
+                ApprovalLevel = "Director",
+                Status = "Approved",
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow,
+                ApprovedAt = DateTime.UtcNow
+            };
+            _DbContext.AuditApprovals.Add(approval);
 
             await _DbContext.SaveChangesAsync();
             return true;

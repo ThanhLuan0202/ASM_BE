@@ -56,5 +56,8 @@ namespace ASM_Services.Services.SQAStaffServices
 
         public Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
             => _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
+
+        public Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.ApprovePlanAsync(auditId, approverId, comment);
     }
 }
