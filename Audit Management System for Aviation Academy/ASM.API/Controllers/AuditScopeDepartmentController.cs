@@ -1,5 +1,5 @@
 ﻿using ASM_Repositories.Models.AuditScopeDepartmentDTO;
-using ASM_Services.Interfaces.DepartmentHeadInterfaces;
+using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

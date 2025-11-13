@@ -1,5 +1,5 @@
 ﻿using ASM_Repositories.Models.FindingSeverityDTO;
-using ASM_Services.Interfaces.DepartmentHeadInterfaces;
+using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;

@@ -1,6 +1,5 @@
 ﻿using ASM_Repositories.Models.ActionDTO;
-using ASM_Services.Interfaces.DepartmentHeadInterfaces;
-using ASM_Services.Services.DepartmentHeadServices;
+using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

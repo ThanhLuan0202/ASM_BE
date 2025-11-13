@@ -1,5 +1,5 @@
 ﻿using ASM_Repositories.Models.AuditApprovalDTO;
-using ASM_Services.Interfaces.DepartmentHeadInterfaces;
+using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
