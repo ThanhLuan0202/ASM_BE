@@ -15,6 +15,7 @@ using ASM_Repositories.Models.AuditScheduleDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
 using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Repositories.Models.AuditChecklistItemDTO;
+using ASM_Repositories.Models.AuditAssignmentDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
@@ -316,6 +317,29 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Audit, opt => opt.Ignore());
+
+            // AuditAssignment
+            CreateMap<AuditAssignment, ViewAuditAssignment>()
+                .ForMember(dest => dest.AuditTitle, opt => opt.MapFrom(src => src.Audit != null ? src.Audit.Title : null))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Dept != null ? src.Dept.Name : null))
+                .ForMember(dest => dest.AuditorName, opt => opt.MapFrom(src => src.Auditor != null ? src.Auditor.FullName : null));
+            CreateMap<CreateAuditAssignment, AuditAssignment>()
+                .ForMember(dest => dest.AssignmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.Audit, opt => opt.Ignore())
+                .ForMember(dest => dest.Dept, opt => opt.Ignore())
+                .ForMember(dest => dest.Auditor, opt => opt.Ignore());
+            CreateMap<UpdateAuditAssignment, AuditAssignment>()
+                .ForMember(dest => dest.AssignmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.DeptId, opt => opt.Ignore())
+                .ForMember(dest => dest.AuditorId, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Audit, opt => opt.Ignore())
+                .ForMember(dest => dest.Dept, opt => opt.Ignore())
+                .ForMember(dest => dest.Auditor, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
