@@ -33,6 +33,8 @@ public partial class Audit
 
     public virtual ICollection<AuditApproval> AuditApprovals { get; set; } = new List<AuditApproval>();
 
+    public virtual ICollection<AuditAssignment> AuditAssignments { get; set; } = new List<AuditAssignment>();
+
     public virtual ICollection<AuditChecklistItem> AuditChecklistItems { get; set; } = new List<AuditChecklistItem>();
 
     public virtual ICollection<AuditCriteriaMap> AuditCriteriaMaps { get; set; } = new List<AuditCriteriaMap>();

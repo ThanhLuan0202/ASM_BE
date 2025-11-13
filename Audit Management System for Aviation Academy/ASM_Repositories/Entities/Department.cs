@@ -21,6 +21,8 @@ public partial class Department
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 
+    public virtual ICollection<AuditAssignment> AuditAssignments { get; set; } = new List<AuditAssignment>();
+
     public virtual ICollection<AuditScopeDepartment> AuditScopeDepartments { get; set; } = new List<AuditScopeDepartment>();
 
     public virtual ICollection<DepartmentHead> DepartmentHeads { get; set; } = new List<DepartmentHead>();

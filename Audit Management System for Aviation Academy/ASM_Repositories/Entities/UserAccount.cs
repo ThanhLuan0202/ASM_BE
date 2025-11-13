@@ -39,6 +39,8 @@ public partial class UserAccount
 
     public virtual ICollection<AuditApproval> AuditApprovals { get; set; } = new List<AuditApproval>();
 
+    public virtual ICollection<AuditAssignment> AuditAssignments { get; set; } = new List<AuditAssignment>();
+
     public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
