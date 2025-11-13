@@ -175,4 +175,79 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    [HttpPost("{id}/status/approved")]
+    public async Task<IActionResult> SetStatusApproved(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToApprovedAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Action status updated to Approved." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to Approved");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+
+    [HttpPost("{id}/status/rejected")]
+    public async Task<IActionResult> SetStatusRejected(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToRejectedAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Action status updated to Rejected." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to Rejected");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+
+    [HttpPost("{id}/status/closed")]
+    public async Task<IActionResult> SetStatusClosed(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToClosedAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Action status updated to Closed." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to Closed");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
 }

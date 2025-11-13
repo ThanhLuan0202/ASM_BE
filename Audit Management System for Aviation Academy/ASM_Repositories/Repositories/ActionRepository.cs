@@ -182,5 +182,75 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateStatusToApprovedAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Approved");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Approved' does not exist in ActionStatus.");
+
+            entity.Status = "Approved";
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Rejected");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Rejected' does not exist in ActionStatus.");
+
+            entity.Status = "Rejected";
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToClosedAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Closed");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Closed' does not exist in ActionStatus.");
+
+            entity.Status = "Closed";
+            entity.ClosedAt = DateTime.UtcNow;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -16,5 +16,8 @@ namespace ASM_Repositories.Interfaces
         Task<bool> SoftDeleteAsync(Guid id);
         Task<bool> UpdateStatusToInProgressAsync(Guid id);
         Task<bool> UpdateStatusToReviewedAsync(Guid id);
+        Task<bool> UpdateStatusToApprovedAsync(Guid id);
+        Task<bool> UpdateStatusToRejectedAsync(Guid id);
+        Task<bool> UpdateStatusToClosedAsync(Guid id);
     }
 }
