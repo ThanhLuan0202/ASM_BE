@@ -14,5 +14,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAction> CreateAsync(CreateAction dto);
         Task<ViewAction> UpdateAsync(Guid id, UpdateAction dto);
         Task<bool> SoftDeleteAsync(Guid id);
+        Task<bool> UpdateStatusToInProgressAsync(Guid id);
     }
 }

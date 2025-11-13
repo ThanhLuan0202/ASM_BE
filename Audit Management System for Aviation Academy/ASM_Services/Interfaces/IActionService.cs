@@ -14,5 +14,6 @@ namespace ASM_Services.Interfaces
         Task<ViewAction> CreateAsync(CreateAction dto);
         Task<ViewAction> UpdateAsync(Guid id, UpdateAction dto);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> UpdateStatusToInProgressAsync(Guid id);
     }
 }

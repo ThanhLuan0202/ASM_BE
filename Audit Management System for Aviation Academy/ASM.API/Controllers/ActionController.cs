@@ -125,4 +125,29 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    [HttpPost("{id}/status/in-progress")]
+    public async Task<IActionResult> SetStatusInProgress(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToInProgressAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Action status updated to InProgress." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to InProgress");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
 }
