@@ -1,4 +1,5 @@
-﻿using ASM_Repositories.Models.ReportRequestDTO;
+﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.ReportRequestDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewReportRequest> CreateAsync(CreateReportRequest dto);
         Task<ViewReportRequest?> UpdateAsync(Guid id, UpdateReportRequest dto);
         Task<bool> SoftDeleteAsync(Guid id);
+        Task AddReportRequestAsync(ReportRequest rr);
     }
 }

@@ -67,5 +67,9 @@ namespace ASM_Repositories.Repositories
         {
             return await _DbContext.RootCauses.AnyAsync(x => x.RootCauseId == id);
         }
+
+        public async Task<Dictionary<int, string>> GetRootCausesAsync(List<int> rootIds)
+        => await _DbContext.RootCauses.Where(r => rootIds.Contains(r.RootCauseId))
+            .ToDictionaryAsync(r => r.RootCauseId, r => r.Name);
     }
 }

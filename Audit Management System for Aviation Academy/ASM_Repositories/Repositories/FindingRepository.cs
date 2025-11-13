@@ -238,5 +238,61 @@ namespace ASM_Repositories.Repositories
         {
             return await _DbContext.Findings.AnyAsync(f => f.FindingId == id);
         }
+
+        public async Task<List<Finding>> GetFindingsAsync(Guid auditId)
+        => await _DbContext.Findings.Include(f => f.RootCause)
+            .Where(f => f.AuditId == auditId).ToListAsync();
+
+        public async Task<List<ViewFindingByMonth>> GetFindingsByMonthAsync(Guid auditId)
+        {
+            var data = await _DbContext.Findings
+                .Where(f => f.AuditId == auditId)
+                .GroupBy(f => new { f.CreatedAt.Year, f.CreatedAt.Month })
+                .Select(g => new
+                {
+                    g.Key.Year,
+                    g.Key.Month,
+                    Count = g.Count()
+                })
+                .ToListAsync(); // ← EF sẽ chạy SQL tới đây, OK
+
+            // Phần này chạy trên memory (client side)
+            var result = data
+                .AsEnumerable()
+                .Select(g => new ViewFindingByMonth
+                {
+                    Date = new DateTime(g.Year, g.Month, 1),
+                    Count = g.Count
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId)
+        {
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
+
+            var start = new DateTime(currentYear, currentMonth, 1);
+            var end = start.AddMonths(1);
+
+            var result = await _DbContext.Findings
+                .Where(f => f.AuditId == auditId && f.CreatedAt >= start && f.CreatedAt < end)
+                .Include(f => f.Dept) 
+                .GroupBy(f => f.Dept.Name)
+                .Select(g => new
+                {
+                    Department = g.Key ?? "Unknown",
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            return result
+                .Select(r => (r.Department, r.Count))
+                .ToList();
+        }
+
     }
 }

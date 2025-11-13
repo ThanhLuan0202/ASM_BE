@@ -72,7 +72,9 @@ namespace ASM_Repositories.Repositories
             return await _context.Departments.AnyAsync(d => d.DeptId == id);
         }
 
-
+        public async Task<Dictionary<int, string>> GetDepartmentsAsync(List<int> deptIds)
+        => await _context.Departments.Where(d => deptIds.Contains(d.DeptId))
+            .ToDictionaryAsync(d => d.DeptId, d => d.Name);
     }
 
 }

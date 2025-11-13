@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AttachmentDTO;
 using ASM_Services.Interfaces.AdminInterfaces;
@@ -63,6 +64,8 @@ namespace ASM_Services.Services
         }
 
         public Task<bool> DeleteAsync(Guid attachmentId) => _repo.DeleteAsync(attachmentId);
+
+        public Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds) => _repo.GetAttachmentsAsync(findingIds);
     }
 }
 

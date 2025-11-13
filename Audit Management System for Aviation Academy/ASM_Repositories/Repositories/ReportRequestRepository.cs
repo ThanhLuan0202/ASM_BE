@@ -71,6 +71,12 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
+        public Task AddReportRequestAsync(ReportRequest rr)
+        {
+            _context.ReportRequests.Add(rr);
+            return Task.CompletedTask;
+        }
+
     }
 
 }

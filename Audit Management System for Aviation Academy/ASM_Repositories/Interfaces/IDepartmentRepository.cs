@@ -16,5 +16,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewDepartment?> UpdateDepartmentAsync(int id, UpdateDepartment dto);
         Task<bool> DeleteDepartmentAsync(int id);
         Task<bool> ExistsAsync(int id);
+        Task<Dictionary<int, string>> GetDepartmentsAsync(List<int> deptIds);
     }
 }

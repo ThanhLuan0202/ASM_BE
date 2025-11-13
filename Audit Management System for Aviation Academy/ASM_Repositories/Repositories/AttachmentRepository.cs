@@ -138,6 +138,8 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds)
+        => await _context.Attachments.Where(a => findingIds.Contains(a.EntityId)).ToListAsync();
     }
 }
 

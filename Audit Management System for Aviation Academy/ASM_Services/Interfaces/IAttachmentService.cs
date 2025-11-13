@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AttachmentDTO;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -15,6 +16,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewAttachment?> UpdateAsync(Guid attachmentId, UpdateAttachment dto);
         Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, IFormFile file);
         Task<bool> DeleteAsync(Guid attachmentId);
+        Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
     }
 }
 

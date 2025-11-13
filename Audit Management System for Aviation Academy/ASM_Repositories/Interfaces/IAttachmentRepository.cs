@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AttachmentDTO;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAttachment?> UpdateAsync(Guid attachmentId, UpdateAttachment dto);
         Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, string fileName, string blobPath, string contentType, long sizeBytes);
         Task<bool> DeleteAsync(Guid attachmentId);
+        Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
     }
 }
 

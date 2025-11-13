@@ -13,5 +13,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewRootCause?> UpdateAsync(int id, UpdateRootCause dto);
         Task<bool> DeleteAsync(int id); // soft delete: set Status = "Inactive"
         Task<bool> ExistsAsync(int id);
+        Task<Dictionary<int, string>> GetRootCausesAsync(List<int> rootIds);
     }
 }

@@ -352,6 +352,8 @@ namespace ASM_Repositories.Repositories
             await _DbContext.SaveChangesAsync();
             return true;
         }
+
+        public Task SaveChangesAsync() => _DbContext.SaveChangesAsync();
     }
 }
 

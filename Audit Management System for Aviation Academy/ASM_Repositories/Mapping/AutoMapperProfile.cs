@@ -47,6 +47,9 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.Now));
             CreateMap<UpdateDepartment, Department>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
+            CreateMap<(int DeptID, int Count), ViewDepartmentCount>()
+                .ForMember(dest => dest.DeptName, opt => opt.Ignore())
+                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
 
             // User 
             CreateMap<UserAccount, ViewUser>().ReverseMap();
@@ -91,7 +94,15 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateAudit, Audit>()
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+            CreateMap<Audit, ViewAuditSummary>()
+                .ForMember(dest => dest.TotalFindings, opt => opt.Ignore())
+                .ForMember(dest => dest.OpenFindings, opt => opt.Ignore())
+                .ForMember(dest => dest.ClosedFindings, opt => opt.Ignore())
+                .ForMember(dest => dest.OverdueFindings, opt => opt.Ignore())
+                .ForMember(dest => dest.SeverityBreakdown, opt => opt.Ignore())
+                .ForMember(dest => dest.ByDepartment, opt => opt.Ignore())
+                .ForMember(dest => dest.ByRootCause, opt => opt.Ignore());
 
             // ChecklistTemplate mappings
             CreateMap<ChecklistTemplate, ViewChecklistTemplate>().ReverseMap();
@@ -177,6 +188,9 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
             CreateMap<UpdateRootCause, RootCause>()
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
+            CreateMap<(int RootId, int Count), ViewRootCauseCount>()
+                .ForMember(dest => dest.RootCause, opt => opt.Ignore())
+                .ForMember(dest => dest.Count, opt => opt.MapFrom(src => src.Count));
 
             // Role
             CreateMap<Role, ViewRole>().ReverseMap();
