@@ -24,6 +24,7 @@ namespace ASM_Services.Services
         public Task<ViewAction> UpdateAsync(Guid id, UpdateAction dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> DeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
         public Task<bool> UpdateStatusToInProgressAsync(Guid id) => _repo.UpdateStatusToInProgressAsync(id);
+        public Task<bool> UpdateStatusToReviewedAsync(Guid id) => _repo.UpdateStatusToReviewedAsync(id);
     }
 
 }

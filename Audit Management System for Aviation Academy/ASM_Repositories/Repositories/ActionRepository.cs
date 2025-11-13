@@ -159,5 +159,28 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateStatusToReviewedAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Reviewed");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Reviewed' does not exist in ActionStatus.");
+
+            entity.Status = "Reviewed";
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
