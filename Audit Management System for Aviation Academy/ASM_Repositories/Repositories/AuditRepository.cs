@@ -354,6 +354,23 @@ namespace ASM_Repositories.Repositories
         }
 
         public Task SaveChangesAsync() => _DbContext.SaveChangesAsync();
+
+        public async Task<Audit?> UpdateStatusByAuditIdAsync(Guid auditId, string status)
+        {
+            var audit = await _DbContext.Audits
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            if (audit != null)
+            {
+                _DbContext.Audits.Attach(audit); 
+                audit.Status = status;
+
+                await _DbContext.SaveChangesAsync();
+            }
+
+            return audit;
+        }
     }
 }
 

@@ -194,10 +194,8 @@ namespace ASM_Services.Services
             var audit = await _repo.GetAuditByIdAsync(auditId);
             if (audit == null) throw new Exception("Audit not found");
 
-            // Cập nhật trạng thái audit
-            audit.Status = "Submitted";
+            await _repo.UpdateStatusByAuditIdAsync(auditId, "Submitted");
 
-            // Tạo AuditDocument
             var doc = new AuditDocument
             {
                 DocId = Guid.NewGuid(),
@@ -212,7 +210,6 @@ namespace ASM_Services.Services
             };
             await _auditDocumentRepo.AddAuditDocumentAsync(doc);
 
-            // Tạo ReportRequest
             var rr = new ReportRequest
             {
                 ReportRequestId = Guid.NewGuid(),
@@ -225,8 +222,15 @@ namespace ASM_Services.Services
             };
             await _reportRequestRepo.AddReportRequestAsync(rr);
 
-            // Lưu tất cả thay đổi
             await _repo.SaveChangesAsync();
         }
+
+        public async Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc)
+        {
+            var audit = await _repo.UpdateStatusByAuditIdAsync(auditId, statusAudit);
+            var doc = await _auditDocumentRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
+            var rr = await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
+        }
+
     }
 }

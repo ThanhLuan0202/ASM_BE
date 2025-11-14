@@ -1,4 +1,5 @@
-﻿using ASM_Repositories.Models.ChecklistItemDTO;
+﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AuditChecklistItemDTO;
 using ASM_Repositories.Models.UsersDTO;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public Guid AuditId { get; set; }
 
-        public ViewChecklistItem AuditItem { get; set; }
+        public ViewAuditChecklistItem AuditItem { get; set; }
 
         public string Title { get; set; }
 

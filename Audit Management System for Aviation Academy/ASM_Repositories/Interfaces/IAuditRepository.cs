@@ -22,5 +22,6 @@ namespace ASM_Repositories.Interfaces
         Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment);
         Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
         Task SaveChangesAsync();
+        Task<Audit?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
     }
 }

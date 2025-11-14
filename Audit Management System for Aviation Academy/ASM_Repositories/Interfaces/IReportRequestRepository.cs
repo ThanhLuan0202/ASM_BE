@@ -16,5 +16,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewReportRequest?> UpdateAsync(Guid id, UpdateReportRequest dto);
         Task<bool> SoftDeleteAsync(Guid id);
         Task AddReportRequestAsync(ReportRequest rr);
+        Task<ReportRequest?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
     }
 }

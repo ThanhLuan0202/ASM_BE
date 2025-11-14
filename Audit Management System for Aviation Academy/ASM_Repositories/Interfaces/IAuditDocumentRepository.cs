@@ -10,5 +10,6 @@ namespace ASM_Repositories.Interfaces
     public interface IAuditDocumentRepository
     {
         Task AddAuditDocumentAsync(AuditDocument doc);
+        Task<AuditDocument?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
     }
 }
