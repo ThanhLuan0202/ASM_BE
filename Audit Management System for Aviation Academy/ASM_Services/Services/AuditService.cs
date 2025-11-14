@@ -4,8 +4,10 @@ using ASM_Repositories.Models.AuditDTO;
 using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Repositories.Models.FindingDTO;
 using ASM_Repositories.Models.RootCauseDTO;
+using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +24,7 @@ namespace ASM_Services.Services
         private readonly IReportRequestRepository _reportRequestRepo;
         private readonly IAuditScopeDepartmentRepository _auditScopeDepartmentRepo;
         private readonly IMapper _mapper ;
+        
         public AuditService(IAuditRepository repo, IFindingRepository findingRepo, IDepartmentRepository departmentRepo, IRootCauseRepository rootCauseRepo, IAuditDocumentRepository auditDocumentRepo, IReportRequestRepository reportRequestRepo, IAuditScopeDepartmentRepository auditScopeDepartmentRepo, IMapper mapper)
         {
             _repo = repo;
@@ -32,6 +35,7 @@ namespace ASM_Services.Services
             _reportRequestRepo = reportRequestRepo;
             _auditScopeDepartmentRepo = auditScopeDepartmentRepo;
             _mapper = mapper;
+            
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -232,5 +236,6 @@ namespace ASM_Services.Services
             var rr = await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
         }
 
+        
     }
 }

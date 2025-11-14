@@ -2,6 +2,8 @@
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Migrations;
+using ASM_Repositories.Models.AuditCriterionDTO;
+using ASM_Repositories.Models.AuditDocumentDTO;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,17 +31,14 @@ namespace ASM_Repositories.Repositories
         }
         public async Task<AuditDocument?> UpdateStatusByAuditIdAsync(Guid auditId, string status)
         {
-            // Load entity nhưng không tracking
             var doc = await _context.AuditDocuments
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.AuditId == auditId);
 
             if (doc != null)
             {
-                // Attach entity vào context hiện tại
                 _context.AuditDocuments.Attach(doc);
 
-                // Cập nhật giá trị
                 doc.Status = status;
                 doc.UploadedAt = DateTime.UtcNow;
 
@@ -49,5 +48,27 @@ namespace ASM_Repositories.Repositories
             return doc;
         }
 
+        public async Task<AuditDocument?> UpdateAsync(Guid auditId, Action<AuditDocument> updateAction)
+        {
+            var doc = await _context.AuditDocuments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.AuditId == auditId);
+
+            if (doc == null) return null;
+
+            updateAction(doc);
+            _context.AuditDocuments.Update(doc);
+            await _context.SaveChangesAsync();
+            return doc;
+        }
+
+        public async Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId)
+        {
+            var entity = await _context.AuditDocuments
+                .FirstOrDefaultAsync(d => d.AuditId == auditId);
+            return entity == null ? null : _mapper.Map<ViewAuditDocument>(entity);
+        }
+
+        
     }
 }

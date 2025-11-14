@@ -1,4 +1,6 @@
 ﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AuditCriterionDTO;
+using ASM_Repositories.Models.AuditDocumentDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +13,7 @@ namespace ASM_Repositories.Interfaces
     {
         Task AddAuditDocumentAsync(AuditDocument doc);
         Task<AuditDocument?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
+        Task<AuditDocument?> UpdateAsync(Guid auditId, Action<AuditDocument> updateAction);
+        Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId);
     }
 }

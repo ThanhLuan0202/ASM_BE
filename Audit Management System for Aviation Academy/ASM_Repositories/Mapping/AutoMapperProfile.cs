@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ASM_Repositories.Models.AuditDocumentDTO;
 
 namespace ASM_Repositories.Mapping
 {
@@ -344,6 +345,9 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.Dept, opt => opt.Ignore())
                 .ForMember(dest => dest.Auditor, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AuditDocument
+            CreateMap<AuditDocument, ViewAuditDocument>().ReverseMap();
         }
     }
 }
