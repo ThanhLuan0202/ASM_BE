@@ -97,6 +97,10 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<AuditScopeDepartment>> GetAuditScopeDepartmentsAsync(Guid auditId)
+        => await _context.AuditScopeDepartments.Include(f => f.Dept)
+            .Where(f => f.AuditId == auditId).ToListAsync();
     }
 
 }

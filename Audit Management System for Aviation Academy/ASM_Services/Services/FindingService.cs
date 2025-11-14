@@ -49,7 +49,6 @@ namespace ASM_Services.Services
         {
             var data = await _repo.GetFindingsByMonthAsync(auditId);
 
-            // Nếu không có dữ liệu, trả 12 tháng = 0
             if (data == null || data.Count == 0)
             {
                 return Enumerable.Range(1, 12)
@@ -57,7 +56,6 @@ namespace ASM_Services.Services
                     .ToList();
             }
 
-            // Đảm bảo dùng 12 tháng trong năm của dữ liệu
             int year = data.First().Date.Year;
             var fullRange = Enumerable.Range(1, 12)
                 .Select(m =>

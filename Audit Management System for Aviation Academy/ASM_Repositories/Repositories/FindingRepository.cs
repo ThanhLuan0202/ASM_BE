@@ -240,10 +240,18 @@ namespace ASM_Repositories.Repositories
         }
 
         public async Task<List<Finding>> GetFindingsAsync(Guid auditId)
-        => await _DbContext.Findings.Include(f => f.RootCause)
-            .Where(f => f.AuditId == auditId).ToListAsync();
+        {
+            return await _DbContext.Findings
+                .Include(f => f.RootCause)
+                .Include(f => f.CreatedByNavigation)  
+                .Include(f => f.Reviewer)            
+                .Include(f => f.AuditItem)           
+                .Include(f => f.Dept)                 
+                .Where(f => f.AuditId == auditId)
+                .ToListAsync();
+        }
 
-        public async Task<List<ViewFindingByMonth>> GetFindingsByMonthAsync(Guid auditId)
+        public async Task<List<ViewFindingByMonthCount>> GetFindingsByMonthAsync(Guid auditId)
         {
             var data = await _DbContext.Findings
                 .Where(f => f.AuditId == auditId)
@@ -259,7 +267,7 @@ namespace ASM_Repositories.Repositories
             // Phần này chạy trên memory (client side)
             var result = data
                 .AsEnumerable()
-                .Select(g => new ViewFindingByMonth
+                .Select(g => new ViewFindingByMonthCount
                 {
                     Date = new DateTime(g.Year, g.Month, 1),
                     Count = g.Count

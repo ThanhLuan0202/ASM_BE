@@ -15,6 +15,7 @@ namespace ASM_Repositories.Models.AuditDTO
         public string Title { get; set; } = "";
         public string Type { get; set; } = "";
         public string Scope { get; set; } = "";
+        public string Status { get; set; } = "";
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
@@ -26,6 +27,6 @@ namespace ASM_Repositories.Models.AuditDTO
         public Dictionary<string, int> SeverityBreakdown { get; set; } = new();
         public List<ViewDepartmentCount> ByDepartment { get; set; } = new();
         public List<ViewRootCauseCount> ByRootCause { get; set; } = new();
-        public List<ViewFindingByMonth> FindingsByDate { get; set; } = new();
+        public List<ViewFindingByMonth> FindingsByMonth { get; set; } = new();
     }
 }

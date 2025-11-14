@@ -15,7 +15,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> DeleteFindingAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
         Task<List<Finding>> GetFindingsAsync(Guid auditId);
-        Task<List<ViewFindingByMonth>> GetFindingsByMonthAsync(Guid auditId);
+        Task<List<ViewFindingByMonthCount>> GetFindingsByMonthAsync(Guid auditId);
         Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId);
     }
 }

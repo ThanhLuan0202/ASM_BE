@@ -79,6 +79,10 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+            CreateMap<Finding, ViewFindingDetail>()
+                .ForMember(d => d.AuditItem, o => o.MapFrom(s => s.AuditItem))
+                .ForMember(d => d.CreatedByUser, o => o.MapFrom(s => s.CreatedByNavigation))
+                .ForMember(d => d.ReviewerByUser, o => o.MapFrom(s => s.Reviewer));
 
             // Audit mappings
             CreateMap<Audit, ViewAudit>().ReverseMap();
