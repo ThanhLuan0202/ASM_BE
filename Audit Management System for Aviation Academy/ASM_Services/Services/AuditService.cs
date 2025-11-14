@@ -197,21 +197,23 @@ namespace ASM_Services.Services
 
             var doc = new AuditDocument
             {
+                DocId = Guid.NewGuid(),
                 AuditId = audit.AuditId,
-                DocumentType = "Submitted_Report",
+                DocumentType = "Submitted Report",
                 Title = $"{audit.Title} - Submitted Report",
-                BlobPath = "",
-                UploadedAt = DateTime.UtcNow,
-                IsFinalVersion = true
+                Status = "Pending"
             };
             await _auditDocumentRepo.AddAuditDocumentAsync(doc);
 
             var rr = new ReportRequest
             {
                 ReportRequestId = Guid.NewGuid(),
+                
                 Parameters = $"{{\"auditId\":\"{auditId}\"}}",
                 Status = "Submitted",
-                RequestedAt = DateTime.UtcNow
+                FilePath = $"reports/{audit.AuditId}/report.pdf", // giả lập đường dẫn report
+                RequestedAt = DateTime.UtcNow,
+                CompletedAt = null
             };
             await _reportRequestRepo.AddReportRequestAsync(rr);
 

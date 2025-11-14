@@ -48,6 +48,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditScheduleService, AuditScheduleService>();
             service.AddTransient<IAuditCriteriaMapService, AuditCriteriaMapService>();
             service.AddTransient<IAuditAssignmentService, AuditAssignmentService>();
+            service.AddTransient<IPdfGeneratorService, PdfGeneratorService>();
 
 
 
