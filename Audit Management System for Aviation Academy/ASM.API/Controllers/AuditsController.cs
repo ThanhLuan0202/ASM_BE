@@ -30,13 +30,15 @@ namespace ASM.API.Controllers
         private readonly IFindingService _findingService;
         private readonly IAttachmentService _attachmentService;
         private readonly IPdfGeneratorService _pdfService;
-        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService)
+        private readonly IFirebaseUploadService _firebaseService;
+        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService, IFirebaseUploadService firebaseService)
         {
             _service = service;
             _env = env;
             _findingService = findingService;
             _attachmentService = attachmentService;
             _pdfService = pdfService;
+            _firebaseService = firebaseService;
         }
 
         [HttpGet]
@@ -355,8 +357,38 @@ namespace ASM.API.Controllers
         [HttpPost("Submit/{auditId:guid}")]
         public async Task<IActionResult> Submit(Guid auditId)
         {
-            await _service.SubmitAuditAsync(auditId);
-            return Ok(new { message = "Audit submitted", auditId });
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("User not authenticated");
+
+            var userId = Guid.Parse(userIdClaim);
+
+            var summary = await _service.GetAuditSummaryAsync(auditId);
+            if (summary == null) return NotFound("Audit not found");
+
+            var findings = await _findingService.GetFindingsAsync(auditId);
+            var attachments = await _attachmentService.GetAttachmentsAsync(findings.Select(f => f.FindingId).ToList());
+            var data = await _findingService.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+            var findingsByMonth = await _findingService.GetFindingsByMonthAsync(auditId);
+
+            var charts = new List<byte[]>
+            {
+                GenerateLineChartPng(findingsByMonth),
+                GeneratePieChartPng(summary.SeverityBreakdown.Select(kv => (kv.Key, kv.Value)).ToList()),
+                GenerateBarChartPng(data.Select(x => (x.Department, x.Count)).ToList())
+            };
+
+            var pdfBytes = _pdfService.GeneratePdf(summary, findings, attachments, logo: null, charts);
+
+            using var stream = new MemoryStream(pdfBytes);
+            stream.Position = 0;
+            IFormFile pdfFile = new FormFile(stream, 0, pdfBytes.Length, "file", $"{Guid.NewGuid()}_{summary.Title}.pdf");
+
+            var pdfUrl = await _firebaseService.UploadFileAsync(pdfFile, $"reports/{auditId}");
+
+            await _service.SubmitAuditAsync(auditId, pdfUrl, userId);
+
+            return Ok(new { message = "Audit submitted successfully", pdfUrl });
         }
 
         [HttpGet("{auditId:guid}/chart/line")]

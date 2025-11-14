@@ -189,34 +189,43 @@ namespace ASM_Services.Services
 
 
 
-        public async Task SubmitAuditAsync(Guid auditId)
+        public async Task SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy)
         {
             var audit = await _repo.GetAuditByIdAsync(auditId);
             if (audit == null) throw new Exception("Audit not found");
+
+            // Cập nhật trạng thái audit
             audit.Status = "Submitted";
 
+            // Tạo AuditDocument
             var doc = new AuditDocument
             {
                 DocId = Guid.NewGuid(),
                 AuditId = audit.AuditId,
                 DocumentType = "Submitted Report",
                 Title = $"{audit.Title} - Submitted Report",
-                Status = "Pending"
+                Status = "Pending",
+                BlobPath = string.Empty,
+                IsFinalVersion = false,
+                ContentType = string.Empty,
+                SizeBytes = string.Empty.Length
             };
             await _auditDocumentRepo.AddAuditDocumentAsync(doc);
 
+            // Tạo ReportRequest
             var rr = new ReportRequest
             {
                 ReportRequestId = Guid.NewGuid(),
-                
+                RequestedBy = requestedBy,
                 Parameters = $"{{\"auditId\":\"{auditId}\"}}",
-                Status = "Submitted",
-                FilePath = $"reports/{audit.AuditId}/report.pdf", // giả lập đường dẫn report
-                RequestedAt = DateTime.UtcNow,
-                CompletedAt = null
+                Status = "Pending",
+                FilePath = pdfUrl,
+                RequestedAt = DateTime.UtcNow
+
             };
             await _reportRequestRepo.AddReportRequestAsync(rr);
 
+            // Lưu tất cả thay đổi
             await _repo.SaveChangesAsync();
         }
     }
