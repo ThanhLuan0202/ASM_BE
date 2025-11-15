@@ -45,5 +45,10 @@ namespace ASM_Services.Services
         {
             return await _repo.GetBySectionAsync(section);
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> GetByUserIdAsync(Guid userId)
+        {
+            return await _repo.GetByUserIdAsync(userId);
+        }
     }
 }

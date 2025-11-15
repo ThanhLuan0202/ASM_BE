@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASM.API.Controllers
@@ -143,6 +144,30 @@ namespace ASM.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving audit checklist items by section", error = ex.Message });
+            }
+        }
+
+        [HttpGet("my-assignments")]
+        public async Task<ActionResult<IEnumerable<ViewAuditChecklistItem>>> GetMyAssignments()
+        {
+            try
+            {
+                // Lấy UserId từ JWT token
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.GetByUserIdAsync(userId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving audit checklist items for user", error = ex.Message });
             }
         }
     }

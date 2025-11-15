@@ -13,5 +13,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditChecklistItem?> UpdateAsync(Guid auditItemId, UpdateAuditChecklistItem dto);
         Task<bool> DeleteAsync(Guid auditItemId);
         Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(string section);
+        Task<IEnumerable<ViewAuditChecklistItem>> GetByUserIdAsync(Guid userId);
     }
 }

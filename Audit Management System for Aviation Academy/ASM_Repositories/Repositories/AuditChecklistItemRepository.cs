@@ -90,5 +90,39 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAuditChecklistItem>>(items);
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> GetByUserIdAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException("UserId cannot be empty.");
+
+            // Lấy tất cả AuditAssignment có AuditorId = userId
+            var auditAssignments = await _DbContext.AuditAssignments
+                .Where(aa => aa.AuditorId == userId)
+                .Select(aa => aa.DeptId)
+                .Distinct()
+                .ToListAsync();
+
+            if (!auditAssignments.Any())
+                return new List<ViewAuditChecklistItem>();
+
+            // Lấy tên các Department từ các DeptId
+            var departmentNames = await _DbContext.Departments
+                .Where(d => auditAssignments.Contains(d.DeptId) && d.Status == "Active")
+                .Select(d => d.Name)
+                .ToListAsync();
+
+            if (!departmentNames.Any())
+                return new List<ViewAuditChecklistItem>();
+
+            // Lấy tất cả AuditChecklistItem có Section trùng với các Name đã lấy được
+            var items = await _DbContext.AuditChecklistItems
+                .Where(aci => departmentNames.Contains(aci.Section))
+                .OrderBy(aci => aci.Section)
+                .ThenBy(aci => aci.Order)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAuditChecklistItem>>(items);
+        }
     }
 }
