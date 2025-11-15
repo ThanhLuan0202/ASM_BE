@@ -302,5 +302,18 @@ namespace ASM_Repositories.Repositories
                 .ToList();
         }
 
+        public async Task UpdateFindingStatusAsync(Guid findingId, string status)
+        {
+            var entity = await _context.Findings
+                .FirstOrDefaultAsync(x => x.FindingId == findingId);
+
+            if (entity == null)
+                throw new Exception("Finding not found");
+
+            entity.Status = status;
+            _context.Findings.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

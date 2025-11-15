@@ -153,6 +153,14 @@ namespace ASM_Repositories.Repositories
             _context.Attachments.Update(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Guid?> GetEntityIdByAttachmentIdAsync(Guid attachmentId)
+        {
+            return await _context.Attachments
+                .Where(a => a.AttachmentId == attachmentId)
+                .Select(a => (Guid?)a.EntityId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
 

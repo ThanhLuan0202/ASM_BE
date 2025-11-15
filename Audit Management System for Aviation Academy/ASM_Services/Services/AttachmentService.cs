@@ -13,11 +13,14 @@ namespace ASM_Services.Services
     {
         private readonly IAttachmentRepository _repo;
         private readonly IFirebaseUploadService _firebaseUploadService;
-
-        public AttachmentService(IAttachmentRepository repo, IFirebaseUploadService firebaseUploadService)
+        private readonly IActionRepository _actionRepository;
+        private readonly IFindingRepository _findingRepository;
+        public AttachmentService(IAttachmentRepository repo, IFirebaseUploadService firebaseUploadService, IActionRepository actionRepository, IFindingRepository findingRepository)
         {
             _repo = repo;
             _firebaseUploadService = firebaseUploadService;
+            _actionRepository = actionRepository;
+            _findingRepository = findingRepository;
         }
 
         public Task<IEnumerable<ViewAttachment>> GetAllAsync() => _repo.GetAllAsync();
@@ -65,9 +68,43 @@ namespace ASM_Services.Services
 
         public Task<bool> DeleteAsync(Guid attachmentId) => _repo.DeleteAsync(attachmentId);
 
-        public Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds) => _repo.GetAttachmentsAsync(findingIds);
+        public async Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds) => await _repo.GetAttachmentsAsync(findingIds);
 
-        public Task UpdateAttachmentStatusAsync(Guid attachmentId, string status) => _repo.UpdateAttachmentStatusAsync(attachmentId, status);
+        public async Task UpdateAttachmentStatusAsync(Guid attachmentId, string status) =>  await _repo.UpdateAttachmentStatusAsync(attachmentId, status);
+
+        public async Task ApproveByHigherLevel(Guid attachmentId)
+        {
+            await _repo.UpdateAttachmentStatusAsync(attachmentId, "Completed");
+
+            var actionId = await _repo.GetEntityIdByAttachmentIdAsync(attachmentId);
+            if (!actionId.HasValue)
+                throw new InvalidOperationException($"Action not found for AttachmentId = {attachmentId}");
+
+            await _actionRepository.UpdateActionStatusAsync(actionId.Value, "Completed");
+
+            var findingId = await _actionRepository.GetFindingIdByActionIdAsync(actionId.Value);
+            if (!findingId.HasValue)
+                throw new InvalidOperationException($"Finding not found for ActionId = {actionId.Value}");
+
+            await _findingRepository.UpdateFindingStatusAsync(findingId.Value, "Closed");
+        }
+
+        public async Task RejectByHigherLevel(Guid attachmentId)
+        {
+            await _repo.UpdateAttachmentStatusAsync(attachmentId, "Rejected");
+
+            var actionId = await _repo.GetEntityIdByAttachmentIdAsync(attachmentId);
+            if (!actionId.HasValue)
+                throw new InvalidOperationException($"Action not found for AttachmentId = {attachmentId}");
+
+            await _actionRepository.UpdateActionStatusAsync(actionId.Value, "Rejected");
+
+            var findingId = await _actionRepository.GetFindingIdByActionIdAsync(actionId.Value);
+            if (!findingId.HasValue)
+                throw new InvalidOperationException($"Finding not found for ActionId = {actionId.Value}");
+
+            await _findingRepository.UpdateFindingStatusAsync(findingId.Value, "Reopen");
+        }
     }
 }
 

@@ -17,6 +17,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> DeleteAsync(Guid attachmentId);
         Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
         Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
+        Task<Guid?> GetEntityIdByAttachmentIdAsync(Guid attachmentId);
     }
 }
 

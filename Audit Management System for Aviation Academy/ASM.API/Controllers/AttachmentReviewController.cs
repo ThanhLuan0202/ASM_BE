@@ -15,7 +15,7 @@ namespace ASM.API.Controllers
             _attachmentService = attachmentService;
         }
 
-        [HttpPost("{attachmentId:guid}/approve")]
+        [HttpPut("{attachmentId:guid}/approve")]
         public async Task<IActionResult> Approve(Guid attachmentId)
         {
             try
@@ -29,7 +29,7 @@ namespace ASM.API.Controllers
             }
         }
 
-        [HttpPost("{attachmentId:guid}/returned")]
+        [HttpPut("{attachmentId:guid}/returned")]
         public async Task<IActionResult> Reject(Guid attachmentId)
         {
             try
@@ -42,5 +42,42 @@ namespace ASM.API.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpPut("{attachmentId:guid}/approve/higher-level")]
+        public async Task<IActionResult> ApproveByHigherLevel(Guid attachmentId)
+        {
+            try
+            {
+                await _attachmentService.ApproveByHigherLevel(attachmentId);
+                return Ok(new { message = "Attachment, Action, and Finding approved successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
+        [HttpPut("{attachmentId:guid}/reject/higher-level")]
+        public async Task<IActionResult> RejectByHigherLevel(Guid attachmentId)
+        {
+            try
+            {
+                await _attachmentService.RejectByHigherLevel(attachmentId);
+                return Ok(new { message = "Attachment, Action, and Finding rejected successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
     }
 }

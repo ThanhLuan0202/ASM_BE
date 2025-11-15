@@ -252,5 +252,26 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task UpdateActionStatusAsync(Guid actionId, string status)
+        {
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(x => x.ActionId == actionId);
+
+            if (entity == null)
+                throw new Exception("Action not found");
+
+            entity.Status = status;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Guid?> GetFindingIdByActionIdAsync(Guid actionId)
+        {
+            return await _context.Actions
+                .Where(a => a.ActionId == actionId)
+                .Select(a => (Guid?)a.FindingId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
