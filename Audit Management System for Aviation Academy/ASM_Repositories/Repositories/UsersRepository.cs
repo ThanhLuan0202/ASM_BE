@@ -117,5 +117,13 @@ namespace ASM_Repositories.Repositories
 
             return true;
         }
+
+        public async Task<ViewUserShortInfo> GetUserShortInfoAsync(Guid userId)
+        {
+            var user = await _context.UserAccounts
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            return _mapper.Map<ViewUserShortInfo>(user);
+        }
     }
 }

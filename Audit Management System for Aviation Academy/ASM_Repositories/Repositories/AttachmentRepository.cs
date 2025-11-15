@@ -161,6 +161,18 @@ namespace ASM_Repositories.Repositories
                 .Select(a => (Guid?)a.EntityId)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task RejectAttachmentAsync(Guid attachmentId)
+        {
+            var entity = await _context.Attachments
+                .FirstOrDefaultAsync(x => x.AttachmentId == attachmentId);
+            if (entity == null)
+                throw new Exception("Attachment not found");
+            entity.Status = "Returned";
+            entity.IsArchived= false;
+            _context.Attachments.Update(entity);
+            await _context.SaveChangesAsync();
+        }
     }
 }
 

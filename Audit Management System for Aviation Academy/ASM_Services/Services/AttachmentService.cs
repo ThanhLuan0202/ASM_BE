@@ -1,8 +1,10 @@
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AttachmentDTO;
+using ASM_Repositories.Models.NotificationDTO;
 using ASM_Services.Interfaces.AdminInterfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,14 +15,18 @@ namespace ASM_Services.Services
     {
         private readonly IAttachmentRepository _repo;
         private readonly IFirebaseUploadService _firebaseUploadService;
-        private readonly IActionRepository _actionRepository;
-        private readonly IFindingRepository _findingRepository;
-        public AttachmentService(IAttachmentRepository repo, IFirebaseUploadService firebaseUploadService, IActionRepository actionRepository, IFindingRepository findingRepository)
+        private readonly IActionRepository _actionRepo;
+        private readonly IFindingRepository _findingRepo;
+        private readonly INotificationRepository _notificationRepo;
+        private readonly IUsersRepository _userRepo;
+        public AttachmentService(IAttachmentRepository repo, IFirebaseUploadService firebaseUploadService, IActionRepository actionRepo, IFindingRepository findingRepo, INotificationRepository notificationRepo, IUsersRepository userRepo)
         {
             _repo = repo;
             _firebaseUploadService = firebaseUploadService;
-            _actionRepository = actionRepository;
-            _findingRepository = findingRepository;
+            _actionRepo = actionRepo;
+            _findingRepo = findingRepo;
+            _notificationRepo = notificationRepo;
+            _userRepo = userRepo;
         }
 
         public Task<IEnumerable<ViewAttachment>> GetAllAsync() => _repo.GetAllAsync();
@@ -80,13 +86,13 @@ namespace ASM_Services.Services
             if (!actionId.HasValue)
                 throw new InvalidOperationException($"Action not found for AttachmentId = {attachmentId}");
 
-            await _actionRepository.UpdateActionStatusAsync(actionId.Value, "Completed");
+            await _actionRepo.UpdateActionStatusAsync(actionId.Value, "Completed");
 
-            var findingId = await _actionRepository.GetFindingIdByActionIdAsync(actionId.Value);
+            var findingId = await _actionRepo.GetFindingIdByActionIdAsync(actionId.Value);
             if (!findingId.HasValue)
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId.Value}");
 
-            await _findingRepository.UpdateFindingStatusAsync(findingId.Value, "Closed");
+            await _findingRepo.UpdateFindingStatusAsync(findingId.Value, "Closed");
         }
 
         public async Task RejectByHigherLevel(Guid attachmentId)
@@ -97,13 +103,38 @@ namespace ASM_Services.Services
             if (!actionId.HasValue)
                 throw new InvalidOperationException($"Action not found for AttachmentId = {attachmentId}");
 
-            await _actionRepository.UpdateActionStatusAsync(actionId.Value, "Rejected");
+            await _actionRepo.UpdateActionStatusAsync(actionId.Value, "Rejected");
 
-            var findingId = await _actionRepository.GetFindingIdByActionIdAsync(actionId.Value);
+            var findingId = await _actionRepo.GetFindingIdByActionIdAsync(actionId.Value);
             if (!findingId.HasValue)
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId.Value}");
 
-            await _findingRepository.UpdateFindingStatusAsync(findingId.Value, "Reopen");
+            await _findingRepo.UpdateFindingStatusAsync(findingId.Value, "Reopen");
+        }
+
+        public async Task RejectAttachmentAsync(Guid attachmentId, Guid rejectedBy, string reason)
+        {
+
+            await _repo.RejectAttachmentAsync(attachmentId);
+
+            var attachment = await _repo.GetByIdAsync(attachmentId);   
+            
+            var user = await _userRepo.GetUserShortInfoAsync(rejectedBy);
+
+            Guid? ownerId = attachment.UploadedBy.Value;
+
+            await _notificationRepo.CreateAsync(new CreateNotification
+            {
+                UserId = ownerId.Value,
+                Title = "Your attachment was rejected",
+                Message = $"File {attachment.FileName} has been rejected.\n" +
+                            $"Reason: {reason}.\n" +
+                            $"Rejected by: {user.FullName}.\n" +
+                            $"Role name: {user.RoleName}",
+                EntityType = attachment.EntityType,
+                EntityId = attachment.AttachmentId,
+                IsRead = false,
+            });
         }
     }
 }

@@ -20,6 +20,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
         Task ApproveByHigherLevel(Guid attachmentId);
         Task RejectByHigherLevel(Guid attachmentId);
+        Task RejectAttachmentAsync(Guid attachmentId, Guid rejectedBy, string reason);
     }
 }
 

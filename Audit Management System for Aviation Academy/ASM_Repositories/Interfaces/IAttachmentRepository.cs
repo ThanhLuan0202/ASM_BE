@@ -18,6 +18,7 @@ namespace ASM_Repositories.Interfaces
         Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
         Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
         Task<Guid?> GetEntityIdByAttachmentIdAsync(Guid attachmentId);
+        Task RejectAttachmentAsync(Guid attachmentId);
     }
 }
 

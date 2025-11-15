@@ -1,7 +1,9 @@
-﻿using ASM_Services.Interfaces.AdminInterfaces;
+﻿using ASM_Repositories.Models.AttachmentDTO;
+using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ASM.API.Controllers
 {
@@ -30,11 +32,19 @@ namespace ASM.API.Controllers
         }
 
         [HttpPut("{attachmentId:guid}/returned")]
-        public async Task<IActionResult> Reject(Guid attachmentId)
+        public async Task<IActionResult> Reject(Guid attachmentId, [FromBody] CreateReasonRejectAttachment request)
         {
             try
             {
-                await _attachmentService.UpdateAttachmentStatusAsync(attachmentId, "Returned");
+                if (request == null || string.IsNullOrWhiteSpace(request.Reason))
+                    return BadRequest("Reason is required.");
+
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("User not authenticated");
+
+                await _attachmentService.RejectAttachmentAsync(attachmentId, Guid.Parse(userIdClaim), request.Reason);
+
                 return Ok(new { message = $"Attachment {attachmentId} returned successfully." });
             }
             catch (Exception ex)

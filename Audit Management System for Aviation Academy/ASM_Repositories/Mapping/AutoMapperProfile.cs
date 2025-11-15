@@ -67,6 +67,7 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
+            CreateMap<UserAccount, ViewUserShortInfo>().ReverseMap();
 
             // Finding mappings
             CreateMap<Finding, ViewFinding>().ReverseMap();
