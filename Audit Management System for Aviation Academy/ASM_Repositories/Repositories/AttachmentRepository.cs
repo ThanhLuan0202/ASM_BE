@@ -150,6 +150,7 @@ namespace ASM_Repositories.Repositories
                 throw new Exception("Attachment not found");
 
             entity.Status = status;
+            entity.IsArchived = status == "Completed";
             _context.Attachments.Update(entity);
             await _context.SaveChangesAsync();
         }
