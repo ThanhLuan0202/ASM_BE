@@ -40,5 +40,10 @@ namespace ASM_Services.Services
         {
             return await _repo.DeleteAsync(auditItemId);
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(string section)
+        {
+            return await _repo.GetBySectionAsync(section);
+        }
     }
 }

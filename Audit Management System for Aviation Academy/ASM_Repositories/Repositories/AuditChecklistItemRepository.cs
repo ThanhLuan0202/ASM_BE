@@ -71,5 +71,24 @@ namespace ASM_Repositories.Repositories
             await _DbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(string section)
+        {
+            if (string.IsNullOrWhiteSpace(section))
+                throw new ArgumentException("Section cannot be null or empty.");
+
+            var isValidSection = await _DbContext.Departments
+                .AnyAsync(d => d.Name == section && d.Status == "Active");
+
+            if (!isValidSection)
+                throw new InvalidOperationException($"Section '{section}' is not a valid department name or the department is not active.");
+
+            var items = await _DbContext.AuditChecklistItems
+                .Where(aci => aci.Section == section)
+                .OrderBy(aci => aci.Order)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAuditChecklistItem>>(items);
+        }
     }
 }

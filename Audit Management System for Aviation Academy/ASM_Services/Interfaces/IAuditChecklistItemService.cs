@@ -12,5 +12,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<ViewAuditChecklistItem> CreateAsync(CreateAuditChecklistItem dto);
         Task<ViewAuditChecklistItem?> UpdateAsync(Guid auditItemId, UpdateAuditChecklistItem dto);
         Task<bool> DeleteAsync(Guid auditItemId);
+        Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(string section);
     }
 }

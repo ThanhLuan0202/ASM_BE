@@ -120,5 +120,30 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the item", error = ex.Message });
             }
         }
+
+        [HttpGet("by-section/{section}")]
+        public async Task<ActionResult<IEnumerable<ViewAuditChecklistItem>>> GetBySection(string section)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(section))
+                    return BadRequest(new { message = "Section is required" });
+
+                var result = await _service.GetBySectionAsync(section);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving audit checklist items by section", error = ex.Message });
+            }
+        }
     }
 }

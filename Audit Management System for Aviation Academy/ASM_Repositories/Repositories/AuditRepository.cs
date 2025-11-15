@@ -328,7 +328,7 @@ namespace ASM_Repositories.Repositories
                 throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
             }
 
-            var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Approve");
+            var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Approved");
             if (!approveStatusExists)
             {
                 throw new InvalidOperationException("Status 'Approve' does not exist in AuditStatus");
