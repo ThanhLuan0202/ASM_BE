@@ -140,6 +140,19 @@ namespace ASM_Repositories.Repositories
         }
         public async Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds)
         => await _context.Attachments.Where(a => findingIds.Contains(a.EntityId)).ToListAsync();
+
+        public async Task UpdateAttachmentStatusAsync(Guid attachmentId, string status)
+        {
+            var entity = await _context.Attachments
+                .FirstOrDefaultAsync(x => x.AttachmentId == attachmentId);
+
+            if (entity == null)
+                throw new Exception("Attachment not found");
+
+            entity.Status = status;
+            _context.Attachments.Update(entity);
+            await _context.SaveChangesAsync();
+        }
     }
 }
 

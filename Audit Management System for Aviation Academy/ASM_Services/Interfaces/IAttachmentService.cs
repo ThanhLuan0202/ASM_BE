@@ -17,6 +17,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, IFormFile file);
         Task<bool> DeleteAsync(Guid attachmentId);
         Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
+        Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
     }
 }
 

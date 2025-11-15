@@ -16,6 +16,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, string fileName, string blobPath, string contentType, long sizeBytes);
         Task<bool> DeleteAsync(Guid attachmentId);
         Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
+        Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
     }
 }
 

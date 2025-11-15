@@ -66,6 +66,8 @@ namespace ASM_Services.Services
         public Task<bool> DeleteAsync(Guid attachmentId) => _repo.DeleteAsync(attachmentId);
 
         public Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds) => _repo.GetAttachmentsAsync(findingIds);
+
+        public Task UpdateAttachmentStatusAsync(Guid attachmentId, string status) => _repo.UpdateAttachmentStatusAsync(attachmentId, status);
     }
 }
 
