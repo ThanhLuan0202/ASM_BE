@@ -358,7 +358,6 @@ namespace ASM_Repositories.Repositories
         public async Task<Audit?> UpdateStatusByAuditIdAsync(Guid auditId, string status)
         {
             var audit = await _DbContext.Audits
-                .AsNoTracking() 
                 .FirstOrDefaultAsync(a => a.AuditId == auditId);
 
             if (audit != null)

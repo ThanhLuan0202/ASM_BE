@@ -55,5 +55,27 @@ namespace ASM.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("{auditId}")]
+        public async Task<IActionResult> GetDocumentsByAuditId(Guid auditId)
+        {
+            try
+            {
+                var document = await _auditDocumentService.GetAuditDocumentByAuditIdAsync(auditId);
+
+                if (document == null)
+                    return NotFound(new { message = "No audit document found", auditId });
+
+                return Ok(document);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Internal server error",
+                    error = ex.Message
+                });
+            }
+        }
     }
 }
