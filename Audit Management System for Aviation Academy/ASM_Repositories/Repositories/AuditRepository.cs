@@ -218,7 +218,9 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> SubmitToLeadAuditorAsync(Guid auditId)
         {
-            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
             if (audit == null)
             {
                 return false;
@@ -238,7 +240,9 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
             if (audit == null)
             {
                 return false;
@@ -277,7 +281,9 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
             if (audit == null)
             {
                 return false;
@@ -316,7 +322,9 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _DbContext.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
             if (audit == null)
             {
                 return false;
