@@ -122,15 +122,15 @@ namespace ASM.API.Controllers
             }
         }
 
-        [HttpGet("by-section/{section}")]
-        public async Task<ActionResult<IEnumerable<ViewAuditChecklistItem>>> GetBySection(string section)
+        [HttpGet("by-department/{deptId:int}")]
+        public async Task<ActionResult<IEnumerable<ViewAuditChecklistItem>>> GetByDepartment(int deptId)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(section))
-                    return BadRequest(new { message = "Section is required" });
+                if (deptId <= 0)
+                    return BadRequest(new { message = "DepartmentId must be greater than zero" });
 
-                var result = await _service.GetBySectionAsync(section);
+                var result = await _service.GetBySectionAsync(deptId);
                 return Ok(result);
             }
             catch (ArgumentException ex)

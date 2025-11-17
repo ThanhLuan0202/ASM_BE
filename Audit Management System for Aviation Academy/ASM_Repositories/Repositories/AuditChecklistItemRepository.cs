@@ -72,19 +72,23 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(string section)
+        public async Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(int departmentId)
         {
-            if (string.IsNullOrWhiteSpace(section))
-                throw new ArgumentException("Section cannot be null or empty.");
+            if (departmentId <= 0)
+                throw new ArgumentException("DepartmentId must be greater than zero.");
 
-            var isValidSection = await _DbContext.Departments
-                .AnyAsync(d => d.Name == section && d.Status == "Active");
+            var department = await _DbContext.Departments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.DeptId == departmentId);
 
-            if (!isValidSection)
-                throw new InvalidOperationException($"Section '{section}' is not a valid department name or the department is not active.");
+            if (department == null)
+                throw new InvalidOperationException($"Department with ID '{departmentId}' was not found.");
+
+            if (!string.Equals(department.Status, "Active", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException($"Department '{department.Name}' is not active.");
 
             var items = await _DbContext.AuditChecklistItems
-                .Where(aci => aci.Section == section)
+                .Where(aci => aci.Section == department.Name)
                 .OrderBy(aci => aci.Order)
                 .ToListAsync();
 
