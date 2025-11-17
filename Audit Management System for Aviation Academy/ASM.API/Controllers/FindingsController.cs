@@ -161,7 +161,33 @@ namespace ASM.API.Controllers
             }
         }
 
-        
+        [HttpGet("by-department/{deptId:int}")]
+        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetByDepartment(int deptId)
+        {
+            try
+            {
+                if (deptId <= 0)
+                {
+                    return BadRequest(new { message = "DepartmentId must be greater than zero" });
+                }
+
+                var result = await _service.GetFindingsByDepartmentAsync(deptId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving findings by department", error = ex.Message });
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {

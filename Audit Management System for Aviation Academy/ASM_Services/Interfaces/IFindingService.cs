@@ -16,5 +16,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<List<Finding>> GetFindingsAsync(Guid auditId);
         Task<List<(DateTime Date, int Count)>> GetFindingsByMonthAsync(Guid auditId);
         Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId);
+        Task<IEnumerable<ViewFinding>> GetFindingsByDepartmentAsync(int departmentId);
     }
 }

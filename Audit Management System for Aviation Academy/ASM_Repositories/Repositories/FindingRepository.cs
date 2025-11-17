@@ -315,5 +315,29 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<ViewFinding>> GetByDepartmentIdAsync(int departmentId)
+        {
+            if (departmentId <= 0)
+                throw new ArgumentException("DepartmentId must be greater than zero.");
+
+            var department = await _DbContext.Departments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.DeptId == departmentId);
+
+            if (department == null)
+                throw new InvalidOperationException($"Department with ID '{departmentId}' was not found.");
+
+            var findings = await _DbContext.Findings
+                .Where(f => f.DeptId == departmentId)
+                .Include(f => f.Audit)
+                .Include(f => f.Dept)
+                .Include(f => f.CreatedByNavigation)
+                .Include(f => f.Reviewer)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewFinding>>(findings);
+        }
+
     }
 }

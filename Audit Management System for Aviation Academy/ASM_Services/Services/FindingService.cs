@@ -75,5 +75,8 @@ namespace ASM_Services.Services
             return result;
         }
 
+        public Task<IEnumerable<ViewFinding>> GetFindingsByDepartmentAsync(int departmentId)
+            => _repo.GetByDepartmentIdAsync(departmentId);
+
     }
 }
