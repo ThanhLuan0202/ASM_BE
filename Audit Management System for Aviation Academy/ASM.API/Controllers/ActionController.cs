@@ -1,6 +1,7 @@
 ﻿using ASM_Repositories.Models.ActionDTO;
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 [Route("api/[controller]")]
@@ -9,6 +10,12 @@ public class ActionController : ControllerBase
 {
     private readonly IActionService _service;
     private readonly ILogger<ActionController> _logger;
+
+    public class UpdateProgressPercentRequest
+    {
+        [Range(0, 100, ErrorMessage = "ProgressPercent must be between 0 and 100.")]
+        public byte ProgressPercent { get; set; }
+    }
 
     public ActionController(IActionService service, ILogger<ActionController> logger)
     {
@@ -246,6 +253,44 @@ public class ActionController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error updating status of action {id} to Rejected");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+
+    [HttpPut("{id}/progress-percent")]
+    public async Task<IActionResult> UpdateProgressPercent(Guid id, [FromBody] UpdateProgressPercentRequest request)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            if (request == null)
+                return BadRequest(new { message = "Request body is required." });
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            var updated = await _service.UpdateProgressPercentAsync(id, request.ProgressPercent);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Progress percent updated successfully.", progressPercent = request.ProgressPercent });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating progress percent for action {id}");
             return StatusCode(500, "Internal server error.");
         }
     }

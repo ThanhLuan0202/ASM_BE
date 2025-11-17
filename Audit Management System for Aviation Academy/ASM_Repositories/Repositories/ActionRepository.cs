@@ -287,5 +287,28 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAction>>(list);
         }
+
+        public async Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            if (progressPercent > 100)
+                throw new ArgumentException("ProgressPercent cannot exceed 100.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            if (progressPercent < entity.ProgressPercent)
+                throw new InvalidOperationException("ProgressPercent cannot be decreased.");
+
+            entity.ProgressPercent = progressPercent;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -22,5 +22,6 @@ namespace ASM_Repositories.Interfaces
         Task UpdateActionStatusAsync(Guid actionId, string status);
         Task<Guid?> GetFindingIdByActionIdAsync(Guid actionId);
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
+        Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent);
     }
 }
