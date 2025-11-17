@@ -19,5 +19,6 @@ namespace ASM_Services.Interfaces
         Task<bool> UpdateStatusToApprovedAsync(Guid id);
         Task<bool> UpdateStatusToRejectedAsync(Guid id);
         Task<bool> UpdateStatusToClosedAsync(Guid id);
+        Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
     }
 }

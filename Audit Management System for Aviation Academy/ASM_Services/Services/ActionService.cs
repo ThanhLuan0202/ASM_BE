@@ -28,6 +28,7 @@ namespace ASM_Services.Services
         public Task<bool> UpdateStatusToApprovedAsync(Guid id) => _repo.UpdateStatusToApprovedAsync(id);
         public Task<bool> UpdateStatusToRejectedAsync(Guid id) => _repo.UpdateStatusToRejectedAsync(id);
         public Task<bool> UpdateStatusToClosedAsync(Guid id) => _repo.UpdateStatusToClosedAsync(id);
+        public Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId) => _repo.GetByAssignedToAsync(userId);
     }
 
 }

@@ -273,5 +273,19 @@ namespace ASM_Repositories.Repositories
                 .Select(a => (Guid?)a.FindingId)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException("UserId cannot be empty.");
+
+            var list = await _context.Actions
+                .AsNoTracking()
+                .Where(a => a.AssignedTo == userId && a.Status != "Inactive")
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAction>>(list);
+        }
     }
 }

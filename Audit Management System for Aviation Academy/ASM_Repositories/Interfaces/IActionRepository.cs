@@ -21,5 +21,6 @@ namespace ASM_Repositories.Interfaces
         Task<bool> UpdateStatusToClosedAsync(Guid id);
         Task UpdateActionStatusAsync(Guid actionId, string status);
         Task<Guid?> GetFindingIdByActionIdAsync(Guid actionId);
+        Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
     }
 }

@@ -49,6 +49,30 @@ public class ActionController : ControllerBase
         }
     }
 
+    [HttpGet("my-assigned")]
+    public async Task<IActionResult> GetMyAssignedActions()
+    {
+        try
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var result = await _service.GetByAssignedToAsync(userId);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving actions assigned to current user.");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAction dto)
     {
