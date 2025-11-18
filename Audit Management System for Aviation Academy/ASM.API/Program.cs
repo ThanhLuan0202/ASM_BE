@@ -3,6 +3,7 @@ using ASM_Repositories.DBContext;
 using ASM_Repositories.DependencyInjection;
 using ASM_Repositories.Mapping;
 using ASM_Services.DependencyInjection;
+using ASM_Services.Models.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ builder.Services.AddDbContext<AuditManagementSystemForAviationAcademyContext>(op
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddHttpClient();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddRepository().AddServices();
 
 builder.Services.AddControllers().AddJsonOptions(options =>

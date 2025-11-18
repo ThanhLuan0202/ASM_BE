@@ -21,5 +21,7 @@ public partial class ReportRequest
 
     public DateTime? CompletedAt { get; set; }
 
+    public string Note { get; set; }
+
     public virtual UserAccount RequestedByNavigation { get; set; }
 }

@@ -339,11 +339,11 @@ namespace ASM_Repositories.Repositories
             var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Approved");
             if (!approveStatusExists)
             {
-                throw new InvalidOperationException("Status 'Approve' does not exist in AuditStatus");
+                throw new InvalidOperationException("Status 'Approved' does not exist in AuditStatus");
             }
 
-            audit.Status = "Approve";
-
+            audit.Status = "Approved";
+            audit.IsPublished = true;
             var approval = new AuditApproval
             {
                 AuditApprovalId = Guid.NewGuid(),
@@ -359,6 +359,26 @@ namespace ASM_Repositories.Repositories
 
             await _DbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IReadOnlyList<LeadAuditorContact>> GetLeadAuditorsAsync(Guid auditId)
+        {
+            var contacts = await _DbContext.AuditTeams
+                .Include(at => at.User)
+                .Where(at => at.AuditId == auditId
+                    && at.Status == "Active"
+                    && at.User != null
+                    && at.User.IsActive
+                    && (at.IsLead || at.RoleInTeam == "LeadAuditor"))
+                .Select(at => new LeadAuditorContact
+                {
+                    UserId = at.UserId,
+                    FullName = at.User.FullName,
+                    Email = at.User.Email
+                })
+                .ToListAsync();
+
+            return contacts;
         }
 
         public Task SaveChangesAsync() => _DbContext.SaveChangesAsync();

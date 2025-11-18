@@ -342,6 +342,7 @@ namespace ASM.API.Controllers
             }
             catch (Exception ex)
             {
+
                 return StatusCode(500, new { message = "An error occurred while approving the plan", error = ex.Message });
             }
         }
