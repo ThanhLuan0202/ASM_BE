@@ -13,9 +13,9 @@ namespace ASM_Services.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly EmailSettings _mailSettings;
+        private readonly MailSettings _mailSettings;
 
-        public EmailService(IOptions<EmailSettings> mailSettings)
+        public EmailService(IOptions<MailSettings> mailSettings)
         {
             _mailSettings = mailSettings.Value;
         }
@@ -33,12 +33,19 @@ namespace ASM_Services.Services
             };
             email.Body = builder.ToMessageBody();
 
-            using var smtp = new MailKit.Net.Smtp.SmtpClient();
-            await smtp.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.Port, true);
+            using var smtp = new SmtpClient();
+
+            smtp.AuthenticationMechanisms.Remove("XOAUTH2");
+
+            await smtp.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.Port,
+                MailKit.Security.SecureSocketOptions.StartTls);
+
             await smtp.AuthenticateAsync(_mailSettings.From, _mailSettings.Password);
+
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
+
 
 
 
