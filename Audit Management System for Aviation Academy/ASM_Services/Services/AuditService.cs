@@ -13,10 +13,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ASM_Services.Services
 {
@@ -32,7 +33,8 @@ namespace ASM_Services.Services
         private readonly IMapper _mapper ;
         private readonly IEmailService _emailService;
         private readonly ILogger<AuditService> _logger;
-        
+        private readonly IAttachmentRepository _attachmentRepo;
+
         public AuditService(
             IAuditRepository repo,
             IFindingRepository findingRepo,
@@ -43,7 +45,8 @@ namespace ASM_Services.Services
             IAuditScopeDepartmentRepository auditScopeDepartmentRepo,
             IMapper mapper,
             IEmailService emailService,
-            ILogger<AuditService> logger)
+            ILogger<AuditService> logger,
+            IAttachmentRepository attachmentRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -55,7 +58,7 @@ namespace ASM_Services.Services
             _mapper = mapper;
             _emailService = emailService;
             _logger = logger;
-            
+            _attachmentRepo = attachmentRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -185,8 +188,16 @@ namespace ASM_Services.Services
                 })
                 .ToList();
 
+            var findingIds = findingsThisMonth.Select(f => f.FindingId).ToList();
+            var attachments = await _attachmentRepo.GetAttachmentsByFindingIdAsync(findingIds);
+
             // Mapping Findings
             var mappedFindings = _mapper.Map<List<ViewFindingDetail>>(findingsThisMonth);
+
+            foreach (var f in mappedFindings)
+            {
+                f.Attachments = attachments.Where(a => a.EntityId == f.FindingId).ToList();
+            }
 
             var findingsByMonth = new ViewFindingByMonth
             {

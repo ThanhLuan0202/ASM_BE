@@ -1,4 +1,5 @@
 ﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AttachmentDTO;
 using ASM_Repositories.Models.AuditChecklistItemDTO;
 using ASM_Repositories.Models.UsersDTO;
 using System;
@@ -26,6 +27,8 @@ namespace ASM_Repositories.Models.FindingDTO
         public int? RootCauseId { get; set; }
 
         public int? DeptId { get; set; }
+
+        public List<ViewAttachment> Attachments { get; set; }
 
         public ViewUser CreatedByUser { get; set; }
 

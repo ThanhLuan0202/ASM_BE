@@ -174,6 +174,15 @@ namespace ASM_Repositories.Repositories
             _context.Attachments.Update(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ViewAttachment>> GetAttachmentsByFindingIdAsync(List<Guid> findingIds)
+        {
+            var attachments = await _context.Attachments
+                .Where(a => findingIds.Contains(a.EntityId))
+                .ToListAsync();
+
+            return _mapper.Map<List<ViewAttachment>>(attachments);
+        }
     }
 }
 
