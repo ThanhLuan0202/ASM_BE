@@ -1,9 +1,10 @@
+﻿using ASM_Repositories.Entities;
 using ASM_Services.Interfaces;
 using ASM_Services.Models.Email;
 using MailKit.Net.Smtp;
-using MimeKit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,136 +13,75 @@ namespace ASM_Services.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly EmailSettings _settings;
-        private readonly ILogger<EmailService> _logger;
+        private readonly EmailSettings _mailSettings;
 
-        public EmailService(IOptions<EmailSettings> options, ILogger<EmailService> logger)
+        public EmailService(IOptions<EmailSettings> mailSettings)
         {
-            _settings = options?.Value ?? throw new ArgumentNullException(nameof(options));
-            _logger = logger;
+            _mailSettings = mailSettings.Value;
         }
 
-        public async Task SendEmailAsync(EmailRequest request)
+        public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-            if (request.To == null || !request.To.Any())
-                throw new ArgumentException("At least one recipient is required.", nameof(request.To));
+            var email = new MimeMessage();
+            email.Sender = MailboxAddress.Parse(_mailSettings.From);
+            email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = subject;
 
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(
-                string.IsNullOrWhiteSpace(_settings.FromDisplayName) ? _settings.FromEmail : _settings.FromDisplayName,
-                _settings.FromEmail ?? _settings.UserName));
-
-            foreach (var to in request.To.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase))
-                message.To.Add(MailboxAddress.Parse(to.Trim()));
-
-            if (request.Cc != null)
-                foreach (var cc in request.Cc.Where(x => !string.IsNullOrWhiteSpace(x)))
-                    message.Cc.Add(MailboxAddress.Parse(cc.Trim()));
-
-            if (request.Bcc != null)
-                foreach (var bcc in request.Bcc.Where(x => !string.IsNullOrWhiteSpace(x)))
-                    message.Bcc.Add(MailboxAddress.Parse(bcc.Trim()));
-
-            message.Subject = request.Subject ?? string.Empty;
-            message.Body = new TextPart(string.IsNullOrWhiteSpace(request.HtmlBody) ? "plain" : "html")
+            var builder = new BodyBuilder
             {
-                Text = string.IsNullOrWhiteSpace(request.HtmlBody) ? request.PlainTextBody : request.HtmlBody
+                HtmlBody = body
             };
+            email.Body = builder.ToMessageBody();
 
-            try
-            {
-                using var smtp = new SmtpClient();
+            using var smtp = new MailKit.Net.Smtp.SmtpClient();
+            await smtp.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.Port, true);
+            await smtp.AuthenticateAsync(_mailSettings.From, _mailSettings.Password);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
 
-                // Set timeout (milliseconds)
-                try
-                {
-                    smtp.Timeout = _settings.TimeoutSeconds * 1000;
-                }
-                catch
-                {
-                    // Ignore if Timeout cannot be set for some reason
-                }
 
-                // Choose socket option based on port / settings
-                var socketOption = MailKit.Security.SecureSocketOptions.Auto;
-                if (_settings.Port == 465)
-                {
-                    socketOption = MailKit.Security.SecureSocketOptions.SslOnConnect;
-                }
-                else if (_settings.EnableSsl)
-                {
-                    socketOption = MailKit.Security.SecureSocketOptions.StartTls;
-                }
 
-                _logger.LogDebug("Connecting SMTP {Host}:{Port} using {Option}", _settings.Host, _settings.Port, socketOption);
+        public async Task SendForLeadAuditor(string toEmail, string auditTitle, string leadFullName, DateTime? fieldworkStart)
+        {
+            string subject = $"[Audit Review] Kế hoạch kiểm định cần Lead Auditor xem xét – {auditTitle}";
 
-                // Try connect with retries and fallback options
-                var connected = false;
-                var lastException = (Exception?)null;
+            string body = $@"
+<p>Xin chào <strong>{leadFullName}</strong>,</p>
 
-                async Task<bool> TryConnectAsync(int port, MailKit.Security.SecureSocketOptions option)
-                {
-                    try
-                    {
-                        _logger.LogDebug("Attempting SMTP connect {Host}:{Port} option={Option}", _settings.Host, port, option);
-                        await smtp.ConnectAsync(_settings.Host, port, option);
-                        connected = true;
-                        _logger.LogDebug("SMTP connected {Host}:{Port}", _settings.Host, port);
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        lastException = ex;
-                        _logger.LogWarning(ex, "SMTP connect failed for {Host}:{Port} using {Option}", _settings.Host, port, option);
-                        return false;
-                    }
-                }
+<p>Bạn được chỉ định là <strong>Lead Auditor</strong> cho cuộc kiểm định:</p>
 
-                // Primary attempt
-                if (!await TryConnectAsync(_settings.Port, socketOption))
-                {
-                    // Build fallback list
-                    var fallbacks = new List<(int Port, MailKit.Security.SecureSocketOptions Option)>();
-                    if (_settings.Port == 465)
-                    {
-                        fallbacks.Add((587, MailKit.Security.SecureSocketOptions.StartTls));
-                    }
-                    else if (_settings.Port == 587)
-                    {
-                        fallbacks.Add((465, MailKit.Security.SecureSocketOptions.SslOnConnect));
-                    }
-                    // Always try Auto as last resort
-                    fallbacks.Add((_settings.Port, MailKit.Security.SecureSocketOptions.Auto));
+<p style='margin-left:20px'>
+    <strong>Tên Audit:</strong> {auditTitle}<br/>
+    <strong>Ngày bắt đầu Fieldwork:</strong> {fieldworkStart:dd/MM/yyyy}<br/>
+</p>
 
-                    foreach (var fb in fallbacks)
-                    {
-                        // small delay between attempts
-                        await Task.Delay(500);
-                        if (await TryConnectAsync(fb.Port, fb.Option))
-                        {
-                            break;
-                        }
-                    }
-                }
+<p>Auditor đã hoàn tất bản <strong>Audit Plan</strong> và gửi lên để bạn xem xét.</p>
 
-                if (!connected)
-                {
-                    // If still not connected, throw last exception to be handled by caller
-                    throw lastException ?? new Exception("Unable to connect to SMTP server");
-                }
+<p>Vui lòng truy cập hệ thống và thực hiện các bước:</p>
 
-                if (!string.IsNullOrWhiteSpace(_settings.UserName))
-                    await smtp.AuthenticateAsync(_settings.UserName, _settings.Password);
+<ol>
+    <li>Kiểm tra phạm vi (Scope), tiêu chí (Criteria) và Objectives.</li>
+    <li>Kiểm tra danh sách Checklist và tính phù hợp.</li>
+    <li>Kiểm tra Schedule (Kickoff, Evidence Due, Fieldwork Start...).</li>
+    <li>Phê duyệt hoặc yêu cầu chỉnh sửa Audit Plan.</li>
+</ol>
 
-                await smtp.SendAsync(message);
-                await smtp.DisconnectAsync(true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send email with subject {Subject}", request.Subject);
-                throw;
-            }
+
+
+<p>Xin cảm ơn vì sự hợp tác và hỗ trợ của bạn.</p>
+
+<br/>
+<p><em>Hệ thống Audit Management System</em></p>
+";
+
+
+            await SendEmailAsync(toEmail, subject, body);
+
         }
     }
 }
+//< p >
+//Bạn có thể truy cập trực tiếp bằng đường link sau:< br />
+//< a href = '{reviewUrl}' style = 'color:#0b70ff;' > Mở Audit Plan</a>
+//</p>

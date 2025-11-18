@@ -30,7 +30,7 @@ namespace ASM_Services.Services
         private readonly IAuditDocumentRepository _auditDocumentRepo;
         private readonly IReportRequestRepository _reportRequestRepo;
         private readonly IAuditScopeDepartmentRepository _auditScopeDepartmentRepo;
-        private readonly IMapper _mapper ;
+        private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
         private readonly ILogger<AuditService> _logger;
         private readonly IAttachmentRepository _attachmentRepo;
@@ -280,28 +280,12 @@ namespace ASM_Services.Services
                     return;
                 }
 
-                var contacts = await _repo.GetLeadAuditorsAsync(auditId);
-                var recipients = contacts?
-                    .Where(c => !string.IsNullOrWhiteSpace(c.Email))
-                    .Select(c => c.Email.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList();
+                var contacts = await _repo.GetLeadAuditorAsync(auditId);
 
-                if (recipients == null || recipients.Count == 0)
-                {
-                    _logger.LogWarning("Audit {AuditId} has no active lead auditors to notify.", auditId);
-                    return;
-                }
 
-                var request = new EmailRequest
-                {
-                    Subject = $"[Action Required] {audit.Title} is ready for Lead Auditor review",
-                    HtmlBody = BuildLeadAuditorEmailBody(audit),
-                    PlainTextBody = BuildLeadAuditorPlainText(audit),
-                    To = recipients
-                };
 
-                await _emailService.SendEmailAsync(request);
+
+                await _emailService.SendForLeadAuditor(contacts.Email, audit.Title, contacts.FullName, audit.StartDate);
             }
             catch (Exception ex)
             {
@@ -362,6 +346,6 @@ namespace ASM_Services.Services
             var rr = await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
         }
 
-        
+
     }
 }

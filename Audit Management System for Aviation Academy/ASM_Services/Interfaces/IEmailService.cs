@@ -5,7 +5,8 @@ namespace ASM_Services.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(EmailRequest request);
+        Task SendEmailAsync(string toEmail, string subject, string body);
+        Task SendForLeadAuditor(string toEmail, string auditTitle, string leadFullName, DateTime? fieldworkStart);
     }
 }
 

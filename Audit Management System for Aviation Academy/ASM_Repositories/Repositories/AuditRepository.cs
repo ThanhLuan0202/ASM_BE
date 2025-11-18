@@ -85,7 +85,7 @@ namespace ASM_Repositories.Repositories
             audit.AuditId = Guid.NewGuid();
             audit.CreatedAt = DateTime.UtcNow;
             audit.Status = status;
-            audit.CreatedBy = createdByUserId; 
+            audit.CreatedBy = createdByUserId;
 
             _DbContext.Audits.Add(audit);
             await _DbContext.SaveChangesAsync();
@@ -144,7 +144,7 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> DeleteAuditAsync(Guid id)
         {
-            var existing = await _DbContext.Audits.FindAsync(id);
+            var existing = await _DbContext.Audits.AsTracking().FirstOrDefaultAsync(x => x.AuditId == id);
             if (existing == null)
             {
                 return false;
@@ -361,25 +361,26 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
-        public async Task<IReadOnlyList<LeadAuditorContact>> GetLeadAuditorsAsync(Guid auditId)
+        public async Task<UserAccount?> GetLeadAuditorAsync(Guid auditId)
         {
-            var contacts = await _DbContext.AuditTeams
+            var lead = await _DbContext.AuditTeams
                 .Include(at => at.User)
                 .Where(at => at.AuditId == auditId
                     && at.Status == "Active"
                     && at.User != null
                     && at.User.IsActive
                     && (at.IsLead || at.RoleInTeam == "LeadAuditor"))
-                .Select(at => new LeadAuditorContact
+                .Select(at => new UserAccount
                 {
                     UserId = at.UserId,
                     FullName = at.User.FullName,
                     Email = at.User.Email
                 })
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
-            return contacts;
+            return lead;
         }
+
 
         public Task SaveChangesAsync() => _DbContext.SaveChangesAsync();
 
@@ -390,7 +391,7 @@ namespace ASM_Repositories.Repositories
 
             if (audit != null)
             {
-                _DbContext.Audits.Attach(audit); 
+                _DbContext.Audits.Attach(audit);
                 audit.Status = status;
 
                 await _DbContext.SaveChangesAsync();

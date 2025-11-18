@@ -2,14 +2,10 @@ namespace ASM_Services.Models.Email
 {
     public class EmailSettings
     {
-        public string Host { get; set; }
-        public int Port { get; set; } = 587;
-        public bool EnableSsl { get; set; } = true;
-        public string UserName { get; set; }
+        public string From { get; set; }
         public string Password { get; set; }
-        public string FromEmail { get; set; }
-        public string FromDisplayName { get; set; } = "Audit Management System";
-        public int TimeoutSeconds { get; set; } = 30;
+        public string SmtpServer { get; set; }
+        public int Port { get; set; }
     }
 }
 
