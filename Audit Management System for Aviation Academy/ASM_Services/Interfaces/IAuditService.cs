@@ -22,6 +22,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId);
         Task SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
         Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc);
+        Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note);
 
     }
 }

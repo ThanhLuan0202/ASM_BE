@@ -346,6 +346,11 @@ namespace ASM_Services.Services
             var rr = await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
         }
 
-
+        public async Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note)
+        {
+            var audit = await _repo.UpdateStatusByAuditIdAsync(auditId, statusAudit);
+            var doc = await _auditDocumentRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
+            var rr = await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, statusDoc, note);
+        }
     }
 }

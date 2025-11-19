@@ -95,6 +95,24 @@ namespace ASM_Repositories.Repositories
             return rr;
         }
 
+        public async Task<ReportRequest?> UpdateStatusAndNoteByAuditIdAsync(Guid auditId, string status, string note)
+        {
+            var rr = await _context.ReportRequests
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Parameters.Contains($"\"auditId\":\"{auditId}\""));
+
+            if (rr != null)
+            {
+                _context.ReportRequests.Attach(rr);
+                rr.Status = status;
+                rr.Note = note;
+                rr.CompletedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+            }
+
+            return rr;
+        }
 
     }
 

@@ -1,4 +1,5 @@
-﻿using ASM_Services.Interfaces.SQAStaffInterfaces;
+﻿using ASM_Repositories.Models.ReportRequestDTO;
+using ASM_Services.Interfaces.SQAStaffInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,12 +30,12 @@ namespace ASM.API.Controllers
             }
         }
 
-        [HttpPost("{auditId:guid}/reject")]
-        public async Task<IActionResult> Reject(Guid auditId)
+        [HttpPut("{auditId:guid}/reject")]
+        public async Task<IActionResult> Reject(Guid auditId, [FromBody] CreateReasonRejectReportRequest request)
         {
             try
             {
-                await _auditService.UpdateReportStatusAsync(auditId, "Returned", "Rejected");
+                await _auditService.UpdateReportStatusAndNoteAsync(auditId, "Returned", "Rejected", request.Reason);
                 return Ok(new { message = $"Audit {auditId} rejected successfully." });
             }
             catch (Exception ex)
