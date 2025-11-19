@@ -114,6 +114,14 @@ namespace ASM_Repositories.Repositories
             return rr;
         }
 
+        public async Task<string?> GetNoteByAuditIdAsync(Guid auditId)
+        {
+            var rr = await _context.ReportRequests
+                .FirstOrDefaultAsync(r => r.Parameters.Contains($"\"auditId\":\"{auditId}\""));
+
+            return rr?.Note;
+        }
+
     }
 
 }

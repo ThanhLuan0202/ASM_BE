@@ -23,5 +23,6 @@ namespace ASM_Services.Services
         public Task<ViewReportRequest> CreateAsync(CreateReportRequest dto) => _repo.CreateAsync(dto);
         public Task<ViewReportRequest?> UpdateAsync(Guid id, UpdateReportRequest dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> SoftDeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
+        public Task<string?> GetNoteByAuditIdAsync(Guid auditId) => _repo.GetNoteByAuditIdAsync(auditId);
     }
 }

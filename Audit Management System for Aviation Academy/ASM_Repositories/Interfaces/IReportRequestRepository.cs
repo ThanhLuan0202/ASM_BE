@@ -18,5 +18,6 @@ namespace ASM_Repositories.Interfaces
         Task AddReportRequestAsync(ReportRequest rr);
         Task<ReportRequest?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
         Task<ReportRequest?> UpdateStatusAndNoteByAuditIdAsync(Guid auditId, string status, string note);
+        Task<string?> GetNoteByAuditIdAsync(Guid auditId);
     }
 }

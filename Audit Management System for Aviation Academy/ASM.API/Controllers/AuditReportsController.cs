@@ -1,4 +1,5 @@
 ﻿using ASM_Repositories.Models.ReportRequestDTO;
+using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,11 @@ namespace ASM.API.Controllers
     public class AuditReportsController : ControllerBase
     {
         private readonly IAuditService _auditService;
-        public AuditReportsController(IAuditService auditService)
+        private readonly IReportRequestService _reportRequestService;
+        public AuditReportsController(IAuditService auditService, IReportRequestService reportRequestService)
         {
             _auditService = auditService;
+            _reportRequestService = reportRequestService;
         }
 
         [HttpPost("{auditId:guid}/approve")]
@@ -42,6 +45,18 @@ namespace ASM.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        [HttpGet("Note/{auditId:guid}")]
+        public async Task<IActionResult> GetNoteByAuditId(Guid auditId)
+        {
+            // Gọi hàm service/repo
+            var note = await _reportRequestService.GetNoteByAuditIdAsync(auditId);
+
+            if (note == null)
+                return NotFound(new { Message = "ReportRequest not found for this auditId." });
+
+            return Ok(new { Reason = note });
         }
     }
 }
