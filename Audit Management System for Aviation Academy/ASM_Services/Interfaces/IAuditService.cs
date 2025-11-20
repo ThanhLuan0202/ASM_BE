@@ -23,6 +23,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
         Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc);
         Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note);
-
+        Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request);
     }
 }

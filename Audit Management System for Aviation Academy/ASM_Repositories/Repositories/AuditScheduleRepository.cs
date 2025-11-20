@@ -162,6 +162,27 @@ namespace ASM_Repositories.Repositories
             return await _context.AuditSchedules
                 .AnyAsync(x => x.ScheduleId == scheduleId && x.Status != "Inactive");
         }
+
+        public async Task UpdateSchedulesAsync(Guid auditId, List<UpdateAuditSchedule>? list)
+        {
+            if (list == null || !list.Any())
+                return; // Không có gì để update, bỏ qua
+
+            // Xóa schedule cũ
+            var existing = _context.AuditSchedules
+                .Where(x => x.AuditId == auditId);
+            _context.AuditSchedules.RemoveRange(existing);
+
+            // Thêm schedule mới
+            foreach (var item in list)
+            {
+                var entity = _mapper.Map<AuditSchedule>(item);
+                entity.AuditId = auditId;
+                await _context.AuditSchedules.AddAsync(entity);
+            }
+        }
+
+
     }
 }
 

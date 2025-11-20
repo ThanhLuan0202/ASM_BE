@@ -400,6 +400,34 @@ namespace ASM_Repositories.Repositories
 
             return audit;
         }
+
+        public async Task UpdateAuditPlanAsync(Audit audit, UpdateAudit? updateAudit)
+        {
+            if (updateAudit == null)
+                return; // Không có gì để update
+
+            // Map chỉ các property có giá trị
+            _mapper.Map(updateAudit, audit);
+
+            // Chỉ update audit, EF tự theo dõi entity
+            _context.Audits.Update(audit);
+        }
+
+
+        public async Task<Audit?> GetAuditPlanAsync(Guid auditId)
+        {
+            return await _context.Audits
+                .Include(a => a.CreatedByNavigation)
+                .Include(a => a.AuditScopeDepartments)
+                    .ThenInclude(x => x.Dept)
+                .Include(a => a.AuditCriteriaMaps)
+                    .ThenInclude(x => x.Criteria)
+                .Include(a => a.AuditTeams)
+                    .ThenInclude(x => x.User)
+                .Include(a => a.AuditSchedules)
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+        }
+
     }
 }
 

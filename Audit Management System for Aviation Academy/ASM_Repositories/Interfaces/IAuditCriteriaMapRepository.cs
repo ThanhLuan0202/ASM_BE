@@ -12,5 +12,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditCriteriaMap> CreateAsync(CreateAuditCriteriaMap dto);
         Task<bool> DeleteAsync(Guid auditId, Guid criteriaId);
         Task<bool> ExistsAsync(Guid auditId, Guid criteriaId);
+        Task UpdateCriteriaMapAsync(Guid auditId, List<UpdateAuditCriteriaMap>? list);
     }
 }

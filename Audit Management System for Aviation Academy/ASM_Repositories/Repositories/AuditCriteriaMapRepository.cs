@@ -70,5 +70,25 @@ namespace ASM_Repositories.Repositories
         {
             return await _DbContext.AuditCriteriaMaps.AnyAsync(x => x.AuditId == auditId && x.CriteriaId == criteriaId);
         }
+
+        public async Task UpdateCriteriaMapAsync(Guid auditId, List<UpdateAuditCriteriaMap>? list)
+        {
+            if (list == null || !list.Any())
+                return; // Không có gì để update, bỏ qua
+
+            // Xóa criteria cũ
+            var existing = _context.AuditCriteriaMaps
+                .Where(x => x.AuditId == auditId);
+            _context.AuditCriteriaMaps.RemoveRange(existing);
+
+            // Thêm criteria mới
+            foreach (var item in list)
+            {
+                var entity = _mapper.Map<AuditCriteriaMap>(item);
+                entity.AuditId = auditId;
+                await _context.AuditCriteriaMaps.AddAsync(entity);
+            }
+        }
+
     }
 }

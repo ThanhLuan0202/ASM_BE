@@ -24,5 +24,7 @@ namespace ASM_Repositories.Interfaces
         Task<UserAccount?> GetLeadAuditorAsync(Guid auditId);
         Task SaveChangesAsync();
         Task<Audit?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
+        Task UpdateAuditPlanAsync(Audit audit, UpdateAudit? updateAudit);
+        Task<Audit?> GetAuditPlanAsync(Guid auditId);
     }
 }

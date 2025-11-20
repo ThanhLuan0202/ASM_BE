@@ -101,6 +101,26 @@ namespace ASM_Repositories.Repositories
         public async Task<List<AuditScopeDepartment>> GetAuditScopeDepartmentsAsync(Guid auditId)
         => await _context.AuditScopeDepartments.Include(f => f.Dept)
             .Where(f => f.AuditId == auditId).ToListAsync();
+
+        public async Task UpdateScopeDepartmentsAsync(Guid auditId, List<UpdateAuditScopeDepartment>? list)
+        {
+            if (list == null || !list.Any())
+                return; // Không có gì để update, bỏ qua
+
+            // Xóa scope cũ
+            var existing = _context.AuditScopeDepartments
+                .Where(x => x.AuditId == auditId);
+            _context.AuditScopeDepartments.RemoveRange(existing);
+
+            // Thêm scope mới
+            foreach (var item in list)
+            {
+                var entity = _mapper.Map<AuditScopeDepartment>(item);
+                entity.AuditId = auditId;
+                await _context.AuditScopeDepartments.AddAsync(entity);
+            }
+        }
+
     }
 
 }

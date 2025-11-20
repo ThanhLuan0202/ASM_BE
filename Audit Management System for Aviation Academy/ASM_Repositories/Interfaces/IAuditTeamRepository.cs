@@ -14,5 +14,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditTeam> AddAsync(CreateAuditTeam dto);
         Task<ViewAuditTeam?> UpdateAsync(Guid id, UpdateAuditTeam dto);
         Task<bool> SoftDeleteAsync(Guid id);
+        Task UpdateAuditTeamsAsync(Guid auditId, List<UpdateAuditTeam>? list);
     }
 }

@@ -34,6 +34,9 @@ namespace ASM_Services.Services
         private readonly IEmailService _emailService;
         private readonly ILogger<AuditService> _logger;
         private readonly IAttachmentRepository _attachmentRepo;
+        private readonly IAuditCriteriaMapRepository _auditCriteriaMapRepo;
+        private readonly IAuditTeamRepository _auditTeamRepo;
+        private readonly IAuditScheduleRepository _auditScheduleRepo;
 
         public AuditService(
             IAuditRepository repo,
@@ -46,7 +49,10 @@ namespace ASM_Services.Services
             IMapper mapper,
             IEmailService emailService,
             ILogger<AuditService> logger,
-            IAttachmentRepository attachmentRepo)
+            IAttachmentRepository attachmentRepo,
+            IAuditCriteriaMapRepository auditCriteriaMapRepo,
+            IAuditTeamRepository auditTeamRepo,
+            IAuditScheduleRepository auditScheduleRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -59,6 +65,9 @@ namespace ASM_Services.Services
             _emailService = emailService;
             _logger = logger;
             _attachmentRepo = attachmentRepo;
+            _auditCriteriaMapRepo = auditCriteriaMapRepo;
+            _auditTeamRepo = auditTeamRepo;
+            _auditScheduleRepo = auditScheduleRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -352,5 +361,28 @@ namespace ASM_Services.Services
             var doc = await _auditDocumentRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
             var rr = await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, statusDoc, note);
         }
+
+        public async Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request)
+        {
+            var auditPlan = await _repo.GetAuditPlanAsync(auditId);
+
+            if (auditPlan == null)
+                return false;
+
+            await _repo.UpdateAuditPlanAsync(auditPlan, request.Audit);
+
+            await _auditScopeDepartmentRepo.UpdateScopeDepartmentsAsync(auditId, request.ScopeDepartments);
+
+            await _auditCriteriaMapRepo.UpdateCriteriaMapAsync(auditId, request.Criteria);
+
+            await _auditTeamRepo.UpdateAuditTeamsAsync(auditId, request.AuditTeams);
+
+            await _auditScheduleRepo.UpdateSchedulesAsync(auditId, request.Schedules);
+
+            await _repo.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

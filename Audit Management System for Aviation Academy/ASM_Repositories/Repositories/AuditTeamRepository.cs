@@ -109,6 +109,27 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task UpdateAuditTeamsAsync(Guid auditId, List<UpdateAuditTeam>? list)
+        {
+            if (list == null || !list.Any())
+                return; // Không có gì để update, bỏ qua
+
+            // Xóa team cũ
+            var existing = _context.AuditTeams
+                .Where(x => x.AuditId == auditId);
+            _context.AuditTeams.RemoveRange(existing);
+
+            // Thêm team mới
+            foreach (var item in list)
+            {
+                var entity = _mapper.Map<AuditTeam>(item);
+                entity.AuditId = auditId;
+                await _context.AuditTeams.AddAsync(entity);
+            }
+        }
+
+
     }
 
 }
