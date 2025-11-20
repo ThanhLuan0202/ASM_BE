@@ -69,6 +69,10 @@ namespace ASM_Repositories.Repositories
             return entity == null ? null : _mapper.Map<ViewAuditDocument>(entity);
         }
 
-        
+        public async Task AddAsync(AuditDocument doc)
+        {
+            _context.AuditDocuments.Add(doc);
+            await _context.SaveChangesAsync();
+        }
     }
 }

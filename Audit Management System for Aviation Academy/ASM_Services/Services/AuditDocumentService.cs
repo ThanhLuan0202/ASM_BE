@@ -4,6 +4,7 @@ using ASM_Repositories.Models.AuditDocumentDTO;
 using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
 using Microsoft.AspNetCore.Http;
+using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace ASM_Services.Services
     {
         private readonly IAuditDocumentRepository _repo;
         private readonly IFirebaseUploadService _firebaseUploadService;
-        public AuditDocumentService(IAuditDocumentRepository repo, IFirebaseUploadService firebaseUploadService)
+        private readonly IAuditRepository _auditRepo;
+        public AuditDocumentService(IAuditDocumentRepository repo, IFirebaseUploadService firebaseUploadService, IAuditRepository auditRepo)
         {
             _repo = repo;
             _firebaseUploadService = firebaseUploadService;
+            _auditRepo = auditRepo;
         }
         public async Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId)
         {
@@ -46,5 +49,37 @@ namespace ASM_Services.Services
 
             return updatedDoc;
         }
+
+        public async Task<List<AuditDocument>> UploadMultipleAsync(Guid auditId, List<IFormFile> files, Guid uploadedBy)
+        {
+            var audit = await _auditRepo.GetAuditByIdAsync(auditId);
+            var uploadedDocs = new List<AuditDocument>();
+
+            foreach (var file in files)
+            {
+                var blobPath = await _firebaseUploadService.UploadFileAsync(file, "AuditDocuments");
+
+                var doc = new AuditDocument
+                {
+                    DocId = Guid.NewGuid(),
+                    AuditId = auditId,
+                    DocumentType = "Submitted Report",
+                    Title = $"{audit?.Title} - Submitted Report",
+                    BlobPath = blobPath,
+                    ContentType = file.ContentType,
+                    SizeBytes = file.Length,
+                    UploadedBy = uploadedBy,
+                    UploadedAt = DateTime.UtcNow,
+                    IsFinalVersion = true,
+                    Status = "Completed",
+                };
+
+                await _repo.AddAsync(doc);
+                uploadedDocs.Add(doc);
+            }
+
+            return uploadedDocs;
+        }
+
     }
 }

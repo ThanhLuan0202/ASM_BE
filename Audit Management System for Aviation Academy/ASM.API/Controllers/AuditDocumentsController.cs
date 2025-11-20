@@ -77,5 +77,27 @@ namespace ASM.API.Controllers
                 });
             }
         }
+
+        [HttpPost("upload-multiple/{auditId:guid}")]
+        public async Task<IActionResult> UploadMultipleAuditDocuments(Guid auditId, List<IFormFile> files)
+        {
+            if (files == null || !files.Any())
+                return BadRequest("No files uploaded");
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("User not authenticated");
+
+            try
+            {
+                var result = await _auditDocumentService.UploadMultipleAsync(auditId, files, Guid.Parse(userIdClaim));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }

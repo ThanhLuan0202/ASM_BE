@@ -13,5 +13,6 @@ namespace ASM_Services.Interfaces
     {
         Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId);
         Task<AuditDocument?> UploadAndUpdateAuditDocumentAsync(Guid auditId, IFormFile file, Guid uploadedBy);
+        Task<List<AuditDocument>> UploadMultipleAsync(Guid auditId, List<IFormFile> files, Guid uploadedBy);
     }
 }

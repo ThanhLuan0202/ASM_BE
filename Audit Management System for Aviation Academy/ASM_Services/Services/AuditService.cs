@@ -239,7 +239,7 @@ namespace ASM_Services.Services
             if (audit == null) throw new Exception("Audit not found");
 
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Submitted");
-
+            /*
             var doc = new AuditDocument
             {
                 DocId = Guid.NewGuid(),
@@ -253,7 +253,7 @@ namespace ASM_Services.Services
                 SizeBytes = string.Empty.Length
             };
             await _auditDocumentRepo.AddAuditDocumentAsync(doc);
-
+            */
             var rr = new ReportRequest
             {
                 ReportRequestId = Guid.NewGuid(),
