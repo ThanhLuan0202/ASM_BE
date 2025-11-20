@@ -1,5 +1,7 @@
 ﻿using ASM.API.Hubs;
+using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.AttachmentDTO;
+using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using Microsoft.AspNetCore.Http;
@@ -11,33 +13,20 @@ namespace ASM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AttachmentReviewController : ControllerBase
+    public class ActionReviewController : ControllerBase
     {
         private readonly IAttachmentService _attachmentService;
+        private readonly IActionService _actionService;
         private readonly IHubContext<NotificationHub> _hubContext;
-        public AttachmentReviewController(IAttachmentService attachmentService, IHubContext<NotificationHub> hubContext)
+        public ActionReviewController(IAttachmentService attachmentService, IHubContext<NotificationHub> hubContext, IActionService actionService)
         {
             _attachmentService = attachmentService;
             _hubContext = hubContext;
+            _actionService = actionService;
         }
 
-        [HttpPut("{attachmentId:guid}/approve")]
-        public async Task<IActionResult> Approve(Guid attachmentId)
-        {
-            try
-            {
-                await _attachmentService.UpdateAttachmentStatusAsync(attachmentId, "Approved");
-                return Ok(new { message = $"Attachment {attachmentId} approved successfully." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-        }
-
-
-        [HttpPost("{attachmentId:guid}/returned")]
-        public async Task<IActionResult> Reject(Guid attachmentId, [FromBody] CreateReasonRejectAttachment request)
+        [HttpPost("{actionId:guid}/approve")]
+        public async Task<IActionResult> Approve(Guid actionId, [FromBody] CreateReviewFeedback request)
         {
             try
             {
@@ -47,11 +36,40 @@ namespace ASM.API.Controllers
 
                 Guid userId = Guid.Parse(userIdClaim);
 
-                var notif = await _attachmentService.AttachmentRejectedAsync(
-                    attachmentId,
-                    userId,
-                    request.Reason
-                );
+                var notif = await _actionService.ActionApprovedAsync(actionId, userId, request.Feedback);
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+                {
+                    notif.NotificationId,
+                    notif.Title,
+                    notif.Message,
+                    notif.CreatedAt,
+                    notif.EntityId
+                });
+                return Ok(new
+                {
+                    Message = $"Action {actionId} approve + notification sent",
+                    NotificationId = notif.NotificationId
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+
+        [HttpPost("{actionId:guid}/returned")]
+        public async Task<IActionResult> Reject(Guid actionId, [FromBody] CreateReviewFeedback request)
+        {
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("User not authenticated");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var notif = await _actionService.ActionRejectedAsync(actionId ,userId, request.Feedback);
 
                 await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
                 {
@@ -64,7 +82,7 @@ namespace ASM.API.Controllers
 
                 return Ok(new
                 {
-                    Message = $"Attachment {attachmentId} returned + notification sent",
+                    Message = $"Action {actionId} returned + notification sent",
                     NotificationId = notif.NotificationId
                 });
             }
@@ -76,12 +94,12 @@ namespace ASM.API.Controllers
 
 
 
-        [HttpPut("{attachmentId:guid}/approve/higher-level")]
-        public async Task<IActionResult> ApproveByHigherLevel(Guid attachmentId)
+        [HttpPut("{actionId:guid}/approve/higher-level")]
+        public async Task<IActionResult> ApproveByHigherLevel(Guid actionId, [FromBody] CreateReviewFeedback request)
         {
             try
             {
-                await _attachmentService.ApproveByHigherLevel(attachmentId);
+                await _actionService.ApproveByHigherLevel(actionId, request.Feedback);
                 return Ok(new { message = "Attachment, Action, and Finding approved successfully." });
             }
             catch (InvalidOperationException ex)
@@ -94,12 +112,12 @@ namespace ASM.API.Controllers
             }
         }
 
-        [HttpPut("{attachmentId:guid}/reject/higher-level")]
-        public async Task<IActionResult> RejectByHigherLevel(Guid attachmentId)
+        [HttpPut("{actionId:guid}/reject/higher-level")]
+        public async Task<IActionResult> RejectByHigherLevel(Guid actionId, [FromBody] CreateReviewFeedback request)
         {
             try
             {
-                await _attachmentService.RejectByHigherLevel(attachmentId);
+                await _actionService.RejectByHigherLevel(actionId, request.Feedback);
                 return Ok(new { message = "Attachment, Action, and Finding rejected successfully." });
             }
             catch (InvalidOperationException ex)

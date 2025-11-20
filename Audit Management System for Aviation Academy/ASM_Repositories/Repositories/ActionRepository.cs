@@ -253,6 +253,102 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
+        public async Task<bool> UpdateStatusToReturnedAsync(Guid id, string reviewFeedback)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Returned");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Returned' does not exist in ActionStatus.");
+
+            entity.Status = "Returned";
+            entity.ReviewFeedback = reviewFeedback;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToApprovedAsync(Guid id, string reviewFeedback)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Approved");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Approved' does not exist in ActionStatus.");
+
+            entity.Status = "Approved";
+            entity.ReviewFeedback = reviewFeedback;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToCompletedAsync(Guid id, string reviewFeedback)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Completed");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Approved' does not exist in ActionStatus.");
+
+            entity.Status = "Completed";
+            entity.ReviewFeedback = reviewFeedback;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "Rejected");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Rejected' does not exist in ActionStatus.");
+
+            entity.Status = "Rejected";
+            entity.ReviewFeedback = reviewFeedback;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task UpdateActionStatusAsync(Guid actionId, string status)
         {
             var entity = await _context.Actions

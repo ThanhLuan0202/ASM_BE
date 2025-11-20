@@ -19,6 +19,10 @@ namespace ASM_Repositories.Interfaces
         Task<bool> UpdateStatusToApprovedAsync(Guid id);
         Task<bool> UpdateStatusToRejectedAsync(Guid id);
         Task<bool> UpdateStatusToClosedAsync(Guid id);
+        Task<bool> UpdateStatusToReturnedAsync(Guid id, string reviewFeedback);
+        Task<bool> UpdateStatusToApprovedAsync(Guid id, string reviewFeedback);
+        Task<bool> UpdateStatusToCompletedAsync(Guid id, string reviewFeedback);
+        Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback);
         Task UpdateActionStatusAsync(Guid actionId, string status);
         Task<Guid?> GetFindingIdByActionIdAsync(Guid actionId);
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);

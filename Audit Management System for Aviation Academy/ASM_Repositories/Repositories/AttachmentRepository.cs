@@ -183,6 +183,37 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<List<ViewAttachment>>(attachments);
         }
+
+        public async Task<List<Guid>> GetAttachmentIdsByActionIdAsync(Guid actionId)
+        {
+            return await _context.Attachments
+                .Where(a => a.EntityId == actionId)
+                .Select(a => a.AttachmentId)
+                .ToListAsync();
+        }
+
+        public async Task UpdateStatusAsync(IEnumerable<Guid> attachmentIds, string status)
+        {
+            if (attachmentIds == null || !attachmentIds.Any())
+                throw new ArgumentException("AttachmentIds cannot be null or empty");
+
+            var entities = await _context.Attachments
+                                         .Where(x => attachmentIds.Contains(x.AttachmentId))
+                                         .ToListAsync();
+
+            if (entities.Count == 0)
+                throw new Exception("No attachments found for the given IDs");
+
+            foreach (var entity in entities)
+            {
+                entity.Status = status;
+                entity.IsArchived = status == "Completed";
+            }
+
+            _context.Attachments.UpdateRange(entities);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
 
