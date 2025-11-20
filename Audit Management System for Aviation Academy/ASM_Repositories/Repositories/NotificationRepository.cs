@@ -116,6 +116,22 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Notification> CreateNotificationAsync(Notification create)
+        {
+            if (create == null)
+                throw new ArgumentNullException(nameof(create));
+
+            create.NotificationId = Guid.NewGuid();            
+            create.CreatedAt = DateTime.UtcNow;    
+            create.IsRead = false;                 
+
+            await _context.Notifications.AddAsync(create);
+            await _context.SaveChangesAsync();
+
+            return create; 
+        }
+
     }
 }
 

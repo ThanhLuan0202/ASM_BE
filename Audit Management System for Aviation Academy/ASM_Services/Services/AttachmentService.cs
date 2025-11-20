@@ -19,6 +19,7 @@ namespace ASM_Services.Services
         private readonly IFindingRepository _findingRepo;
         private readonly INotificationRepository _notificationRepo;
         private readonly IUsersRepository _userRepo;
+
         public AttachmentService(IAttachmentRepository repo, IFirebaseUploadService firebaseUploadService, IActionRepository actionRepo, IFindingRepository findingRepo, INotificationRepository notificationRepo, IUsersRepository userRepo)
         {
             _repo = repo;
@@ -136,6 +137,34 @@ namespace ASM_Services.Services
                 IsRead = false,
             });
         }
+
+        public async Task<Notification> AttachmentRejectedAsync(Guid attachmentId, Guid rejectedBy, string reason)
+        {
+            await _repo.RejectAttachmentAsync(attachmentId);
+
+            var attachment = await _repo.GetByIdAsync(attachmentId);
+            var user = await _userRepo.GetUserShortInfoAsync(rejectedBy);
+
+            Guid ownerId = attachment.UploadedBy.Value;
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = ownerId,
+                Title = "Your attachment was rejected",
+                Message = $"File {attachment.FileName} has been rejected.\n" +
+                          $"Reason: {reason}.\n" +
+                          $"Rejected by: {user.FullName}.\n" +
+                          $"Role name: {user.RoleName}",
+                EntityType = attachment.EntityType,
+                EntityId = attachment.AttachmentId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
+        }
+
+
     }
 }
 

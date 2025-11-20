@@ -1,4 +1,5 @@
-﻿using ASM.API.Swagger;
+﻿using ASM.API.Hubs;
+using ASM.API.Swagger;
 using ASM_Repositories.DBContext;
 using ASM_Repositories.DependencyInjection;
 using ASM_Repositories.Mapping;
@@ -155,6 +156,8 @@ builder.Services.AddMemoryCache();
 
 QuestPDF.Settings.License = LicenseType.Community;
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -188,5 +191,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.NotificationDTO;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewNotification> CreateAsync(CreateNotification dto);
         Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto);
         Task<bool> DeleteAsync(Guid notificationId);
+        Task<Notification> CreateNotificationAsync(Notification create);
     }
 }
 

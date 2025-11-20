@@ -21,6 +21,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task ApproveByHigherLevel(Guid attachmentId);
         Task RejectByHigherLevel(Guid attachmentId);
         Task RejectAttachmentAsync(Guid attachmentId, Guid rejectedBy, string reason);
+        Task<Notification> AttachmentRejectedAsync(Guid attachmentId, Guid rejectedBy, string reason);
     }
 }
 
