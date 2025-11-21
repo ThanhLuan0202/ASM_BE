@@ -369,5 +369,13 @@ namespace ASM_Repositories.Repositories
 
         }
 
+        public async Task<Guid?> GetCreatedByIdByFindingIdAsync(Guid findingId)
+        {
+            return await _context.Findings
+                .Where(f => f.FindingId == findingId)
+                .Select(f => f.CreatedBy)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }
