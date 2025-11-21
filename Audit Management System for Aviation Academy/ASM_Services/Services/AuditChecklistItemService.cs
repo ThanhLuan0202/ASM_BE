@@ -50,5 +50,15 @@ namespace ASM_Services.Services
         {
             return await _repo.GetByUserIdAsync(userId);
         }
+
+        public async Task<ViewAuditChecklistItem?> SetCompliantAsync(Guid auditItemId)
+        {
+            return await _repo.SetCompliantAsync(auditItemId);
+        }
+
+        public async Task<ViewAuditChecklistItem?> SetNonCompliantAsync(Guid auditItemId)
+        {
+            return await _repo.SetNonCompliantAsync(auditItemId);
+        }
     }
 }

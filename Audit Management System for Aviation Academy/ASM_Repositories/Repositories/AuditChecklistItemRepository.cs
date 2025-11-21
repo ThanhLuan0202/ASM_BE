@@ -128,5 +128,41 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAuditChecklistItem>>(items);
         }
+
+        public async Task<ViewAuditChecklistItem?> SetCompliantAsync(Guid auditItemId)
+        {
+            if (auditItemId == Guid.Empty)
+                throw new ArgumentException("AuditItemId cannot be empty");
+
+            var existing = await _DbContext.AuditChecklistItems
+                .AsTracking()
+                .FirstOrDefaultAsync(x => x.AuditItemId == auditItemId);
+
+            if (existing == null)
+                return null;
+
+            existing.Status = "Compliant";
+            await _DbContext.SaveChangesAsync();
+
+            return _mapper.Map<ViewAuditChecklistItem>(existing);
+        }
+
+        public async Task<ViewAuditChecklistItem?> SetNonCompliantAsync(Guid auditItemId)
+        {
+            if (auditItemId == Guid.Empty)
+                throw new ArgumentException("AuditItemId cannot be empty");
+
+            var existing = await _DbContext.AuditChecklistItems
+                .AsTracking()
+                .FirstOrDefaultAsync(x => x.AuditItemId == auditItemId);
+
+            if (existing == null)
+                return null;
+
+            existing.Status = "NonCompliant";
+            await _DbContext.SaveChangesAsync();
+
+            return _mapper.Map<ViewAuditChecklistItem>(existing);
+        }
     }
 }

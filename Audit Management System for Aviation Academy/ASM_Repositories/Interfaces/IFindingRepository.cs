@@ -20,5 +20,6 @@ namespace ASM_Repositories.Interfaces
         Task UpdateFindingStatusAsync(Guid findingId, string status);
         Task<IEnumerable<ViewFinding>> GetByDepartmentIdAsync(int departmentId);
         Task<Guid?> GetAuditIdByFindingIdAsync(Guid findingId);
+        Task<IEnumerable<ViewFinding>> GetByAuditItemIdAsync(Guid auditItemId);
     }
 }
