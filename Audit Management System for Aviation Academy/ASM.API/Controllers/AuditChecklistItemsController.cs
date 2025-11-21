@@ -170,5 +170,53 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving audit checklist items for user", error = ex.Message });
             }
         }
+
+        [HttpPut("{auditItemId}/compliant")]
+        public async Task<ActionResult<ViewAuditChecklistItem>> CompliantAuditChecklistItems(Guid auditItemId)
+        {
+            try
+            {
+                if (auditItemId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid item ID" });
+
+                var result = await _service.SetCompliantAsync(auditItemId);
+                if (result == null)
+                    return NotFound(new { message = "Audit checklist item not found" });
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the item status to Compliant", error = ex.Message });
+            }
+        }
+
+        [HttpPut("{auditItemId}/non-compliant")]
+        public async Task<ActionResult<ViewAuditChecklistItem>> NonCompliantAuditChecklistItems(Guid auditItemId)
+        {
+            try
+            {
+                if (auditItemId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid item ID" });
+
+                var result = await _service.SetNonCompliantAsync(auditItemId);
+                if (result == null)
+                    return NotFound(new { message = "Audit checklist item not found" });
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the item status to NonCompliant", error = ex.Message });
+            }
+        }
     }
 }
