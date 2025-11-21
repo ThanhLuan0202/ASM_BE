@@ -339,5 +339,23 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewFinding>>(findings);
         }
 
+        public async Task<IEnumerable<ViewFinding>> GetByAuditItemIdAsync(Guid auditItemId)
+        {
+            if (auditItemId == Guid.Empty)
+                throw new ArgumentException("AuditItemId cannot be empty");
+
+            var findings = await _DbContext.Findings
+                .Where(f => f.AuditItemId == auditItemId)
+                .Include(f => f.Audit)
+                .Include(f => f.Dept)
+                .Include(f => f.CreatedByNavigation)
+                .Include(f => f.Reviewer)
+                .Include(f => f.AuditItem)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewFinding>>(findings);
+        }
+
     }
 }

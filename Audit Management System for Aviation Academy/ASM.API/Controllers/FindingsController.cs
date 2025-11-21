@@ -215,5 +215,28 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the finding", error = ex.Message });
             }
         }
+
+        [HttpGet("by-audit-item/{auditItemId}")]
+        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetByAuditItemId(Guid auditItemId)
+        {
+            try
+            {
+                if (auditItemId == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit item ID" });
+                }
+
+                var result = await _service.GetFindingsByAuditItemIdAsync(auditItemId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving findings by audit item", error = ex.Message });
+            }
+        }
     }
 }
