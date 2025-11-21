@@ -86,6 +86,43 @@ namespace ASM_Services.Services
             await SendEmailAsync(toEmail, subject, body);
 
         }
+
+
+        public async Task SendRejectForAuditor(string toEmail, string auditorFullName, string auditTitle, string leadFullName, string reason)
+        {
+            string subject = $"[Audit Plan Rejected] Audit Plan bị Lead Auditor yêu cầu chỉnh sửa – {auditTitle}";
+
+            string body = $@"
+<p>Xin chào <strong>{auditorFullName}</strong>,</p>
+
+<p>Bản <strong>Audit Plan</strong> bạn gửi cho cuộc kiểm định:</p>
+
+<p style='margin-left:20px'>
+    <strong>Tên Audit:</strong> {auditTitle}<br/>
+</p>
+
+<p>đã được <strong>Lead Auditor – {leadFullName}</strong> xem xét và <span style='color:red;'><strong>từ chối phê duyệt</strong></span>.</p>
+
+<p>Lý do từ chối:</p>
+<p style='margin-left:20px; color:#d9534f;'><em>“{reason}”</em></p>
+
+<p>Vui lòng kiểm tra lại và thực hiện chỉnh sửa:</p>
+
+<ol>
+ 
+    <li>Gửi lại Audit Plan để Lead Auditor xem xét.</li>
+</ol>
+
+
+
+<br/>
+<p>Cảm ơn bạn đã phối hợp.</p>
+<p><em>Hệ thống Audit Management System</em></p>
+";
+
+            await SendEmailAsync(toEmail, subject, body);
+
+        }
     }
 }
 //< p >
