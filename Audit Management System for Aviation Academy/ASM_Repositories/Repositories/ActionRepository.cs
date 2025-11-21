@@ -315,7 +315,7 @@ namespace ASM_Repositories.Repositories
                 .AnyAsync(s => s.ActionStatus1 == "Completed");
 
             if (!statusExists)
-                throw new InvalidOperationException("Status 'Approved' does not exist in ActionStatus.");
+                throw new InvalidOperationException("Status 'Completed' does not exist in ActionStatus.");
 
             entity.Status = "Completed";
             entity.ReviewFeedback = reviewFeedback;
