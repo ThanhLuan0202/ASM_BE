@@ -62,11 +62,12 @@ namespace ASM_Repositories.Repositories
             return doc;
         }
 
-        public async Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId)
+        public async Task<List<ViewAuditDocument?>> GetAuditDocumentByAuditIdAsync(Guid auditId)
         {
-            var entity = await _context.AuditDocuments
-                .FirstOrDefaultAsync(d => d.AuditId == auditId);
-            return entity == null ? null : _mapper.Map<ViewAuditDocument>(entity);
+            var entities = await _context.AuditDocuments
+                .Where(d => d.AuditId == auditId).ToListAsync(); ;
+            return entities.Count == 0 ? new List<ViewAuditDocument?>()
+                           : _mapper.Map<List<ViewAuditDocument?>>(entities);
         }
 
         public async Task AddAsync(AuditDocument doc)

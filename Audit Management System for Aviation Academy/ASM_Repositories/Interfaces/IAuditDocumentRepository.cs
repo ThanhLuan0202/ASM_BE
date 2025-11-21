@@ -14,7 +14,7 @@ namespace ASM_Repositories.Interfaces
         Task AddAuditDocumentAsync(AuditDocument doc);
         Task<AuditDocument?> UpdateStatusByAuditIdAsync(Guid auditId, string status);
         Task<AuditDocument?> UpdateAsync(Guid auditId, Action<AuditDocument> updateAction);
-        Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId);
+        Task<List<ViewAuditDocument?>> GetAuditDocumentByAuditIdAsync(Guid auditId);
         Task AddAsync(AuditDocument doc);
     }
 }

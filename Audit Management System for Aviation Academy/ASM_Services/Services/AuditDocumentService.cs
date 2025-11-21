@@ -24,7 +24,7 @@ namespace ASM_Services.Services
             _firebaseUploadService = firebaseUploadService;
             _auditRepo = auditRepo;
         }
-        public async Task<ViewAuditDocument?> GetAuditDocumentByAuditIdAsync(Guid auditId)
+        public async Task<List<ViewAuditDocument?>> GetAuditDocumentByAuditIdAsync(Guid auditId)
         {
             return await _repo.GetAuditDocumentByAuditIdAsync(auditId);
         }
