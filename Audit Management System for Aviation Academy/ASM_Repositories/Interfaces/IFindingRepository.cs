@@ -19,5 +19,6 @@ namespace ASM_Repositories.Interfaces
         Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId);
         Task UpdateFindingStatusAsync(Guid findingId, string status);
         Task<IEnumerable<ViewFinding>> GetByDepartmentIdAsync(int departmentId);
+        Task<Guid?> GetAuditIdByFindingIdAsync(Guid findingId);
     }
 }

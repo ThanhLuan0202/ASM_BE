@@ -129,6 +129,15 @@ namespace ASM_Repositories.Repositories
             }
         }
 
+        public async Task<Guid?> GetLeadUserIdByAuditIdAsync(Guid auditId)
+        {
+            var lead = await _context.AuditTeams
+                .Where(t => t.AuditId == auditId && t.IsLead == true)
+                .Select(t => t.UserId)
+                .FirstOrDefaultAsync();
+
+            return lead == Guid.Empty ? null : lead;
+        }
 
     }
 

@@ -17,13 +17,15 @@ namespace ASM_Services.Services
         private readonly INotificationRepository _notificationRepo;
         private readonly IAttachmentRepository _attachmentRepo;
         private readonly IFindingRepository _findingRepo;
-        public ActionService(IActionRepository repo, IUsersRepository userRepo, INotificationRepository notificationRepo, IAttachmentRepository attachmentRepo, IFindingRepository findingRepo)
+        private readonly IAuditTeamRepository _auditTeamRepo;
+        public ActionService(IActionRepository repo, IUsersRepository userRepo, INotificationRepository notificationRepo, IAttachmentRepository attachmentRepo, IFindingRepository findingRepo, IAuditTeamRepository auditTeamRepo)
         {
             _repo = repo;
             _userRepo = userRepo;
             _notificationRepo = notificationRepo;
             _attachmentRepo = attachmentRepo;
             _findingRepo = findingRepo;
+            _auditTeamRepo = auditTeamRepo;
         }
 
         public Task<IEnumerable<ViewAction>> GetAllAsync() => _repo.GetAllAsync();
@@ -39,7 +41,7 @@ namespace ASM_Services.Services
         public Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId) => _repo.GetByAssignedToAsync(userId);
         public Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent) => _repo.UpdateProgressPercentAsync(id, progressPercent);
 
-        public async Task<Notification> ActionApprovedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback)
+        public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback)
         {
             await _repo.UpdateStatusToApprovedAsync(actionId, reviewFeedback);
 
@@ -54,23 +56,43 @@ namespace ASM_Services.Services
             if (action.AssignedBy == null)
                 throw new Exception("AssignedBy is null");
 
-            Guid ownerId = action.AssignedBy.Value;
-
-            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
-                UserId = ownerId,
-                Title = "Your attachment was rejected",
-                Message = $"Title {action.Title} has been rejected.\n" +
-                          $"Reason: {reviewFeedback}.\n" +
-                          $"Rejected by: {user.FullName}.\n" +
-                          $"Role name: {user.RoleName}",
+                UserId = action.AssignedBy.Value,
+                Title = "Your action was rejected",
+                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Feedback: {reviewFeedback}" : ""),
                 EntityType = "Action",
                 EntityId = action.ActionId,
                 IsRead = false,
                 Status = "Active",
             });
 
-            return notif;
+            var findingId = await _repo.GetFindingIdByActionIdAsync(actionId);
+            if (findingId == null)
+                throw new Exception("FindingId not found for this Action");
+
+            var auditId = await _findingRepo.GetAuditIdByFindingIdAsync(findingId.Value);
+            if (auditId == null)
+                throw new Exception("AuditId not found for this Finding");
+
+            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId.Value);
+            if (leadId == null)
+                throw new Exception("LeadId not found for this Audit");
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = leadId.Value,
+                Title = "Action approved by Auditor – needs your review",
+                Message = $"Auditor {user.FullName} ({user.RoleName}) has approved the action '{action.Title}'.\n" +
+                        "Please review and provide your feedback or approval as Lead Auditor.",
+                EntityType = "Action",
+                EntityId = action.ActionId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return new List<Notification> { notif1, notif2 };
         }
 
 

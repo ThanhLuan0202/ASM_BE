@@ -22,7 +22,7 @@ namespace ASM_Services.Interfaces
         Task<bool> UpdateStatusToClosedAsync(Guid id);
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
         Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent);
-        Task<Notification> ActionApprovedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback);
+        Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback);
         Task<Notification> ActionRejectedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback);
         Task ApproveByHigherLevel(Guid actionId, string reviewFeedback);
         Task RejectByHigherLevel(Guid actionId, string reviewFeedback);

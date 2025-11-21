@@ -339,5 +339,15 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewFinding>>(findings);
         }
 
+        public async Task<Guid?> GetAuditIdByFindingIdAsync(Guid findingId)
+        {
+            var auditId = await _context.Findings
+                .Where(f => f.FindingId == findingId)
+                .Select(f => f.AuditId)
+                .FirstOrDefaultAsync();
+
+            return auditId == Guid.Empty ? null : auditId;
+        }
+
     }
 }
