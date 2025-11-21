@@ -1,4 +1,5 @@
-﻿using ASM.API.Hubs;
+﻿using ASM.API.Helper;
+using ASM.API.Hubs;
 using ASM.API.Swagger;
 using ASM_Repositories.DBContext;
 using ASM_Repositories.DependencyInjection;
@@ -7,6 +8,7 @@ using ASM_Services.DependencyInjection;
 using ASM_Services.Models.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -24,7 +26,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:8080")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:5500")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -133,7 +135,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 // Ưu tiên lấy token từ query string cho SignalR
                 var accessToken = context.Request.Query["access_token"];
                 var path = context.HttpContext.Request.Path;
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notification"))
                 {
                     context.Token = accessToken;
                 }
@@ -156,6 +158,8 @@ builder.Services.AddMemoryCache();
 
 QuestPDF.Settings.License = LicenseType.Community;
 
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+builder.Services.AddSingleton<NotificationHelper>();
 builder.Services.AddSignalR();
 
 var app = builder.Build();

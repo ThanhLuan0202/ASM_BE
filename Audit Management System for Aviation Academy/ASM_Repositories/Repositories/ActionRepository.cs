@@ -26,7 +26,6 @@ namespace ASM_Repositories.Repositories
         {
             var list = await _context.Actions
                 .AsNoTracking()
-                .Where(a => a.Status == "Active")
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<ViewAction>>(list);

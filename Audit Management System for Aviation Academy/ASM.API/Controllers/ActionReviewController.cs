@@ -1,4 +1,5 @@
-﻿using ASM.API.Hubs;
+﻿using ASM.API.Helper;
+using ASM.API.Hubs;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.AttachmentDTO;
 using ASM_Services.Interfaces;
@@ -17,12 +18,12 @@ namespace ASM.API.Controllers
     {
         private readonly IAttachmentService _attachmentService;
         private readonly IActionService _actionService;
-        private readonly IHubContext<NotificationHub> _hubContext;
-        public ActionReviewController(IAttachmentService attachmentService, IHubContext<NotificationHub> hubContext, IActionService actionService)
+        private readonly NotificationHelper _notificationHelper;
+        public ActionReviewController(IAttachmentService attachmentService, IHubContext<NotificationHub> hubContext, IActionService actionService, NotificationHelper notificationHelper)
         {
             _attachmentService = attachmentService;
-            _hubContext = hubContext;
             _actionService = actionService;
+            _notificationHelper = notificationHelper;
         }
 
         [HttpPost("{actionId:guid}/approve")]
@@ -30,21 +31,17 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
+                if (!User.Identity.IsAuthenticated)
                     return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
 
                 Guid userId = Guid.Parse(userIdClaim);
 
                 var notif = await _actionService.ActionApprovedAsync(actionId, userId, request.Feedback);
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
-                {
-                    notif.NotificationId,
-                    notif.Title,
-                    notif.Message,
-                    notif.CreatedAt,
-                    notif.EntityId
-                });
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
                 return Ok(new
                 {
                     Message = $"Action {actionId} approve + notification sent",
@@ -63,22 +60,18 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
+                if (!User.Identity.IsAuthenticated)
                     return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
 
                 Guid userId = Guid.Parse(userIdClaim);
 
                 var notif = await _actionService.ActionRejectedAsync(actionId ,userId, request.Feedback);
 
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
-                {
-                    notif.NotificationId,
-                    notif.Title,
-                    notif.Message,
-                    notif.CreatedAt,
-                    notif.EntityId
-                });
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
 
                 return Ok(new
                 {

@@ -44,7 +44,15 @@ namespace ASM_Services.Services
             await _repo.UpdateStatusToApprovedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
+            if (action == null)
+                throw new Exception("Action not found");
+
             var user = await _userRepo.GetUserShortInfoAsync(rejectedBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (action.AssignedBy == null)
+                throw new Exception("AssignedBy is null");
 
             Guid ownerId = action.AssignedBy.Value;
 
@@ -66,12 +74,21 @@ namespace ASM_Services.Services
         }
 
 
+
         public async Task<Notification> ActionRejectedAsync(Guid actionId, Guid rejectedBy, string reviewFeedback)
         {
             await _repo.UpdateStatusToReturnedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
+            if (action == null)
+                throw new Exception("Action not found");
+
             var user = await _userRepo.GetUserShortInfoAsync(rejectedBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (action.AssignedBy == null)
+                throw new Exception("AssignedBy is null");
 
             Guid ownerId = action.AssignedBy.Value;
 
