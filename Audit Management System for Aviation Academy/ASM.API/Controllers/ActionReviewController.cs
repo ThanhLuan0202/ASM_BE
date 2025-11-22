@@ -164,7 +164,7 @@ namespace ASM.API.Controllers
 
                 return Ok(new
                 {
-                    Message = "Attachment, Action, and Finding approved successfully.",
+                    Message = "Attachment, Action approved and Finding closed successfully.",
                     SentSuccess = sentSuccess,
                     SentFailed = sentFailed
                 });
@@ -184,8 +184,52 @@ namespace ASM.API.Controllers
         {
             try
             {
-                await _actionService.RejectByHigherLevel(actionId, request.Feedback);
-                return Ok(new { message = "Attachment, Action, and Finding rejected successfully." });
+                if (!User.Identity.IsAuthenticated)
+                    return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var notifications = await _actionService.RejectByHigherLevel(actionId, userId, request.Feedback);
+
+                if (notifications.Count != 2)
+                    return StatusCode(500, new { error = "Expected 2 notifications from service" });
+
+                var notif1 = notifications[0];
+                var notif2 = notifications[1];
+
+                var sentSuccess = new List<object>();
+                var sentFailed = new List<object>();
+
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif1.UserId.ToString(), notif1);
+                    sentSuccess.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId, Error = ex.Message });
+                }
+
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif2.UserId.ToString(), notif2);
+                    sentSuccess.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId, Error = ex.Message });
+                }
+
+                return Ok(new
+                {
+                    Message = "Attachment, Action rejected and Finding reopen successfully.",
+                    SentSuccess = sentSuccess,
+                    SentFailed = sentFailed
+                });
             }
             catch (InvalidOperationException ex)
             {

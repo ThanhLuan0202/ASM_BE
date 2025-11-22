@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ASM_Services.Services
 {
@@ -156,7 +157,7 @@ namespace ASM_Services.Services
             {
                 UserId = action.AssignedBy.Value,
                 Title = "Your action has been completed by Lead Auditor",
-                Message = $"Your action '{action.Title}' has been approved and completed by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
                         (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
                         "\nThe action and attachment is now marked as Completed",
                 EntityType = "Action",
@@ -173,7 +174,7 @@ namespace ASM_Services.Services
             {
                 UserId = createdById.Value,
                 Title = "Finding has been closed by Lead Auditor",
-                Message = $"The finding associated with action '{action.Title}' has been approved and completed by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"The finding associated with action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
                         (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
                         "\nThe finding is now marked as Closed.",
                 EntityType = "Finding",
@@ -185,21 +186,62 @@ namespace ASM_Services.Services
             return new List<Notification> { notif1, notif2 };
         }
 
-        public async Task RejectByHigherLevel(Guid actionId, string reviewFeedback)
+        public async Task<List<Notification>> RejectByHigherLevel(Guid actionId, Guid userBy, string reviewFeedback)
         {
-            await _repo.UpdateStatusToRejectedAsync(actionId, reviewFeedback);
-
             var attachmentId = await _attachmentRepo.GetAttachmentIdsByActionIdAsync(actionId);
             if (attachmentId == null || !attachmentId.Any())
                 throw new InvalidOperationException($"Attachment not found for ActionId = {actionId}");
-
-            await _attachmentRepo.UpdateStatusAsync(attachmentId, "Rejected");
 
             var findingId = await _repo.GetFindingIdByActionIdAsync(actionId);
             if (!findingId.HasValue)
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId}");
 
+            await _repo.UpdateStatusToRejectedAsync(actionId, reviewFeedback);
+            await _attachmentRepo.UpdateStatusAsync(attachmentId, "Rejected");
             await _findingRepo.UpdateFindingStatusAsync(findingId.Value, "Reopen");
+
+            var action = await _repo.GetByIdAsync(actionId);
+            if (action == null)
+                throw new Exception("Action not found");
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (action.AssignedBy == null)
+                throw new Exception("AssignedBy is null");
+
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = action.AssignedBy.Value,
+                Title = "Your action has been rejected by Lead Auditor",
+                Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                        "\nThe action and attachment is now marked as rejected",
+                EntityType = "Action",
+                EntityId = action.ActionId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            var createdById = await _findingRepo.GetCreatedByIdByFindingIdAsync(findingId.Value);
+            if (!createdById.HasValue)
+                throw new Exception("CreatedById not found for this Finding");
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = createdById.Value,
+                Title = "Finding has been reopen by Lead Auditor",
+                Message = $"The finding associated with action '{action.Title}' has been reopen by {user.FullName} ({user.RoleName}).\n" +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                        "\nThe finding is now marked as reopen.",
+                EntityType = "Finding",
+                EntityId = findingId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return new List<Notification> { notif1, notif2 };
         }
 
     }
