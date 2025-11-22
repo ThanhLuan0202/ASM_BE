@@ -16,5 +16,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto);
         Task<bool> DeleteAsync(Guid id);
         Task<ViewUserShortInfo> GetUserShortInfoAsync(Guid userId);
+        Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId);
     }
 }

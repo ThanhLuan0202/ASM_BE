@@ -22,5 +22,6 @@ namespace ASM_Services.Services
         public Task<ViewUser> CreateAsync(CreateUser dto) => _repo.CreateAsync(dto);
         public Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
+        public Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId) => _repo.GetByDeptIdAsync(deptId);
     }
 }

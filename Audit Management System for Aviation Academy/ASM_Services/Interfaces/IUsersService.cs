@@ -15,5 +15,6 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewUser> CreateAsync(CreateUser dto);
         Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto);
         Task<bool> DeleteAsync(Guid id);
+        Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId);
     }
 }

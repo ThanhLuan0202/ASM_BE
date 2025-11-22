@@ -99,6 +99,29 @@ namespace ASM.API.AdminControllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("by-department/{deptId}")]
+        public async Task<IActionResult> GetByDeptId(int deptId)
+        {
+            try
+            {
+                if (deptId <= 0)
+                    return BadRequest(new { message = "DeptId must be greater than zero" });
+
+                var users = await _service.GetByDeptIdAsync(deptId);
+                if (!users.Any())
+                    return NotFound("No users found for this department.");
+                return Ok(users);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
 

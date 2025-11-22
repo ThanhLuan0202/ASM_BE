@@ -125,5 +125,18 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<ViewUserShortInfo>(user);
         }
+
+        public async Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId)
+        {
+            if (deptId <= 0)
+                throw new ArgumentException("DeptId must be greater than zero");
+
+            var users = await _context.UserAccounts
+                .Where(u => u.DeptId == deptId)
+                .OrderBy(u => u.FullName)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewUser>>(users);
+        }
     }
 }
