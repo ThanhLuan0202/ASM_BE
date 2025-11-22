@@ -22,7 +22,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
         Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId);
         Task<Notification> SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
-        Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc);
+        Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note);
         Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note);
         Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request);
     }

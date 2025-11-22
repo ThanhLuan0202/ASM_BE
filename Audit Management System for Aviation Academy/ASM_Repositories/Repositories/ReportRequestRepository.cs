@@ -139,6 +139,14 @@ namespace ASM_Repositories.Repositories
 
             return rr;
         }
+
+        public async Task<ReportRequest?> GetReportByAuditIdAsync(Guid auditId)
+        {
+            var report = await _context.ReportRequests
+                .FirstOrDefaultAsync(r => r.Parameters.Contains($"\"auditId\":\"{auditId}\""));
+
+            return report;
+        }
     }
 
 }

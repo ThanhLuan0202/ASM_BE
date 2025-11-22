@@ -351,11 +351,37 @@ namespace ASM_Services.Services
             return sb.ToString();
         }
 
-        public async Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc)
+        public async Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note)
         {
-            var audit = await _repo.UpdateStatusByAuditIdAsync(auditId, statusAudit);
-            var doc = await _auditDocumentRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
-            var rr = await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
+            await _repo.UpdateStatusByAuditIdAsync(auditId, "Completed");
+            await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, "Approved");
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var report = await _reportRequestRepo.GetReportByAuditIdAsync(auditId);
+            if (report?.RequestedBy == null)
+                throw new Exception("Report requested by unknown user");
+
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = report.RequestedBy.Value,
+                Title = "Your Audit Report has been approved by Auditor",
+                Message = $"Your audit report for the action '{audit?.Title}' has been reviewed and approved by {user.FullName} ({user.RoleName}).\n" +
+                        "You may now proceed to print the report and submit it for further signature or processing.\n" +
+                        (!string.IsNullOrWhiteSpace(note) ? $"\nRemarks: {note}" : ""),
+                EntityType = "ReportRequest",
+                EntityId = report.ReportRequestId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
         }
 
         public async Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note)

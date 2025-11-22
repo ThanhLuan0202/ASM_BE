@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ASM_Repositories.Models.ReportRequestDTO
 {
-    public class CreateReasonRejectReportRequest
+    public class CreateNoteReportRequest
     {
-        public string Reason { get; set; }
+        public string Note { get; set; }
     }
 }
