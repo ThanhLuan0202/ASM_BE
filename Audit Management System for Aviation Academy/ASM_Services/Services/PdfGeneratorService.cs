@@ -13,11 +13,11 @@ namespace ASM_Services.Services
 {
     public class PdfGeneratorService : IPdfGeneratorService
     {
-        public byte[] GeneratePdf(ViewAuditSummary summary, List<Finding> findings, List<Attachment> attachments, byte[]? logo, List<byte[]> charts)
+        public byte[] GeneratePdf(ViewAuditSummary summary, List<Finding> findings, List<Attachment> attachments, byte[]? logo)
         {
             var pdf = QuestPDF.Fluent.Document.Create(container =>
             {
-                // =============== 1️⃣ COVER PAGE ===============
+                // =============== 1️ COVER PAGE ===============
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
@@ -48,98 +48,38 @@ namespace ASM_Services.Services
                         col.Item().Text("CONFIDENTIAL DOCUMENT")
                             .FontSize(10).FontColor("#D90429").Bold().AlignCenter();
                     });
+
+                    page.Footer().AlignCenter().Text(txt =>
+                    {
+                        txt.DefaultTextStyle(x => x.FontSize(10));
+                        txt.Span("Page ");
+                        txt.CurrentPageNumber();
+                        txt.Span(" / ");
+                        txt.TotalPages();
+                    });
                 });
 
-                // =============== 2️⃣ CHART PAGE ===============
+                // =============== 2️ SUMMARY ONLY PAGE ===============
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(24);
                     page.DefaultTextStyle(x => x.FontSize(10));
-                    page.Header().Text(summary.Title).Bold().FontSize(12).AlignCenter();
+                    page.Header().Text("1. Summary Tables").Bold().FontSize(12).AlignCenter();
 
-                    // =============== CHART ===============
-
-                    page.Content().Column(col =>
-                    {
-                        col.Spacing(10);
-                        col.Item().Text("1. Charts Overview").FontSize(13).Bold().AlignCenter().FontColor("#1B4965");
-
-                        col.Item().Column(chartCol =>
-                        {
-                            chartCol.Spacing(12);
-
-                            chartCol.Item().Row(r =>
-                            {
-                                var chart1 = charts.ElementAtOrDefault(0);
-                                if (chart1 != null)
-                                    r.RelativeItem().Padding(4).Border(0.5f).BorderColor("#CCCCCC")
-                                        .Column(c =>
-                                        {
-                                            c.Item().Text("1.1 Biểu đồ đường (Line Chart)").FontSize(10).Bold();
-                                            c.Item().Image(chart1).FitWidth();
-                                        });
-
-                                var chart2 = charts.ElementAtOrDefault(1);
-                                if (chart2 != null)
-                                    r.RelativeItem().Padding(4).Border(0.5f).BorderColor("#CCCCCC")
-                                        .Column(c =>
-                                        {
-                                            c.Item().Text("1.2 Biểu đồ tròn (Pie / Donut Chart)").FontSize(10).Bold();
-                                            c.Item().Image(chart2).FitWidth();
-                                        });
-                            });
-
-                            var chart3 = charts.ElementAtOrDefault(2);
-                            if (chart3 != null)
-                                chartCol.Item().Padding(4).Border(0.5f).BorderColor("#CCCCCC")
-                                    .Column(c =>
-                                    {
-                                        c.Item().Text("1.5 Biểu đồ tần suất (Histogram)").FontSize(10).Bold();
-                                        c.Item().Image(chart3).FitWidth();
-                                    });
-
-                        });
-                    });
-
-                    // =============== FOOTER ===============
-
-                    page.Footer().AlignCenter().Text(x =>
-                    {
-                        x.Span("Page ");
-                        x.CurrentPageNumber();
-                        x.Span(" / ");
-                        x.TotalPages();
-                    });
-                });
-
-                // =============== 3️⃣ SUMMARY + FINDINGS ===============
-                container.Page(page =>
-                {
-                    page.Size(PageSizes.A4);
-                    page.Margin(24);
-                    page.DefaultTextStyle(x => x.FontSize(10));
-                    page.Header().Text(summary.Title).Bold().FontSize(12).AlignCenter();
-
-                    page.Content().Column(col =>
+                    page.Content().PaddingTop(15).Column(col =>
                     {
                         col.Spacing(10);
                         var headerColor = "#E9ECEF";
                         var borderColor = "#999999";
                         var rowBorder = "#CCCCCC";
 
-                        // ---- 2️⃣ Summary Tables ----
-                        col.Item().Text("2. Summary Tables").FontSize(13).Bold().AlignCenter().FontColor("#1B4965");
-
                         col.Item().Column(section =>
                         {
                             section.Spacing(12);
-                            var headerColor = "#E9ECEF";
-                            var borderColor = "#999999";
-                            var rowBorder = "#CCCCCC";
 
-                            // 2.1 Severity
-                            section.Item().Text("2.1 Findings by Severity").Bold().FontSize(11);
+                            // 1.1 Severity
+                            section.Item().Text("1.1 Findings by Severity").Bold().FontSize(11);
                             section.Item().Table(t =>
                             {
                                 t.ColumnsDefinition(cd =>
@@ -161,8 +101,8 @@ namespace ASM_Services.Services
                                 }
                             });
 
-                            // 2.2 Department
-                            section.Item().Text("2.2 Findings by Department").Bold().FontSize(11);
+                            // 1.2 Department
+                            section.Item().Text("1.2 Findings by Department").Bold().FontSize(11);
 
                             var deptSummary = summary.ByDepartment
                                 .GroupBy(d => d.DeptName)
@@ -197,9 +137,8 @@ namespace ASM_Services.Services
                                 }
                             });
 
-
-                            // 2.3 Root Cause
-                            section.Item().Text("2.3 Findings by Root Cause").Bold().FontSize(11);
+                            // 1.3 Root Cause
+                            section.Item().Text("1.3 Findings by Root Cause").Bold().FontSize(11);
                             section.Item().Table(t =>
                             {
                                 t.ColumnsDefinition(cd =>
@@ -221,32 +160,51 @@ namespace ASM_Services.Services
                                 }
                             });
                         });
+                    });
 
+                    page.Footer().AlignCenter().Text(txt =>
+                    {
+                        txt.DefaultTextStyle(x => x.FontSize(10));
+                        txt.Span("Page ");
+                        txt.CurrentPageNumber();
+                        txt.Span(" / ");
+                        txt.TotalPages();
+                    });
+                });
 
+                // =============== 3️ DETAILED FINDINGS PAGE ===============
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(24);
+                    page.DefaultTextStyle(x => x.FontSize(10));
+                    page.Header().Text("2. Detailed Findings").Bold().FontSize(12).AlignCenter();
 
-                        // --- Detailed Findings Section ---
-                        col.Item().Text("3. Detailed Findings").Bold().FontSize(12);
+                    page.Content().PaddingTop(15).Column(col =>
+                    {
+                        col.Spacing(12);
 
                         col.Item().Table(t =>
                         {
                             t.ColumnsDefinition(cd =>
                             {
-                                cd.ConstantColumn(28);
-                                cd.RelativeColumn(4);
-                                cd.RelativeColumn(2);
-                                cd.RelativeColumn(1);
-                                cd.RelativeColumn(1);
-                                cd.RelativeColumn(1.5f);
+                                cd.ConstantColumn(28);   
+                                cd.ConstantColumn(190);  
+                                cd.ConstantColumn(110);  
+                                cd.ConstantColumn(60);   
+                                cd.ConstantColumn(60);  
+                                cd.ConstantColumn(80);   
                             });
 
                             string headerColor = "#E9ECEF";
                             string borderColor = "#999999";
+                            string rowBorder = "#CCCCCC";
 
                             t.Header(h =>
                             {
                                 h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("#").Bold();
-                                h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).Text("Title").Bold();
-                                h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Dept").Bold();
+                                h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Title").Bold();
+                                h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Department Name").Bold();
                                 h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Severity").Bold();
                                 h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Status").Bold();
                                 h.Cell().Background(headerColor).Border(0.5f).BorderColor(borderColor).Padding(5).AlignCenter().Text("Deadline").Bold();
@@ -257,30 +215,31 @@ namespace ASM_Services.Services
 
                             foreach (var f in findings)
                             {
-                                string border = "#CCCCCC";
                                 string bg = alt ? "#F9FAFB" : "#FFFFFF";
                                 alt = !alt;
 
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).AlignCenter().Text(idx++.ToString());
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).Text(f.Title ?? "-");
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).AlignCenter().Text(f.DeptId?.ToString() ?? "-");
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).AlignCenter().Text(f.Severity ?? "-");
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).AlignCenter().Text(f.Status ?? "-");
-                                t.Cell().Background(bg).Border(0.5f).BorderColor(border).Padding(4).AlignCenter().Text(f.Deadline?.ToString("yyyy-MM-dd") ?? "-");
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).AlignCenter().Text(idx++.ToString());
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).Text(f.Title ?? "-").LineHeight(1.25f);
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).Text(f.Dept.Name?.ToString() ?? "-").LineHeight(1.25f);
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).Text(f.Severity ?? "-");
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).Text(f.Status ?? "-");
+                                t.Cell().Background(bg).Border(0.5f).BorderColor(rowBorder).Padding(4).AlignCenter().Text(f.Deadline?.ToString("yyyy-MM-dd") ?? "-");
                             }
                         });
                     });
 
-                    page.Footer().AlignCenter().Text(x =>
+                    page.Footer().AlignCenter().Text(txt =>
                     {
-                        x.Span("Page ");
-                        x.CurrentPageNumber();
-                        x.Span(" / ");
-                        x.TotalPages();
+                        txt.DefaultTextStyle(x => x.FontSize(10));
+                        txt.Span("Page ");
+                        txt.CurrentPageNumber();
+                        txt.Span(" / ");
+                        txt.TotalPages();
                     });
                 });
 
-                // =============== 4️⃣ SIGNATURE PAGE ===============
+
+                // =============== 4 SIGNATURE PAGE ==============
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
@@ -324,12 +283,20 @@ namespace ASM_Services.Services
                             });
                         });
                     });
+
+                    page.Footer().AlignCenter().Text(txt =>
+                    {
+                        txt.DefaultTextStyle(x => x.FontSize(10));
+                        txt.Span("Page ");
+                        txt.CurrentPageNumber();
+                        txt.Span(" / ");
+                        txt.TotalPages();
+                    });
                 });
+
             });
 
             return pdf.GeneratePdf();
         }
-
-
     }
 }

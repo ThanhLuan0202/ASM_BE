@@ -122,6 +122,23 @@ namespace ASM_Repositories.Repositories
             return rr?.Note;
         }
 
+        public async Task<ReportRequest> CreateReportRequestAsync(Guid auditId, string pdfUrl, Guid requestedBy)
+        {
+            var rr = new ReportRequest
+            {
+                ReportRequestId = Guid.NewGuid(),
+                RequestedBy = requestedBy,
+                Parameters = $"{{\"auditId\":\"{auditId}\"}}",
+                Status = "Pending",
+                FilePath = pdfUrl,
+                RequestedAt = DateTime.UtcNow
+            };
+
+            _context.ReportRequests.Add(rr);
+            await _context.SaveChangesAsync();
+
+            return rr;
+        }
     }
 
 }

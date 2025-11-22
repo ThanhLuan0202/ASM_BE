@@ -1,3 +1,4 @@
+using ASM.API.Helper;
 using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Services.Interfaces;
@@ -31,7 +32,8 @@ namespace ASM.API.Controllers
         private readonly IAttachmentService _attachmentService;
         private readonly IPdfGeneratorService _pdfService;
         private readonly IFirebaseUploadService _firebaseService;
-        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService, IFirebaseUploadService firebaseService)
+        private readonly NotificationHelper _notificationHelper;
+        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService, IFirebaseUploadService firebaseService, NotificationHelper notificationHelper)
         {
             _service = service;
             _env = env;
@@ -39,6 +41,7 @@ namespace ASM.API.Controllers
             _attachmentService = attachmentService;
             _pdfService = pdfService;
             _firebaseService = firebaseService;
+            _notificationHelper = notificationHelper;
         }
 
         [HttpGet]
@@ -358,7 +361,9 @@ namespace ASM.API.Controllers
         [HttpPost("Submit/{auditId:guid}")]
         public async Task<IActionResult> Submit(Guid auditId)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("User not authenticated");
 
@@ -368,28 +373,48 @@ namespace ASM.API.Controllers
             if (summary == null) return NotFound("Audit not found");
 
             var findings = await _findingService.GetFindingsAsync(auditId);
+
             var attachments = await _attachmentService.GetAttachmentsAsync(findings.Select(f => f.FindingId).ToList());
+
             var data = await _findingService.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+
             var findingsByMonth = await _findingService.GetFindingsByMonthAsync(auditId);
 
-            var charts = new List<byte[]>
-            {
-                GenerateLineChartPng(findingsByMonth),
-                GeneratePieChartPng(summary.SeverityBreakdown.Select(kv => (kv.Key, kv.Value)).ToList()),
-                GenerateBarChartPng(data.Select(x => (x.Department, x.Count)).ToList())
-            };
-
-            var pdfBytes = _pdfService.GeneratePdf(summary, findings, attachments, logo: null, charts);
+            var pdfBytes = _pdfService.GeneratePdf(summary, findings, attachments, logo: null);
 
             using var stream = new MemoryStream(pdfBytes);
+
             stream.Position = 0;
+
             IFormFile pdfFile = new FormFile(stream, 0, pdfBytes.Length, "file", $"{Guid.NewGuid()}_{summary.Title}.pdf");
 
             var pdfUrl = await _firebaseService.UploadFileAsync(pdfFile, $"reports/{auditId}");
 
-            await _service.SubmitAuditAsync(auditId, pdfUrl, userId);
+            var notif = await _service.SubmitAuditAsync(auditId, pdfUrl, userId);
 
-            return Ok(new { message = "Audit submitted successfully", pdfUrl });
+            var sentSuccess = new List<object>();
+            var sentFailed = new List<object>();
+
+            try
+            {
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+                sentSuccess.Add(new { UserId = notif.UserId, NotificationId = notif.NotificationId });
+            }
+            catch (Exception ex)
+            {
+                sentFailed.Add(new { UserId = notif.UserId, NotificationId = notif.NotificationId, Error = ex.Message });
+            }
+            return Ok(new 
+            {   Message = "Audit submitted successfully",
+                pdfUrl,
+                SentSuccess = sentSuccess,
+                SentFailed = sentFailed
+            });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while submitting the audit", Error = ex.Message });
+            }
         }
 
         [HttpGet("{auditId:guid}/chart/line")]
@@ -457,7 +482,7 @@ namespace ASM.API.Controllers
                 GenerateBarChartPng(data.Select(x => (x.Department, x.Count)).ToList()),
         
             };
-            var pdfBytes = _pdfService.GeneratePdf(summary, findings, attachments, logo, charts);
+            var pdfBytes = _pdfService.GeneratePdf(summary, findings, attachments, logo);
             return File(pdfBytes, "application/pdf", $"Audit_{auditId}.pdf");
         }
 

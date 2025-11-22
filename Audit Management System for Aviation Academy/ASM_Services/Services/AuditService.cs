@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ASM_Services.Services
 {
@@ -37,6 +38,8 @@ namespace ASM_Services.Services
         private readonly IAuditCriteriaMapRepository _auditCriteriaMapRepo;
         private readonly IAuditTeamRepository _auditTeamRepo;
         private readonly IAuditScheduleRepository _auditScheduleRepo;
+        private readonly INotificationRepository _notificationRepo;
+        private readonly IUsersRepository _userRepo;
 
         public AuditService(
             IAuditRepository repo,
@@ -52,7 +55,9 @@ namespace ASM_Services.Services
             IAttachmentRepository attachmentRepo,
             IAuditCriteriaMapRepository auditCriteriaMapRepo,
             IAuditTeamRepository auditTeamRepo,
-            IAuditScheduleRepository auditScheduleRepo)
+            IAuditScheduleRepository auditScheduleRepo,
+            INotificationRepository notificationRepo,
+            IUsersRepository userRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -68,6 +73,8 @@ namespace ASM_Services.Services
             _auditCriteriaMapRepo = auditCriteriaMapRepo;
             _auditTeamRepo = auditTeamRepo;
             _auditScheduleRepo = auditScheduleRepo;
+            _notificationRepo = notificationRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -242,40 +249,36 @@ namespace ASM_Services.Services
 
 
 
-        public async Task SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy)
+        public async Task<Notification> SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy)
         {
             var audit = await _repo.GetAuditByIdAsync(auditId);
             if (audit == null) throw new Exception("Audit not found");
 
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Submitted");
-            /*
-            var doc = new AuditDocument
-            {
-                DocId = Guid.NewGuid(),
-                AuditId = audit.AuditId,
-                DocumentType = "Submitted Report",
-                Title = $"{audit.Title} - Submitted Report",
-                Status = "Pending",
-                BlobPath = string.Empty,
-                IsFinalVersion = false,
-                ContentType = string.Empty,
-                SizeBytes = string.Empty.Length
-            };
-            await _auditDocumentRepo.AddAuditDocumentAsync(doc);
-            */
-            var rr = new ReportRequest
-            {
-                ReportRequestId = Guid.NewGuid(),
-                RequestedBy = requestedBy,
-                Parameters = $"{{\"auditId\":\"{auditId}\"}}",
-                Status = "Pending",
-                FilePath = pdfUrl,
-                RequestedAt = DateTime.UtcNow
 
-            };
-            await _reportRequestRepo.AddReportRequestAsync(rr);
+            var rr = await _reportRequestRepo.CreateReportRequestAsync(auditId, pdfUrl, requestedBy);
 
-            await _repo.SaveChangesAsync();
+            var user = await _userRepo.GetUserShortInfoAsync(requestedBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            if (leadId == null)
+                throw new Exception("LeadId not found for this Audit");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = leadId.Value,
+                Title = "Audit Report Submitted – Review Required",
+                Message = $"Audit report for '{audit.Title}' has been submitted by {user.FullName} ({user.RoleName}).\n" +
+                        "Kindly review and provide your feedback.",
+                EntityType = "ReportRequest",
+                EntityId = rr.ReportRequestId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
         }
 
         private async Task NotifyLeadAuditorsAsync(Guid auditId)

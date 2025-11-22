@@ -10,6 +10,6 @@ namespace ASM_Services.Interfaces
 {
     public interface IPdfGeneratorService
     {
-        byte[] GeneratePdf(ViewAuditSummary summary, List<Finding> findings, List<Attachment> attachments, byte[]? logo, List<byte[]> charts);
+        byte[] GeneratePdf(ViewAuditSummary summary, List<Finding> findings, List<Attachment> attachments, byte[]? logo);
     }
 }

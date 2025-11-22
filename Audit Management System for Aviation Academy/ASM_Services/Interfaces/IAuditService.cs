@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditDTO;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment);
         Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
         Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId);
-        Task SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
+        Task<Notification> SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
         Task UpdateReportStatusAsync(Guid auditId, string statusAudit, string statusDoc);
         Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note);
         Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request);
