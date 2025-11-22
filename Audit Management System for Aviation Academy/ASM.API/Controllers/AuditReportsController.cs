@@ -37,6 +37,7 @@ namespace ASM.API.Controllers
                     return Unauthorized("User ID not found in token");
 
                 Guid userId = Guid.Parse(userIdClaim);
+
                 if (request == null) return BadRequest("Invalid request.");
 
                 var notif = await _auditService.ReportApproveAsync(auditId, userId, request.Note);
@@ -76,12 +77,45 @@ namespace ASM.API.Controllers
         {
             try
             {
-                await _auditService.UpdateReportStatusAndNoteAsync(auditId, "Returned", "Rejected", request.Note);
-                return Ok(new { message = $"Audit {auditId} rejected successfully." });
+                if (!User.Identity.IsAuthenticated)
+                    return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                if (request == null) return BadRequest("Invalid request.");
+                var notif = await _auditService.ReportRejectedAsync(auditId, userId, request.Note);
+
+                var sentSuccess = new List<object>();
+                var sentFailed = new List<object>();
+
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+                    sentSuccess.Add(new { UserId = notif.UserId, NotificationId = notif.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif.UserId, NotificationId = notif.NotificationId, Error = ex.Message });
+                }
+
+                return Ok(new
+                {
+                    Message = $"Audit {auditId} rejected successfully.",
+                    SentSuccess = sentSuccess,
+                    SentFailed = sentFailed
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { error = ex.Message });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return StatusCode(500, new { error = "An unexpected error occurred.", details = ex.Message });
             }
         }
 

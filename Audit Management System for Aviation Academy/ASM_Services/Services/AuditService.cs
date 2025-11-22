@@ -354,7 +354,7 @@ namespace ASM_Services.Services
         public async Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note)
         {
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Completed");
-            await _reportRequestRepo.UpdateStatusByAuditIdAsync(auditId, "Approved");
+            await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, "Approved", note);
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -384,11 +384,37 @@ namespace ASM_Services.Services
             return notif;
         }
 
-        public async Task UpdateReportStatusAndNoteAsync(Guid auditId, string statusAudit, string statusDoc, string note)
+        public async Task<Notification> ReportRejectedAsync(Guid auditId, Guid userBy, string note)
         {
-            var audit = await _repo.UpdateStatusByAuditIdAsync(auditId, statusAudit);
-            var doc = await _auditDocumentRepo.UpdateStatusByAuditIdAsync(auditId, statusDoc);
-            var rr = await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, statusDoc, note);
+            await _repo.UpdateStatusByAuditIdAsync(auditId, "Returned");
+            await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, "Rejected", note);
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var report = await _reportRequestRepo.GetReportByAuditIdAsync(auditId);
+            if (report?.RequestedBy == null)
+                throw new Exception("Report requested by unknown user");
+
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = report.RequestedBy.Value,
+                Title = "Your Audit Report Has Been Returned for Revision",
+                Message = $"Your audit report for the action '{audit.Title}' has been reviewed by {user.FullName} ({user.RoleName}) and requires revision.\n" +
+                        "Please update the report according to the feedback provided and resubmit it for further review.\n" +
+                        (!string.IsNullOrWhiteSpace(note) ? $"\nRemarks: {note}" : ""),
+                EntityType = "ReportRequest",
+                EntityId = report.ReportRequestId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
         }
 
         public async Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request)

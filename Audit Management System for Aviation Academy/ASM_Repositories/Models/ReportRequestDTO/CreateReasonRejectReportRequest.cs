@@ -8,6 +8,6 @@ namespace ASM_Repositories.Models.ReportRequestDTO
 {
     public class CreateNoteReportRequest
     {
-        public string Note { get; set; }
+        public string? Note { get; set; }
     }
 }
