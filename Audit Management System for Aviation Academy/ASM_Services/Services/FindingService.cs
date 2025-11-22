@@ -83,5 +83,10 @@ namespace ASM_Services.Services
             return await _repo.GetByAuditItemIdAsync(auditItemId);
         }
 
+        public async Task<ViewFinding?> SetReceivedAsync(Guid findingId)
+        {
+            return await _repo.SetReceivedAsync(findingId);
+        }
+
     }
 }

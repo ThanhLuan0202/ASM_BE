@@ -371,10 +371,40 @@ namespace ASM_Repositories.Repositories
 
         public async Task<Guid?> GetCreatedByIdByFindingIdAsync(Guid findingId)
         {
-            return await _context.Findings
+            return await _DbContext.Findings
                 .Where(f => f.FindingId == findingId)
                 .Select(f => f.CreatedBy)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<ViewFinding?> SetReceivedAsync(Guid findingId)
+        {
+            if (findingId == Guid.Empty)
+                throw new ArgumentException("FindingId cannot be empty");
+
+            var existing = await _DbContext.Findings
+                .AsTracking()
+                .FirstOrDefaultAsync(x => x.FindingId == findingId);
+
+            if (existing == null)
+                return null;
+
+            // Validate status exists
+            var statusExists = await _DbContext.FindingStatuses.AnyAsync(s => s.FindingStatus1 == "Received");
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'Received' does not exist in FindingStatus table");
+
+            existing.Status = "Received";
+            await _DbContext.SaveChangesAsync();
+
+            var updated = await _DbContext.Findings
+                .Include(f => f.Audit)
+                .Include(f => f.Dept)
+                .Include(f => f.CreatedByNavigation)
+                .Include(f => f.Reviewer)
+                .FirstOrDefaultAsync(f => f.FindingId == findingId);
+
+            return _mapper.Map<ViewFinding>(updated);
         }
 
     }
