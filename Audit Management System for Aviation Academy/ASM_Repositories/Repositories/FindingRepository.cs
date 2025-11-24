@@ -425,5 +425,23 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewFinding>>(findings);
         }
 
+        public async Task<IEnumerable<ViewFinding>> GetFindingsByCreatedByAsync(Guid createdBy)
+        {
+            if (createdBy == Guid.Empty)
+                throw new ArgumentException("CreatedBy cannot be empty");
+
+            var findings = await _DbContext.Findings
+                .Where(f => f.CreatedBy == createdBy)
+                .Include(f => f.Audit)
+                .Include(f => f.Dept)
+                .Include(f => f.CreatedByNavigation)
+                .Include(f => f.Reviewer)
+                .Include(f => f.AuditItem)
+                .OrderByDescending(f => f.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewFinding>>(findings);
+        }
+
     }
 }

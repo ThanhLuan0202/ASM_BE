@@ -93,5 +93,10 @@ namespace ASM_Services.Services
             return await _repo.GetFindingsByAuditIdAsync(auditId);
         }
 
+        public async Task<IEnumerable<ViewFinding>> GetFindingsByCreatedByAsync(Guid createdBy)
+        {
+            return await _repo.GetFindingsByCreatedByAsync(createdBy);
+        }
+
     }
 }

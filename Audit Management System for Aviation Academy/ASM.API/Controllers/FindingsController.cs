@@ -293,5 +293,28 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving findings by audit", error = ex.Message });
             }
         }
+
+        [HttpGet("by-created-by/{createdBy}")]
+        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetByCreatedBy(Guid createdBy)
+        {
+            try
+            {
+                if (createdBy == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid createdBy ID" });
+                }
+
+                var result = await _service.GetFindingsByCreatedByAsync(createdBy);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving findings by createdBy", error = ex.Message });
+            }
+        }
     }
 }

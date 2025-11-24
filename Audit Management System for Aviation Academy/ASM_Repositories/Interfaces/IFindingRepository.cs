@@ -24,5 +24,6 @@ namespace ASM_Repositories.Interfaces
         Task<Guid?> GetCreatedByIdByFindingIdAsync(Guid findingId);
         Task<ViewFinding?> SetReceivedAsync(Guid findingId);
         Task<IEnumerable<ViewFinding>> GetFindingsByAuditIdAsync(Guid auditId);
+        Task<IEnumerable<ViewFinding>> GetFindingsByCreatedByAsync(Guid createdBy);
     }
 }
