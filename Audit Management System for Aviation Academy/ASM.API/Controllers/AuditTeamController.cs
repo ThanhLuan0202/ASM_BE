@@ -1,7 +1,10 @@
 ﻿using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Security.Claims;
 
 namespace ASM.API.Controllers
 {
@@ -78,6 +81,68 @@ namespace ASM.API.Controllers
             if (!success)
                 return NotFound(new { message = "Record not found or already inactive." });
             return Ok(new { message = "Audit team member marked as inactive successfully." });
+        }
+
+        [HttpGet("check-lead-auditor/{auditId}")]
+        [Authorize]
+        public async Task<IActionResult> CheckIsLeadAuditor(Guid auditId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid audit ID" });
+
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token" });
+
+                var isLeadAuditor = await _service.IsLeadAuditorAsync(userId, auditId);
+
+                return Ok(new { 
+                    isLeadAuditor = isLeadAuditor,
+                    userId = userId,
+                    auditId = auditId
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while checking lead auditor status", error = ex.Message });
+            }
+        }
+
+        [HttpGet("my-lead-auditor-audits")]
+        [Authorize]
+        public async Task<IActionResult> GetMyLeadAuditorAudits()
+        {
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token" });
+
+                var auditIds = await _service.GetAuditIdsByLeadAuditorAsync(userId);
+
+                return Ok(new { 
+                    isLeadAuditor = auditIds.Any(),
+                    userId = userId,
+                    auditIds = auditIds,
+                    count = auditIds.Count()
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving lead auditor audits", error = ex.Message });
+            }
         }
     }
 }

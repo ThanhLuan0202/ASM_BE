@@ -139,6 +139,39 @@ namespace ASM_Repositories.Repositories
             return lead == Guid.Empty ? null : lead;
         }
 
+        public async Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException("UserId cannot be empty");
+
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty");
+
+            var isLeadAuditor = await _context.AuditTeams
+                .AnyAsync(t => t.UserId == userId 
+                    && t.AuditId == auditId 
+                    && t.RoleInTeam == "LeadAuditor" 
+                    && t.Status == "Active");
+
+            return isLeadAuditor;
+        }
+
+        public async Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException("UserId cannot be empty");
+
+            var auditIds = await _context.AuditTeams
+                .Where(t => t.UserId == userId 
+                    && t.RoleInTeam == "LeadAuditor" 
+                    && t.Status == "Active")
+                .Select(t => t.AuditId)
+                .Distinct()
+                .ToListAsync();
+
+            return auditIds;
+        }
+
     }
 
 }

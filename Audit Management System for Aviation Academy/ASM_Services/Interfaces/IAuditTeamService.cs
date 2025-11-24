@@ -14,5 +14,7 @@ namespace ASM_Services.Interfaces
         Task<ViewAuditTeam> CreateAsync(CreateAuditTeam dto);
         Task<ViewAuditTeam?> UpdateAsync(Guid id, UpdateAuditTeam dto);
         Task<bool> SoftDeleteAsync(Guid id);
+        Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId);
+        Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId);
     }
 }

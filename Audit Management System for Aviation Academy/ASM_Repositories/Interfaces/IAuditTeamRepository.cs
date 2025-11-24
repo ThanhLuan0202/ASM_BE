@@ -16,5 +16,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> SoftDeleteAsync(Guid id);
         Task UpdateAuditTeamsAsync(Guid auditId, List<UpdateAuditTeam>? list);
         Task<Guid?> GetLeadUserIdByAuditIdAsync(Guid auditId);
+        Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId);
+        Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId);
     }
 }

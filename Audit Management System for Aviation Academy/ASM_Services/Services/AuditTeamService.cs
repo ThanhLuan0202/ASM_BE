@@ -23,5 +23,7 @@ namespace ASM_Services.Services
         public Task<ViewAuditTeam> CreateAsync(CreateAuditTeam dto) => _repo.AddAsync(dto);
         public Task<ViewAuditTeam?> UpdateAsync(Guid id, UpdateAuditTeam dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> SoftDeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
+        public Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId) => _repo.IsLeadAuditorAsync(userId, auditId);
+        public Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId) => _repo.GetAuditIdsByLeadAuditorAsync(userId);
     }
 }
