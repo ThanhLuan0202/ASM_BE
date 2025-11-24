@@ -28,5 +28,6 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
         Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent);
         Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id);
+        Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId);
     }
 }

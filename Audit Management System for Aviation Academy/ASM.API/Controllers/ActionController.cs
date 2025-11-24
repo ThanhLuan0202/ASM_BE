@@ -344,4 +344,26 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    [HttpGet("by-finding/{findingId}")]
+    public async Task<IActionResult> GetByFindingId(Guid findingId)
+    {
+        try
+        {
+            if (findingId == Guid.Empty)
+                return BadRequest(new { message = "Invalid FindingId" });
+
+            var result = await _service.GetByFindingIdAsync(findingId);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error retrieving actions by findingId {findingId}");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
 }

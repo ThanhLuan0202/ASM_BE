@@ -428,5 +428,19 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId)
+        {
+            if (findingId == Guid.Empty)
+                throw new ArgumentException("FindingId cannot be empty.");
+
+            var list = await _context.Actions
+                .AsNoTracking()
+                .Where(a => a.FindingId == findingId && a.Status != "Inactive")
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAction>>(list);
+        }
     }
 }

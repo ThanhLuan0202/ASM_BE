@@ -42,6 +42,7 @@ namespace ASM_Services.Services
         public Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId) => _repo.GetByAssignedToAsync(userId);
         public Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent) => _repo.UpdateProgressPercentAsync(id, progressPercent);
         public Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id) => _repo.UpdateStatusToApprovedAuditorAsync(id);
+        public Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId) => _repo.GetByFindingIdAsync(findingId);
 
         public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
