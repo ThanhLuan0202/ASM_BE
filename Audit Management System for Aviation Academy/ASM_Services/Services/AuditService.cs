@@ -224,9 +224,52 @@ namespace ASM_Services.Services
         public Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
             => _repo.ApprovePlanAsync(auditId, approverId, comment);
 
-        public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.RejectPlanContentAsync(auditId, approverId, comment);
-        
+        public async Task<List<Notification>> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            if (audit.CreatedBy == null)
+                throw new Exception("Audit CreatedBy is null");
+
+            await _repo.RejectPlanContentAsync(auditId, approverId, comment);
+
+            var user = await _userRepo.GetUserShortInfoAsync(approverId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = audit.CreatedBy.Value,
+                Title = "Your Audit Plan Has Been Rejected By Director",
+                Message = $"Your audit plan '{audit.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
+                        $"Reason: {comment}",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            if (leadId == null)
+                throw new Exception("LeadId not found for this Audit");
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = leadId.Value,
+                Title = "Your Audit Plan Has Been Rejected By Director",
+                Message = $"Your audit plan '{audit.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
+                        $"Reason: {comment}",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return new List<Notification> { notif1, notif2 };
+        }
+
         public async Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId)
         {
             var audit = await _repo.GetAuditByIdAsync(auditId);

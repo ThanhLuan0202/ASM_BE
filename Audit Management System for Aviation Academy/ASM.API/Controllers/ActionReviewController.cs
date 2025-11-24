@@ -164,7 +164,11 @@ namespace ASM.API.Controllers
                 return Ok(new
                 {
                     Message = $"Action {actionId} returned + notification sent",
-                    NotificationId = notif.NotificationId
+                    Notification = new
+                    {
+                        UserId = notif.UserId,
+                        NotificationId = notif.NotificationId
+                    }
                 });
             }
             catch (Exception ex)
