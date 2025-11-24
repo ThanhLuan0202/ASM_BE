@@ -224,18 +224,30 @@ namespace ASM.API.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
                 if (id == Guid.Empty)
                 {
                     return BadRequest(new { message = "Invalid audit ID" });
                 }
 
-                var ok = await _service.SubmitToLeadAuditorAsync(id);
-                if (!ok)
-                {
-                    return NotFound(new { message = $"Audit with ID {id} not found" });
-                }
+                var notif = await _service.SubmitToLeadAuditorAsync(id, userId);
+                
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
 
-                return Ok(new { message = "Submitted to Lead Auditor successfully. Audit status set to PendingReview." });
+                return Ok(new 
+                { 
+                    message = "Submitted to Lead Auditor successfully. Audit status set to PendingReview.",
+                    UserId = notif.UserId,
+                    NotificationId = notif.NotificationId
+                });
             }
             catch (InvalidOperationException ex)
             {

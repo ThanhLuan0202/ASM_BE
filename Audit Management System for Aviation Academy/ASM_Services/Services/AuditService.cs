@@ -11,6 +11,7 @@ using ASM_Services.Models.Email;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,16 +109,39 @@ namespace ASM_Services.Services
 
         public Task<bool> UpdateStatusAsync(Guid auditId, string status) => _repo.UpdateStatusAsync(auditId, status);
 
-        public async Task<bool> SubmitToLeadAuditorAsync(Guid auditId)
+        public async Task<Notification> SubmitToLeadAuditorAsync(Guid auditId, Guid userBy)
         {
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
             var updated = await _repo.SubmitToLeadAuditorAsync(auditId);
             if (!updated)
-            {
-                return false;
-            }
+                throw new Exception($"Submit failed for audit {auditId}.");
 
             await NotifyLeadAuditorsAsync(auditId);
-            return true;
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            if (leadId == null)
+                throw new Exception("LeadId not found for this Audit");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = leadId.Value,
+                Title = "Audit Plan has been created by Auditor",
+                Message = $"Audit '{audit.Title}' has been submitted to you by {user.FullName} ({user.RoleName}).\n" +
+                        "Please proceed with the next steps.",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
         }
 
         public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
