@@ -23,6 +23,7 @@ namespace ASM_Services.Interfaces
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
         Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent);
         Task<bool> ActionVerifiedAsync(Guid id, string reviewFeedback);
+        Task<bool> ActionDeclinedAsync(Guid id, string reviewFeedback);
         Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback);
         Task<Notification> ActionRejectedAsync(Guid actionId, Guid userBy, string reviewFeedback);
         Task<List<Notification>> ApproveByHigherLevel(Guid actionId, Guid userBy, string reviewFeedback);

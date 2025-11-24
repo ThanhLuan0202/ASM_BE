@@ -48,6 +48,11 @@ namespace ASM_Services.Services
         {
             return await _repo.UpdateStatusToVerifiedAsync(id, reviewFeedback);
         }
+        public async Task<bool> ActionDeclinedAsync(Guid id, string reviewFeedback)
+        {
+            return await _repo.UpdateStatusToDeclinedAsync(id, reviewFeedback);
+        }
+
         public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
             await _repo.UpdateStatusToApprovedAsync(actionId, reviewFeedback);

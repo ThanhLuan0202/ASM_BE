@@ -50,6 +50,29 @@ namespace ASM.API.Controllers
             }
         }
 
+        [HttpPost("{actionId:guid}/declined")]
+        public async Task<IActionResult> Declined(Guid actionId, [FromBody] CreateReviewFeedback request)
+        {
+            try
+            {
+                if (actionId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid ActionId" });
+
+                var updated = await _actionService.ActionDeclinedAsync(actionId, request.Feedback);
+                if (!updated)
+                    return NotFound(new { message = "Action not found or inactive." });
+
+                return Ok(new { message = "Action status updated to Declined." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
 
         [HttpPost("{actionId:guid}/approve")]
         public async Task<IActionResult> Approve(Guid actionId, [FromBody] CreateReviewFeedback request)
