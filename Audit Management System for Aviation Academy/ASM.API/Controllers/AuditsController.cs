@@ -275,13 +275,42 @@ namespace ASM.API.Controllers
                     return Unauthorized(new { message = "Invalid or missing user token" });
                 }
 
-                var ok = await _service.ApproveAndForwardToDirectorAsync(id, approverId, request?.Comment);
-                if (!ok)
+                var notifications = await _service.ApproveAndForwardToDirectorAsync(id, approverId, request?.Comment);
+                if (notifications.Count != 2)
+                    return BadRequest("Expected 2 notifications from service");
+
+                var notif1 = notifications[0];
+                var notif2 = notifications[1];
+
+                var sentSuccess = new List<object>();
+                var sentFailed = new List<object>();
+
+                try
                 {
-                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                    await _notificationHelper.SendToUserAsync(notif1.UserId.ToString(), notif1);
+                    sentSuccess.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId, Error = ex.Message });
                 }
 
-                return Ok(new { message = "Approved and forwarded to Director. Audit status set to PendingDirectorApproval." });
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif2.UserId.ToString(), notif2);
+                    sentSuccess.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId, Error = ex.Message });
+                }
+
+                return Ok(new 
+                {
+                    message = "Approved and forwarded to Director. Audit status set to PendingDirectorApproval.",
+                    SentSuccess = sentSuccess,
+                    SentFailed = sentFailed
+                });
             }
             catch (InvalidOperationException ex)
             {

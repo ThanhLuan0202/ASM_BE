@@ -144,18 +144,57 @@ namespace ASM_Services.Services
             return notif;
         }
 
-        public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.RejectPlanContentAsync(auditId, approverId, comment);
+        public async Task<List<Notification>> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            await _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
+
+            var user = await _userRepo.GetUserShortInfoAsync(approverId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var directorId = await _userRepo.GetDirectorIdAsync();
+            if (directorId == null)
+                throw new Exception("Director not found");
+
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = directorId.Value,
+                Title = "Audit Plan Requires Your Review",
+                Message = $"The audit plan '{audit.Title}' has completed Lead Auditor approval and has been forwarded to you by {user.FullName} ({user.RoleName}).\n" +
+                        "Your review and approval are kindly requested.",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = audit.CreatedBy.Value,
+                Title = "Your Audit Plan Has Been Approved",
+                Message = $"Your audit plan '{audit.Title}' has been approved by {user.FullName} ({user.RoleName}) and forwarded to Director for review.",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return new List<Notification> { notif1, notif2 };
+        }
 
         public Task<bool> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
             => _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
 
-        public Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
-
         public Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
             => _repo.ApprovePlanAsync(auditId, approverId, comment);
 
+        public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.RejectPlanContentAsync(auditId, approverId, comment);
+        
         public async Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId)
         {
             var audit = await _repo.GetAuditByIdAsync(auditId);

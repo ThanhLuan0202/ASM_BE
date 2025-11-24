@@ -138,5 +138,17 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewUser>>(users);
         }
+
+        public async Task<Guid?> GetDirectorIdAsync()
+        {
+            return await _context.UserAccounts
+                .Where(u =>
+                    u.RoleName == "Director" &&
+                    u.IsActive &&
+                    u.Status != null &&
+                    u.Status.Equals("Active"))
+                .Select(u => u.UserId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
