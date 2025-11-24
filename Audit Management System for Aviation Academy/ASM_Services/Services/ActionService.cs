@@ -48,9 +48,34 @@ namespace ASM_Services.Services
         {
             return await _repo.UpdateStatusToVerifiedAsync(id, reviewFeedback);
         }
-        public async Task<bool> ActionDeclinedAsync(Guid id, string reviewFeedback)
+        public async Task<Notification> ActionDeclinedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
-            return await _repo.UpdateStatusToDeclinedAsync(id, reviewFeedback);
+            await _repo.UpdateStatusToDeclinedAsync(actionId, reviewFeedback);
+
+            var action = await _repo.GetByIdAsync(actionId);
+            if (action == null)
+                throw new Exception("Action not found");
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (action.AssignedTo == null)
+                throw new Exception("AssignedTo is null");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = action.AssignedTo.Value,
+                Title = "Your action has been declined by AuditeeOwner",
+                Message = $"Your action '{action.Title}' has been declined by {user.FullName} ({user.RoleName})." +
+                        (string.IsNullOrWhiteSpace(reviewFeedback) ? "" : $"\nFeedback: {reviewFeedback}"),
+                EntityType = "Action",
+                EntityId = action.ActionId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
         }
 
         public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback)
@@ -71,9 +96,9 @@ namespace ASM_Services.Services
             var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
                 UserId = action.AssignedBy.Value,
-                Title = "Your action was approved by Auditor",
-                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Feedback: {reviewFeedback}" : ""),
+                Title = "Your action has been approved by Auditor",
+                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nFeedback: {reviewFeedback}" : ""),
                 EntityType = "Action",
                 EntityId = action.ActionId,
                 IsRead = false,
@@ -128,8 +153,8 @@ namespace ASM_Services.Services
             {
                 UserId = action.AssignedBy.Value,
                 Title = "Your action was rejected by Auditor",
-                Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Feedback: {reviewFeedback}" : ""),
+                Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nFeedback: {reviewFeedback}" : ""),
                 EntityType = "Action",
                 EntityId = action.ActionId,
                 IsRead = false,
@@ -168,8 +193,8 @@ namespace ASM_Services.Services
             {
                 UserId = action.AssignedBy.Value,
                 Title = "Your action has been completed by Lead Auditor",
-                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                Message = $"Your action '{action.Title}' has been approved by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nLead Feedback: {reviewFeedback}" : "") +
                         "\nThe action and attachment is now marked as Completed",
                 EntityType = "Action",
                 EntityId = action.ActionId,
@@ -185,8 +210,8 @@ namespace ASM_Services.Services
             {
                 UserId = createdById.Value,
                 Title = "Finding has been closed by Lead Auditor",
-                Message = $"The finding associated with action '{action.Title}' has been approved by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                Message = $"The finding associated with action '{action.Title}' has been approved by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nLead Feedback: {reviewFeedback}" : "") +
                         "\nThe finding is now marked as Closed.",
                 EntityType = "Finding",
                 EntityId = findingId,
@@ -226,8 +251,8 @@ namespace ASM_Services.Services
             {
                 UserId = action.AssignedBy.Value,
                 Title = "Your action has been rejected by Lead Auditor",
-                Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nLead Feedback: {reviewFeedback}" : "") +
                         "\nThe action and attachment is now marked as rejected",
                 EntityType = "Action",
                 EntityId = action.ActionId,
@@ -243,8 +268,8 @@ namespace ASM_Services.Services
             {
                 UserId = createdById.Value,
                 Title = "Finding has been reopen by Lead Auditor",
-                Message = $"The finding associated with action '{action.Title}' has been reopen by {user.FullName} ({user.RoleName}).\n" +
-                        (!string.IsNullOrEmpty(reviewFeedback) ? $"Lead Feedback: {reviewFeedback}" : "") +
+                Message = $"The finding associated with action '{action.Title}' has been reopen by {user.FullName} ({user.RoleName})." +
+                        (!string.IsNullOrEmpty(reviewFeedback) ? $"\nLead Feedback: {reviewFeedback}" : "") +
                         "\nThe finding is now marked as reopen.",
                 EntityType = "Finding",
                 EntityId = findingId,

@@ -353,7 +353,7 @@ namespace ASM_Services.Services
 
         public async Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note)
         {
-            await _repo.UpdateStatusByAuditIdAsync(auditId, "Completed");
+            await _repo.UpdateStatusByAuditIdAsync(auditId, "InProgress");
             await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, "Approved", note);
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);

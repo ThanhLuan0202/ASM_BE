@@ -55,22 +55,32 @@ namespace ASM.API.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
                 if (actionId == Guid.Empty)
                     return BadRequest(new { message = "Invalid ActionId" });
 
-                var updated = await _actionService.ActionDeclinedAsync(actionId, request.Feedback);
-                if (!updated)
-                    return NotFound(new { message = "Action not found or inactive." });
+                var notif = await _actionService.ActionDeclinedAsync(actionId, userId, request.Feedback);
 
-                return Ok(new { message = "Action status updated to Declined." });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+
+                return Ok(new
+                {
+                    Message = $"Action {actionId} declined successfully.",
+                    UserId = notif.UserId,
+                    NotificationId = notif.NotificationId
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error.");
+                return StatusCode(500, ex.Message);
             }
         }
 
