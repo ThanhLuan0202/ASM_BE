@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuditorInfoDto = ASM_Repositories.Models.AuditTeamDTO.AuditorInfoDto;
 
 namespace ASM_Services.Services
 {
@@ -25,5 +26,6 @@ namespace ASM_Services.Services
         public Task<bool> SoftDeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
         public Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId) => _repo.IsLeadAuditorAsync(userId, auditId);
         public Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId) => _repo.GetAuditIdsByLeadAuditorAsync(userId);
+        public Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId) => _repo.GetAuditorsByAuditIdAsync(auditId);
     }
 }

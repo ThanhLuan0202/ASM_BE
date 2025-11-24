@@ -144,5 +144,30 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving lead auditor audits", error = ex.Message });
             }
         }
+
+        [HttpGet("auditors/{auditId}")]
+        public async Task<IActionResult> GetAuditorsByAuditId(Guid auditId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid audit ID" });
+
+                var auditors = await _service.GetAuditorsByAuditIdAsync(auditId);
+
+                if (!auditors.Any())
+                    return NotFound(new { message = "No auditors found for this audit" });
+
+                return Ok(auditors);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving auditors", error = ex.Message });
+            }
+        }
     }
 }

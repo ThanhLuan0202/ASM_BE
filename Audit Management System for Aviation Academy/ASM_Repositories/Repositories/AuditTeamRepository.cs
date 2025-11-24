@@ -172,6 +172,29 @@ namespace ASM_Repositories.Repositories
             return auditIds;
         }
 
+        public async Task<IEnumerable<Models.AuditTeamDTO.AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty");
+
+            var auditors = await _context.AuditTeams
+                .Where(t => t.AuditId == auditId 
+                    && t.RoleInTeam == "Auditor" 
+                    && t.Status == "Active")
+                .Include(t => t.User)
+                .Select(t => new Models.AuditTeamDTO.AuditorInfoDto
+                {
+                    UserId = t.UserId,
+                    FullName = t.User != null ? t.User.FullName : string.Empty,
+                    Email = t.User != null ? t.User.Email : string.Empty
+                })
+                .Distinct()
+                .OrderBy(a => a.FullName)
+                .ToListAsync();
+
+            return auditors;
+        }
+
     }
 
 }

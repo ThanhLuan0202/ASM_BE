@@ -270,5 +270,28 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the finding status to Received", error = ex.Message });
             }
         }
+
+        [HttpGet("by-audit/{auditId}")]
+        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetByAuditId(Guid auditId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                var result = await _service.GetFindingsByAuditIdAsync(auditId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving findings by audit", error = ex.Message });
+            }
+        }
     }
 }
