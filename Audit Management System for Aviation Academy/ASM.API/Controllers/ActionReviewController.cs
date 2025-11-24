@@ -26,6 +26,31 @@ namespace ASM.API.Controllers
             _notificationHelper = notificationHelper;
         }
 
+        [HttpPost("{actionId:guid}/verified")]
+        public async Task<IActionResult> Verified(Guid actionId, [FromBody] CreateReviewFeedback request)
+        {
+            try
+            {
+                if (actionId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid ActionId" });
+
+                var updated = await _actionService.ActionVerifiedAsync(actionId, request.Feedback);
+                if (!updated)
+                    return NotFound(new { message = "Action not found or inactive." });
+
+                return Ok(new { message = "Action status updated to Verified." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error.");
+            }
+        }
+
+
         [HttpPost("{actionId:guid}/approve")]
         public async Task<IActionResult> Approve(Guid actionId, [FromBody] CreateReviewFeedback request)
         {

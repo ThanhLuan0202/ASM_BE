@@ -44,6 +44,10 @@ namespace ASM_Services.Services
         public Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id) => _repo.UpdateStatusToApprovedAuditorAsync(id);
         public Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId) => _repo.GetByFindingIdAsync(findingId);
 
+        public async Task<bool> ActionVerifiedAsync(Guid id, string reviewFeedback)
+        {
+            return await _repo.UpdateStatusToVerifiedAsync(id, reviewFeedback);
+        }
         public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
             await _repo.UpdateStatusToApprovedAsync(actionId, reviewFeedback);
