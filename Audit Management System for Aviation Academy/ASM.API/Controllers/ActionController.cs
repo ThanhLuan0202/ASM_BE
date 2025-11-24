@@ -319,4 +319,29 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    [HttpPut("{id}/approve-by-auditor")]
+    public async Task<IActionResult> ApproveByAuditor(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToApprovedAuditorAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { message = "Action status updated to ApprovedAuditor." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to ApprovedAuditor");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
 }
