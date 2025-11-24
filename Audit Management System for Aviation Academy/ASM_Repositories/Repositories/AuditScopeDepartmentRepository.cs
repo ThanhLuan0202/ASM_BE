@@ -121,6 +121,26 @@ namespace ASM_Repositories.Repositories
             }
         }
 
+        public async Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty");
+
+            var departments = await _context.AuditScopeDepartments
+                .Where(asc => asc.AuditId == auditId && asc.Status == "Active")
+                .Include(asc => asc.Dept)
+                .Select(asc => new Interfaces.DepartmentInfoDto
+                {
+                    DeptId = asc.DeptId,
+                    Name = asc.Dept != null ? asc.Dept.Name : string.Empty
+                })
+                .Distinct()
+                .OrderBy(d => d.Name)
+                .ToListAsync();
+
+            return departments;
+        }
+
     }
 
 }

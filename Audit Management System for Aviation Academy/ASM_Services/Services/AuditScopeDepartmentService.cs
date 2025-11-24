@@ -23,5 +23,6 @@ namespace ASM_Services.Services
         public Task<ViewAuditScopeDepartment> CreateAsync(CreateAuditScopeDepartment dto) => _repo.AddAsync(dto);
         public Task<ViewAuditScopeDepartment?> UpdateAsync(Guid id, UpdateAuditScopeDepartment dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> SoftDeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
+        public Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId) => _repo.GetDepartmentsByAuditIdAsync(auditId);
     }
 }

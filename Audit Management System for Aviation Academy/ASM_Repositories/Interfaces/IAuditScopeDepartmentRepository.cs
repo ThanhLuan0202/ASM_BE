@@ -17,5 +17,12 @@ namespace ASM_Repositories.Interfaces
         Task<bool> SoftDeleteAsync(Guid id);
         Task<List<AuditScopeDepartment>> GetAuditScopeDepartmentsAsync(Guid auditId);
         Task UpdateScopeDepartmentsAsync(Guid auditId, List<UpdateAuditScopeDepartment>? list);
+        Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId);
+    }
+
+    public class DepartmentInfoDto
+    {
+        public int DeptId { get; set; }
+        public string Name { get; set; }
     }
 }

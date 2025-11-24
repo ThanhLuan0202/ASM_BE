@@ -72,5 +72,30 @@ namespace ASM.API.Controllers
             if (!success) return NotFound(new { message = "Record not found or already inactive." });
             return Ok(new { message = "Record marked as inactive successfully." });
         }
+
+        [HttpGet("departments/{auditId}")]
+        public async Task<IActionResult> GetDepartmentsByAuditId(Guid auditId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid audit ID" });
+
+                var departments = await _service.GetDepartmentsByAuditIdAsync(auditId);
+
+                if (!departments.Any())
+                    return NotFound(new { message = "No departments found for this audit" });
+
+                return Ok(departments);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving departments", error = ex.Message });
+            }
+        }
     }
 }
