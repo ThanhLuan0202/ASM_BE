@@ -338,13 +338,19 @@ namespace ASM.API.Controllers
                     return Unauthorized(new { message = "Invalid or missing user token" });
                 }
 
-                var ok = await _service.DeclinedPlanContentAsync(id, approverId, request?.Comment);
-                if (!ok)
-                {
-                    return NotFound(new { message = $"Audit with ID {id} not found" });
-                }
+                var notif = await _service.DeclinedPlanContentAsync(id, approverId, request?.Comment);
 
-                return Ok(new { message = "Plan content declined. Audit status set to Declined." });
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+
+                return Ok(new 
+                { 
+                    message = "Plan content declined. Audit status set to Declined.",
+                    Notification = new
+                    {
+                        UserId = notif.UserId,
+                        NotificationId = notif.NotificationId
+                    }
+                });
             }
             catch (InvalidOperationException ex)
             {

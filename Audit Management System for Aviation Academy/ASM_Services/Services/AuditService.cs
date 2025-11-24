@@ -150,6 +150,9 @@ namespace ASM_Services.Services
             if (audit == null)
                 throw new Exception("Audit not found");
 
+            if (audit.CreatedBy == null)
+                throw new Exception("Audit CreatedBy is null");
+
             await _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
 
             var user = await _userRepo.GetUserShortInfoAsync(approverId);
@@ -186,8 +189,37 @@ namespace ASM_Services.Services
             return new List<Notification> { notif1, notif2 };
         }
 
-        public Task<bool> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
+        public async Task<Notification> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            if(audit.CreatedBy == null)
+                throw new Exception("Audit CreatedBy is null");
+
+            await _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
+
+            var user = await _userRepo.GetUserShortInfoAsync(approverId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var notif = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = audit.CreatedBy.Value,
+                Title = "Your Audit Plan Has Been Declined",
+                Message = $"Your audit plan '{audit.Title}' has been declined by {user.FullName} ({user.RoleName}).\n" +
+                        $"Reason: {comment}",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            return notif;
+        }
+            
+
 
         public Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
             => _repo.ApprovePlanAsync(auditId, approverId, comment);
