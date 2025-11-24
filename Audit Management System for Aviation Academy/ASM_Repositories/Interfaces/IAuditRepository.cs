@@ -19,6 +19,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> UpdateStatusAsync(Guid auditId, string status);
         Task<bool> SubmitToLeadAuditorAsync(Guid auditId);
         Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment);
+        Task<bool> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment);
         Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment);
         Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
         Task<UserAccount?> GetLeadAuditorAsync(Guid auditId);

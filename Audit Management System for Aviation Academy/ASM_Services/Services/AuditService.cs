@@ -147,6 +147,9 @@ namespace ASM_Services.Services
         public Task<bool> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
             => _repo.RejectPlanContentAsync(auditId, approverId, comment);
 
+        public Task<bool> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
+            => _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
+
         public Task<bool> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
             => _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
 

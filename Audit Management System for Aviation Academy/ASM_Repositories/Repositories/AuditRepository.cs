@@ -268,8 +268,49 @@ namespace ASM_Repositories.Repositories
                 AuditApprovalId = Guid.NewGuid(),
                 AuditId = auditId,
                 ApproverId = approverId,
-                ApprovalLevel = "Lead Auditor",
+                ApprovalLevel = "Director",
                 Status = "Rejected Plan",
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow,
+                ApprovedAt = DateTime.UtcNow
+            };
+            _DbContext.AuditApprovals.Add(approval);
+
+            await _DbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (audit == null)
+            {
+                return false;
+            }
+
+            var approverExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == approverId);
+            if (!approverExists)
+            {
+                throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
+            }
+
+            var rejectedStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Declined");
+            if (!rejectedStatusExists)
+            {
+                throw new InvalidOperationException("Status 'Declined' does not exist in AuditStatus");
+            }
+
+            audit.Status = "Declined";
+
+            var approval = new AuditApproval
+            {
+                AuditApprovalId = Guid.NewGuid(),
+                AuditId = auditId,
+                ApproverId = approverId,
+                ApprovalLevel = "Lead Auditor",
+                Status = "Declined Plan",
                 Comment = comment,
                 CreatedAt = DateTime.UtcNow,
                 ApprovedAt = DateTime.UtcNow
