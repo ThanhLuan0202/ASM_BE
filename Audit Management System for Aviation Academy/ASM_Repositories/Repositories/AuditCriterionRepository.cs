@@ -26,7 +26,6 @@ namespace ASM_Repositories.Repositories
         public async Task<IEnumerable<ViewAuditCriterion>> GetAllAsync()
         {
             var list = await _context.AuditCriteria
-                .Where(c => c.Status == "Active")
                 .ToListAsync();
             return _mapper.Map<IEnumerable<ViewAuditCriterion>>(list);
         }
@@ -85,13 +84,13 @@ namespace ASM_Repositories.Repositories
 
         public async Task<bool> SoftDeleteAsync(Guid id)
         {
-            var entity = await _context.AuditCriteria.FindAsync(id);
-            if (entity == null || entity.Status == "Inactive")
-                return false;
+            var e = await _context.AuditCriteria.FindAsync(id);
+            if (e == null || e.Status?.ToLower() == "inactive") return false;
 
-            entity.Status = "Inactive";
-            await _context.SaveChangesAsync();
-            return true;
+            e.Status = "Inactive";
+            _context.Entry(e).Property(p => p.Status).IsModified = true;
+
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 
