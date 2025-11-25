@@ -31,14 +31,54 @@ namespace ASM.API.Controllers
         {
             try
             {
+                if (!User.Identity.IsAuthenticated)
+                    return Unauthorized("User not authenticated");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null)
+                    return Unauthorized("User ID not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
                 if (actionId == Guid.Empty)
                     return BadRequest(new { message = "Invalid ActionId" });
 
-                var updated = await _actionService.ActionVerifiedAsync(actionId, request.Feedback);
-                if (!updated)
-                    return NotFound(new { message = "Action not found or inactive." });
+                var notifications = await _actionService.ActionVerifiedAsync(actionId, userId, request.Feedback);
+                if (notifications.Count != 2)
+                    return BadRequest("Expected 2 notifications from service");
 
-                return Ok(new { message = "Action status updated to Verified." });
+                var notif1 = notifications[0];
+                var notif2 = notifications[1];
+
+                var sentSuccess = new List<object>();
+                var sentFailed = new List<object>();
+
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif1.UserId.ToString(), notif1);
+                    sentSuccess.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif1.UserId, NotificationId = notif1.NotificationId, Error = ex.Message });
+                }
+
+                try
+                {
+                    await _notificationHelper.SendToUserAsync(notif2.UserId.ToString(), notif2);
+                    sentSuccess.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId });
+                }
+                catch (Exception ex)
+                {
+                    sentFailed.Add(new { UserId = notif2.UserId, NotificationId = notif2.NotificationId, Error = ex.Message });
+                }
+
+                return Ok(new 
+                {
+                    message = $"Action {actionId} status updated to Verified.",
+                    SentSuccess = sentSuccess,
+                    SentFailed = sentFailed
+                });
             }
             catch (InvalidOperationException ex)
             {
@@ -74,8 +114,11 @@ namespace ASM.API.Controllers
                 return Ok(new
                 {
                     Message = $"Action {actionId} declined successfully.",
-                    UserId = notif.UserId,
-                    NotificationId = notif.NotificationId
+                    Notification = new
+                    {
+                        UserId = notif.UserId,
+                        NotificationId = notif.NotificationId
+                    }
                 });
             }
             catch (Exception ex)

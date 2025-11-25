@@ -44,9 +44,51 @@ namespace ASM_Services.Services
         public Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id) => _repo.UpdateStatusToApprovedAuditorAsync(id);
         public Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId) => _repo.GetByFindingIdAsync(findingId);
 
-        public async Task<bool> ActionVerifiedAsync(Guid id, string reviewFeedback)
+        public async Task<List<Notification>> ActionVerifiedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
-            return await _repo.UpdateStatusToVerifiedAsync(id, reviewFeedback);
+            await _repo.UpdateStatusToVerifiedAsync(actionId, reviewFeedback);
+
+            var action = await _repo.GetByIdAsync(actionId);
+            if (action == null)
+                throw new Exception("Action not found");
+
+            var user = await _userRepo.GetUserShortInfoAsync(userBy);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (action.AssignedTo == null)
+                throw new Exception("AssignedTo is null");
+
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = action.AssignedTo.Value,
+                Title = "Your action has been verified by AuditeeOwner",
+                Message = $"Your action '{action.Title}' has been verified by {user.FullName} ({user.RoleName})." +
+                        (string.IsNullOrWhiteSpace(reviewFeedback) ? "" : $"\nFeedback: {reviewFeedback}"),
+                EntityType = "Action",
+                EntityId = action.ActionId,
+                IsRead = false,
+                Status = "Active",
+            });
+
+            var findingId = await _repo.GetFindingIdByActionIdAsync(actionId);
+            if (findingId == null)
+                throw new Exception("FindingId not found for this Action");
+
+            var finding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = finding.CreatedBy.Value,
+                Title = "Your action has been verified by AuditeeOwner",
+                Message = $"The action '{action.Title}' related to your finding has been verified by {user.FullName} ({user.RoleName})." +
+                    (string.IsNullOrWhiteSpace(reviewFeedback) ? "" : $"\nReviewer feedback: {reviewFeedback}"),
+                EntityType = "Action",
+                EntityId = action.ActionId,
+                IsRead = false,
+                Status = "Active",
+            });
+            return new List<Notification> { notif1, notif2 };
         }
         public async Task<Notification> ActionDeclinedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
