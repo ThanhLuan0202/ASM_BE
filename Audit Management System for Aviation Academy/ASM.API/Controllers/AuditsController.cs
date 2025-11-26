@@ -378,13 +378,42 @@ namespace ASM.API.Controllers
                     return Unauthorized(new { message = "Invalid or missing user token" });
                 }
 
-                var ok = await _service.ApprovePlanAsync(id, approverId, request?.Comment);
-                if (!ok)
+                var notifications = await _service.ApprovePlanAsync(id, approverId, request?.Comment);
+
+                var sentSuccess = new List<object>();
+                var sentFailed = new List<object>();
+
+                foreach (var notif in notifications)
                 {
-                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                    try
+                    {
+                        await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif );
+
+                        sentSuccess.Add(new
+                        {
+                            UserId = notif.UserId,
+                            NotificationId = notif.NotificationId
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        sentFailed.Add(new
+                        {
+                            UserId = notif.UserId,
+                            NotificationId = notif.NotificationId,
+                            Error = ex.Message
+                        });
+                    }
                 }
 
-                return Ok(new { message = "Plan approved. Audit status set to Approve." });
+
+                return Ok(new 
+                { 
+                    message = "Plan approved. Audit status set to Approve.",
+                    totalNotifications = notifications.Count,
+                    sentSuccess,
+                    sentFailed
+                });
             }
             catch (InvalidOperationException ex)
             {
@@ -393,7 +422,11 @@ namespace ASM.API.Controllers
             catch (Exception ex)
             {
 
-                return StatusCode(500, new { message = "An error occurred while approving the plan", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while approving the plan",
+                    error = ex.InnerException?.Message ?? ex.Message
+                });
             }
         }
 

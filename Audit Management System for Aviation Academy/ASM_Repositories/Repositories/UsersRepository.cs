@@ -150,5 +150,24 @@ namespace ASM_Repositories.Repositories
                 .Select(u => u.UserId)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<Guid?> GetAuditeeOwnerByDepartmentIdAsync(int deptId)
+        {
+            return await _context.UserAccounts
+                .Where(u =>
+                    u.DeptId == deptId &&
+                    u.RoleName == "AuditeeOwner" &&
+                    u.IsActive &&
+                    u.Status != null &&
+                    u.Status.Equals("Active"))
+                .Select(u => u.UserId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> UserExistsAsync(Guid userId)
+        {
+            return await _context.UserAccounts
+                .AnyAsync(u => u.UserId == userId && u.IsActive && u.Status == "Active");
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<List<Notification>> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment);
         Task<Notification> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment);
         Task<List<Notification>> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment);
-        Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
+        Task<List<Notification>> ApprovePlanAsync(Guid auditId, Guid approverId, string comment);
         Task<ViewAuditSummary?> GetAuditSummaryAsync(Guid auditId);
         Task<Notification> SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy);
         Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note);

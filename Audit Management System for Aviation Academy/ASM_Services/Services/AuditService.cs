@@ -218,12 +218,80 @@ namespace ASM_Services.Services
 
             return notif;
         }
-            
 
 
-        public Task<bool> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
-            => _repo.ApprovePlanAsync(auditId, approverId, comment);
 
+        public async Task<List<Notification>> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
+        {
+            var audit = await _repo.GetAuditByIdAsync(auditId);
+            if (audit == null)
+                throw new Exception("Audit not found");
+
+            if (audit.CreatedBy == null)
+                throw new Exception("Audit CreatedBy is null");
+
+            await _repo.ApprovePlanAsync(auditId, approverId, comment);
+
+            var user = await _userRepo.GetUserShortInfoAsync(approverId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var notifications = new List<Notification>();
+
+            var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = audit.CreatedBy.Value,
+                Title = "Your Audit Plan Has Been Approved By Director",
+                Message = $"Your audit plan '{audit.Title}' has been approved by {user.FullName} ({user.RoleName}).",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+            notifications.Add(notif1);
+
+            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            if (leadId == null)
+                throw new Exception("LeadId not found for this Audit");
+
+            var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = leadId.Value,
+                Title = "Your Audit Plan Has Been Approved By Director",
+                Message = $"Your audit plan '{audit.Title}' has been approve by {user.FullName} ({user.RoleName}).",
+                EntityType = "Audit",
+                EntityId = auditId,
+                IsRead = false,
+                Status = "Active",
+            });
+            notifications.Add(notif2);
+
+            var auditScopeDepts = await _auditScopeDepartmentRepo.GetAuditScopeDepartmentsAsync(auditId);
+
+            foreach (var scope in auditScopeDepts)
+            {
+                var auditeeOwnerId = await _userRepo.GetAuditeeOwnerByDepartmentIdAsync(scope.DeptId);
+
+                if (auditeeOwnerId == null) continue;
+                if (!await _userRepo.UserExistsAsync(auditeeOwnerId.Value)) continue;
+
+                var notifDept = await _notificationRepo.CreateNotificationAsync(new Notification
+                {
+                    UserId = auditeeOwnerId.Value,
+                    Title = "New Audit Assigned to Your Department",
+                    Message = $"The audit plan '{audit.Title}' has been approved and assigned to your department ({scope.Dept.Name}).\n" +
+                              "Please prepare for the upcoming audit activities.",
+                    EntityType = "Audit",
+                    EntityId = auditId,
+                    IsRead = false,
+                    Status = "Active"
+                });
+                notifications.Add(notifDept);
+            }
+
+            return notifications;
+
+        }
         public async Task<List<Notification>> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
         {
             var audit = await _repo.GetAuditByIdAsync(auditId);
