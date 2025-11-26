@@ -113,6 +113,7 @@ namespace ASM_Repositories.Repositories
             if (entity == null) return false;
 
             entity.Status = "Inactive";
+            _context.Entry(entity).Property(p => p.Status).IsModified = true;
             await _context.SaveChangesAsync();
             return true;
         }
