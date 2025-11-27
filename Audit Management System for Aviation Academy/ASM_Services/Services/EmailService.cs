@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ASM_Services.Services
@@ -129,10 +130,7 @@ namespace ASM_Services.Services
             string subject = $"[Audit Review] Audit plan cần Director phê duyệt – {auditTitle}";
 
             var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
-            var commentSection = string.IsNullOrWhiteSpace(comment)
-                ? string.Empty
-                : $@"<p><strong>Ghi chú từ {forwardedByName}:</strong></p>
-<p style='margin-left:20px; color:#555;'>{comment}</p>";
+            var commentSection = BuildCommentSection(comment, $"Ghi chú từ {forwardedByName}");
 
             string body = $@"
 <p>Xin chào <strong>{directorFullName}</strong>,</p>
@@ -152,6 +150,117 @@ namespace ASM_Services.Services
 <p><em>Hệ thống Audit Management System</em></p>";
 
             await SendEmailAsync(toEmail, subject, body);
+        }
+
+        public async Task SendAuditPlanApprovedForCreatorAsync(string toEmail, string creatorFullName, string auditTitle, string directorFullName, DateTime? fieldworkStart, string comment)
+        {
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            string subject = $"[Audit Approved] Kế hoạch '{sanitizedAuditTitle}' đã được phê duyệt";
+            var commentSection = BuildCommentSection(comment, "Ghi chú từ Director");
+
+            string body = $@"
+<p>Xin chào <strong>{creatorFullName}</strong>,</p>
+
+<p>Kế hoạch kiểm định <strong>{sanitizedAuditTitle}</strong> đã được Director <strong>{directorFullName}</strong> phê duyệt.</p>
+<p>Ngày fieldwork dự kiến: <strong>{FormatDate(fieldworkStart)}</strong>.</p>
+
+<p>Bạn có thể bắt đầu phối hợp với Lead Auditor và các auditor để chuẩn bị nguồn lực, checklist và tài liệu hỗ trợ.</p>
+
+{commentSection}
+
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
+
+        public async Task SendAuditPlanApprovedForLeadAsync(string toEmail, string leadFullName, string auditTitle, string directorFullName, DateTime? fieldworkStart, string comment)
+        {
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            string subject = $"[Audit Approved] Audit plan '{sanitizedAuditTitle}' đã được Director duyệt";
+            var commentSection = BuildCommentSection(comment, "Ghi chú từ Director");
+
+            string body = $@"
+<p>Xin chào <strong>{leadFullName}</strong>,</p>
+
+<p>Audit plan <strong>{sanitizedAuditTitle}</strong> đã được Director <strong>{directorFullName}</strong> phê duyệt.</p>
+<p>Ngày fieldwork dự kiến: <strong>{FormatDate(fieldworkStart)}</strong>.</p>
+
+<p>Vui lòng:</p>
+<ol>
+    <li>Thông báo cho các auditor trong team và phân công nhiệm vụ.</li>
+    <li>Xác nhận lại các mốc lịch Fieldwork, Kick-off, Evidence collection.</li>
+    <li>Phối hợp với các phòng ban được audit để sắp xếp nhân sự và tài liệu.</li>
+</ol>
+
+{commentSection}
+
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
+
+        public async Task SendAuditPlanApprovedForAuditorAsync(string toEmail, string auditorFullName, string auditTitle, string leadFullName, string directorFullName, DateTime? fieldworkStart, string comment)
+        {
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            string subject = $"[Audit Assignment] Bạn được phân công audit '{sanitizedAuditTitle}'";
+            var commentSection = BuildCommentSection(comment, "Ghi chú từ Director");
+
+            string body = $@"
+<p>Xin chào <strong>{auditorFullName}</strong>,</p>
+
+<p>Bạn được phân công tham gia cuộc kiểm định <strong>{sanitizedAuditTitle}</strong>.</p>
+<ul>
+    <li>Director: <strong>{directorFullName}</strong></li>
+    <li>Lead Auditor: <strong>{leadFullName}</strong></li>
+    <li>Ngày fieldwork dự kiến: <strong>{FormatDate(fieldworkStart)}</strong></li>
+</ul>
+
+<p>Vui lòng làm việc với Lead Auditor để rà soát checklist, thu thập tài liệu nền và thống nhất kế hoạch onsite.</p>
+
+{commentSection}
+
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
+
+        public async Task SendAuditPlanApprovedForDepartmentHeadAsync(string toEmail, string deptHeadFullName, string deptName, string auditTitle, DateTime? fieldworkStart, string comment)
+        {
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            var sanitizedDeptName = string.IsNullOrWhiteSpace(deptName) ? "phòng ban của bạn" : deptName;
+            string subject = $"[Audit Notification] Phòng {sanitizedDeptName} tham gia audit '{sanitizedAuditTitle}'";
+            var commentSection = BuildCommentSection(comment, "Ghi chú thêm");
+
+            string body = $@"
+<p>Xin chào <strong>{deptHeadFullName}</strong>,</p>
+
+<p>Cuộc kiểm định <strong>{sanitizedAuditTitle}</strong> đã được Director phê duyệt và phòng <strong>{sanitizedDeptName}</strong> nằm trong phạm vi audit.</p>
+<p>Ngày fieldwork dự kiến: <strong>{FormatDate(fieldworkStart)}</strong>.</p>
+
+<p>Để chuẩn bị tốt, vui lòng:</p>
+<ul>
+    <li>Chỉ định đầu mối phối hợp với đoàn audit.</li>
+    <li>Rà soát quy trình, hồ sơ, bằng chứng liên quan.</li>
+    <li>Thông báo cho các bên trong phòng ban về lịch làm việc với audit team.</li>
+</ul>
+
+{commentSection}
+
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
+
+        private static string FormatDate(DateTime? date) => date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "Chưa ấn định";
+
+        private static string BuildCommentSection(string comment, string title)
+        {
+            if (string.IsNullOrWhiteSpace(comment))
+                return string.Empty;
+
+            var encoded = WebUtility.HtmlEncode(comment);
+            return $@"<p><strong>{title}:</strong></p>
+<p style='margin-left:20px; color:#555;'>{encoded}</p>";
         }
     }
 }

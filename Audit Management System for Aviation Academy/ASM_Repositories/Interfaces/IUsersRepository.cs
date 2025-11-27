@@ -19,6 +19,7 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId);
         Task<Guid?> GetDirectorIdAsync();
         Task<Guid?> GetAuditeeOwnerByDepartmentIdAsync(int deptId);
+        Task<ViewUserShortInfo?> GetAuditeeOwnerInfoByDepartmentIdAsync(int deptId);
         Task<bool> UserExistsAsync(Guid userId);
 
     }

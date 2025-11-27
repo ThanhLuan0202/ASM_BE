@@ -164,6 +164,23 @@ namespace ASM_Repositories.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<ViewUserShortInfo?> GetAuditeeOwnerInfoByDepartmentIdAsync(int deptId)
+        {
+            var user = await _context.UserAccounts
+                .Where(u =>
+                    u.DeptId == deptId &&
+                    u.RoleName == "AuditeeOwner" &&
+                    u.IsActive &&
+                    u.Status != null &&
+                    u.Status.Equals("Active"))
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return null;
+
+            return _mapper.Map<ViewUserShortInfo>(user);
+        }
+
         public async Task<bool> UserExistsAsync(Guid userId)
         {
             return await _context.UserAccounts

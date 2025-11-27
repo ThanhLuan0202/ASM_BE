@@ -249,6 +249,8 @@ namespace ASM_Services.Services
                 throw new Exception("User not found");
 
             var notifications = new List<Notification>();
+            var emailTasks = new List<Task>();
+            var auditTitle = string.IsNullOrWhiteSpace(audit.Title) ? "Audit Plan" : audit.Title;
 
             var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
@@ -262,9 +264,23 @@ namespace ASM_Services.Services
             });
             notifications.Add(notif1);
 
+            var creatorInfo = await _userRepo.GetUserShortInfoAsync(audit.CreatedBy.Value);
+            if (creatorInfo != null && !string.IsNullOrWhiteSpace(creatorInfo.Email))
+            {
+                emailTasks.Add(_emailService.SendAuditPlanApprovedForCreatorAsync(
+                    creatorInfo.Email,
+                    creatorInfo.FullName,
+                    auditTitle,
+                    user.FullName,
+                    audit.StartDate,
+                    comment));
+            }
+
             var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
+
+            var leadInfo = await _userRepo.GetUserShortInfoAsync(leadId.Value);
 
             var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
@@ -278,18 +294,45 @@ namespace ASM_Services.Services
             });
             notifications.Add(notif2);
 
+            if (leadInfo != null && !string.IsNullOrWhiteSpace(leadInfo.Email))
+            {
+                emailTasks.Add(_emailService.SendAuditPlanApprovedForLeadAsync(
+                    leadInfo.Email,
+                    leadInfo.FullName,
+                    auditTitle,
+                    user.FullName,
+                    audit.StartDate,
+                    comment));
+            }
+
+            var auditors = await _auditTeamRepo.GetAuditorsByAuditIdAsync(auditId);
+            foreach (var auditor in auditors)
+            {
+                if (string.IsNullOrWhiteSpace(auditor.Email))
+                    continue;
+
+                emailTasks.Add(_emailService.SendAuditPlanApprovedForAuditorAsync(
+                    auditor.Email,
+                    auditor.FullName,
+                    auditTitle,
+                    leadInfo?.FullName ?? "Lead Auditor",
+                    user.FullName,
+                    audit.StartDate,
+                    comment));
+            }
+
             var auditScopeDepts = await _auditScopeDepartmentRepo.GetAuditScopeDepartmentsAsync(auditId);
 
             foreach (var scope in auditScopeDepts)
             {
-                var auditeeOwnerId = await _userRepo.GetAuditeeOwnerByDepartmentIdAsync(scope.DeptId);
+                var auditeeOwnerInfo = await _userRepo.GetAuditeeOwnerInfoByDepartmentIdAsync(scope.DeptId);
 
-                if (auditeeOwnerId == null) continue;
-                if (!await _userRepo.UserExistsAsync(auditeeOwnerId.Value)) continue;
+                if (auditeeOwnerInfo == null || auditeeOwnerInfo.UserId == Guid.Empty) continue;
+                if (!await _userRepo.UserExistsAsync(auditeeOwnerInfo.UserId)) continue;
 
                 var notifDept = await _notificationRepo.CreateNotificationAsync(new Notification
                 {
-                    UserId = auditeeOwnerId.Value,
+                    UserId = auditeeOwnerInfo.UserId,
                     Title = "New Audit Assigned to Your Department",
                     Message = $"The audit plan '{audit.Title}' has been approved and assigned to your department ({scope.Dept.Name}).\n" +
                               "Please prepare for the upcoming audit activities.",
@@ -299,6 +342,29 @@ namespace ASM_Services.Services
                     Status = "Active"
                 });
                 notifications.Add(notifDept);
+
+                if (string.IsNullOrWhiteSpace(auditeeOwnerInfo.Email))
+                    continue;
+
+                emailTasks.Add(_emailService.SendAuditPlanApprovedForDepartmentHeadAsync(
+                    auditeeOwnerInfo.Email,
+                    auditeeOwnerInfo.FullName,
+                    scope.Dept?.Name ?? $"Department {scope.DeptId}",
+                    auditTitle,
+                    audit.StartDate,
+                    comment));
+            }
+
+            if (emailTasks.Any())
+            {
+                try
+                {
+                    await Task.WhenAll(emailTasks);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send audit plan approval emails for audit {AuditId}", auditId);
+                }
             }
 
             return notifications;
