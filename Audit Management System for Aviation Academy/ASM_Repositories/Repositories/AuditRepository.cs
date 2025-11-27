@@ -409,9 +409,7 @@ namespace ASM_Repositories.Repositories
                 .Include(at => at.User)
                 .Where(at => at.AuditId == auditId
                     && at.Status == "Active"
-                    && at.User != null
-                    && at.User.IsActive
-                    && (at.IsLead || at.RoleInTeam == "LeadAuditor"))
+                    && (at.RoleInTeam == "LeadAuditor"))
                 .Select(at => new UserAccount
                 {
                     UserId = at.UserId,
