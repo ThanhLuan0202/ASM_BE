@@ -123,6 +123,36 @@ namespace ASM_Services.Services
             await SendEmailAsync(toEmail, subject, body);
 
         }
+
+        public async Task SendAuditPlanForwardedToDirectorAsync(string toEmail, string directorFullName, string auditTitle, string forwardedByName, string forwardedByRole, string comment)
+        {
+            string subject = $"[Audit Review] Audit plan cần Director phê duyệt – {auditTitle}";
+
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            var commentSection = string.IsNullOrWhiteSpace(comment)
+                ? string.Empty
+                : $@"<p><strong>Ghi chú từ {forwardedByName}:</strong></p>
+<p style='margin-left:20px; color:#555;'>{comment}</p>";
+
+            string body = $@"
+<p>Xin chào <strong>{directorFullName}</strong>,</p>
+
+<p>Audit plan <strong>{sanitizedAuditTitle}</strong> đã hoàn tất bước phê duyệt của Lead Auditor và vừa được chuyển tiếp tới bạn bởi <strong>{forwardedByName}</strong> ({forwardedByRole}).</p>
+
+{commentSection}
+
+<p>Vui lòng đăng nhập hệ thống để:</p>
+<ol>
+    <li>Xem lại nội dung Audit Plan, phạm vi và lịch trình.</li>
+    <li>Đánh giá các nguồn lực, rủi ro và đề xuất hành động (nếu cần).</li>
+    <li>Phê duyệt hoặc phản hồi thêm để nhóm chuẩn bị.</li>
+</ol>
+
+<p>Cảm ơn bạn đã dành thời gian hỗ trợ quy trình kiểm định.</p>
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
     }
 }
 //< p >

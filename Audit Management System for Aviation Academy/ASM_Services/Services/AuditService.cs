@@ -163,6 +163,10 @@ namespace ASM_Services.Services
             if (directorId == null)
                 throw new Exception("Director not found");
 
+            var directorInfo = await _userRepo.GetUserShortInfoAsync(directorId.Value);
+            if (directorInfo == null || string.IsNullOrWhiteSpace(directorInfo.Email))
+                throw new Exception("Director contact information not found");
+
             var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
                 UserId = directorId.Value,
@@ -185,6 +189,14 @@ namespace ASM_Services.Services
                 IsRead = false,
                 Status = "Active",
             });
+
+            await _emailService.SendAuditPlanForwardedToDirectorAsync(
+                directorInfo.Email,
+                directorInfo.FullName,
+                audit.Title ?? "Audit Plan",
+                user.FullName,
+                user.RoleName,
+                comment);
 
             return new List<Notification> { notif1, notif2 };
         }
