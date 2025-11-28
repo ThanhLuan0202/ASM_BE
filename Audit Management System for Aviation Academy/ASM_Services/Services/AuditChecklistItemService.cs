@@ -60,5 +60,10 @@ namespace ASM_Services.Services
         {
             return await _repo.SetNonCompliantAsync(auditItemId);
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> CreateFromTemplateAsync(Guid auditId, int deptId)
+        {
+            return await _repo.CreateFromTemplateAsync(auditId, deptId);
+        }
     }
 }

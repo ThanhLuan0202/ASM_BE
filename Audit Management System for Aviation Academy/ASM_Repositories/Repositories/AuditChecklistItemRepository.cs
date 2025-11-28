@@ -164,5 +164,68 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<ViewAuditChecklistItem>(existing);
         }
+
+        public async Task<IEnumerable<ViewAuditChecklistItem>> CreateFromTemplateAsync(Guid auditId, int deptId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty");
+
+            if (deptId <= 0)
+                throw new ArgumentException("DeptId must be greater than zero");
+
+            // 1. Lấy Audit để lấy TemplateId
+            var audit = await _DbContext.Audits
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            if (audit == null)
+                throw new InvalidOperationException($"Audit with ID {auditId} not found");
+
+            if (audit.TemplateId == null || audit.TemplateId == Guid.Empty)
+                throw new InvalidOperationException($"Audit {auditId} does not have a TemplateId");
+
+            // 2. Lấy Department name
+            var department = await _DbContext.Departments
+                .FirstOrDefaultAsync(d => d.DeptId == deptId);
+
+            if (department == null)
+                throw new InvalidOperationException($"Department with ID {deptId} not found");
+
+            string sectionName = department.Name;
+
+            // 3. Lấy tất cả ChecklistItem theo TemplateId
+            var checklistItems = await _DbContext.ChecklistItems
+                .Where(ci => ci.TemplateId == audit.TemplateId)
+                .OrderBy(ci => ci.Order)
+                .ToListAsync();
+
+            if (!checklistItems.Any())
+                throw new InvalidOperationException($"No ChecklistItems found for TemplateId {audit.TemplateId}");
+
+            // 4. Tạo các AuditChecklistItem từ ChecklistItem
+            var auditChecklistItems = new List<AuditChecklistItem>();
+
+            foreach (var checklistItem in checklistItems)
+            {
+                var auditChecklistItem = new AuditChecklistItem
+                {
+                    AuditItemId = Guid.NewGuid(),
+                    AuditId = auditId,
+                    QuestionTextSnapshot = checklistItem.QuestionText,
+                    Section = sectionName,
+                    Order = checklistItem.Order,
+                    Status = "Active",
+                    Comment = null
+                };
+
+                auditChecklistItems.Add(auditChecklistItem);
+            }
+
+            // 5. Lưu vào database
+            _DbContext.AuditChecklistItems.AddRange(auditChecklistItems);
+            await _DbContext.SaveChangesAsync();
+
+            // 6. Trả về kết quả
+            return _mapper.Map<IEnumerable<ViewAuditChecklistItem>>(auditChecklistItems);
+        }
     }
 }

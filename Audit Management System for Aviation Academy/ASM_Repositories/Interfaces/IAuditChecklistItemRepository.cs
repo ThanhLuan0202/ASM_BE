@@ -16,5 +16,6 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewAuditChecklistItem>> GetByUserIdAsync(Guid userId);
         Task<ViewAuditChecklistItem?> SetCompliantAsync(Guid auditItemId);
         Task<ViewAuditChecklistItem?> SetNonCompliantAsync(Guid auditItemId);
+        Task<IEnumerable<ViewAuditChecklistItem>> CreateFromTemplateAsync(Guid auditId, int deptId);
     }
 }

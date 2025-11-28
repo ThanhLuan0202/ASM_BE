@@ -218,5 +218,33 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the item status to NonCompliant", error = ex.Message });
             }
         }
+
+        [HttpPost("from-template")]
+        public async Task<ActionResult<IEnumerable<ViewAuditChecklistItem>>> CreateFromTemplate([FromQuery] Guid auditId, [FromQuery] int deptId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid audit ID" });
+
+                if (deptId <= 0)
+                    return BadRequest(new { message = "Invalid department ID" });
+
+                var result = await _service.CreateFromTemplateAsync(auditId, deptId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating audit checklist items from template", error = ex.Message });
+            }
+        }
     }
 }
