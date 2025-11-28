@@ -30,13 +30,38 @@ namespace ASM_Repositories.Repositories
         public async Task<LoginResponse?> LoginAsync(LoginRequest loginRequest)
         {
             var user = await _DbContext.UserAccounts
-         .FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
+                .AsTracking()
+                .FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
 
             if (user == null || user.PasswordHash == null || user.PasswordSalt == null)
                 return null;
 
-            if (!VerifyPassword(loginRequest.Password, user.PasswordHash, user.PasswordSalt))
+            // Check if account is blocked
+            if (user.Status == "Blocked")
                 return null;
+
+            // Verify password
+            bool isPasswordCorrect = VerifyPassword(loginRequest.Password, user.PasswordHash, user.PasswordSalt);
+
+            if (!isPasswordCorrect)
+            {
+                // Increment failed login count
+                user.FailedLoginCount++;
+
+                // Block account after 5 failed attempts
+                if (user.FailedLoginCount >= 5)
+                {
+                    user.Status = "Blocked";
+                }
+
+                await _DbContext.SaveChangesAsync();
+                return null;
+            }
+
+            // Password is correct - reset failed login count and update last login
+            user.FailedLoginCount = 0;
+            user.LastLogin = DateTime.UtcNow;
+            await _DbContext.SaveChangesAsync();
 
             string token = GenerateJwtToken(user);
 
