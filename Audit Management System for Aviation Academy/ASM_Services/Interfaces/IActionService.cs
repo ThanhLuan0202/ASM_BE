@@ -30,5 +30,6 @@ namespace ASM_Services.Interfaces
         Task<List<Notification>> RejectByHigherLevel(Guid actionId, Guid userBy, string reviewFeedback);
         Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id);
         Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId);
+        Task<IEnumerable<ViewAction>> GetByAssignedDeptIdAsync(int assignedDeptId);
     }
 }

@@ -366,4 +366,26 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    [HttpGet("by-assigned-dept/{assignedDeptId:int}")]
+    public async Task<IActionResult> GetByAssignedDeptId(int assignedDeptId)
+    {
+        try
+        {
+            if (assignedDeptId <= 0)
+                return BadRequest(new { message = "Invalid AssignedDeptId" });
+
+            var result = await _service.GetByAssignedDeptIdAsync(assignedDeptId);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error retrieving actions by assignedDeptId {assignedDeptId}");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
 }

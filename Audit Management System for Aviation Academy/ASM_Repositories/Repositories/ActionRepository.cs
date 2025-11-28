@@ -490,5 +490,19 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAction>>(list);
         }
+
+        public async Task<IEnumerable<ViewAction>> GetByAssignedDeptIdAsync(int assignedDeptId)
+        {
+            if (assignedDeptId <= 0)
+                throw new ArgumentException("AssignedDeptId must be greater than zero.");
+
+            var list = await _context.Actions
+                .AsNoTracking()
+                .Where(a => a.AssignedDeptId == assignedDeptId && a.Status != "Inactive")
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAction>>(list);
+        }
     }
 }
