@@ -900,7 +900,6 @@ namespace ASM.API.Controllers
 
         private byte[] GenerateExcelFile(ViewAuditSummary summary, List<Finding> findings)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using var pkg = new ExcelPackage();
 
             // ---------- Sheet 1: Audit Summary ----------

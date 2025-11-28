@@ -26,5 +26,10 @@ namespace ASM_Services.Services
         {
             return await _authRepository.RegisterAsync(request);
         }
+
+        public async Task<BulkRegisterResponse> BulkRegisterAsync(List<RegisterRequestWithRow> requests)
+        {
+            return await _authRepository.BulkRegisterAsync(requests);
+        }
     }
 }

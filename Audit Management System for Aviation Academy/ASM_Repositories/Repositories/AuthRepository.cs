@@ -148,7 +148,41 @@ namespace ASM_Repositories.Repositories
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        
+        public async Task<BulkRegisterResponse> BulkRegisterAsync(List<RegisterRequestWithRow> requests)
+        {
+            var response = new BulkRegisterResponse
+            {
+                TotalRows = requests.Count
+            };
+
+            foreach (var requestWithRow in requests)
+            {
+                try
+                {
+                    var registerResponse = await RegisterAsync(requestWithRow.Request);
+                    response.SuccessCount++;
+                    response.SuccessItems.Add(new BulkRegisterItem
+                    {
+                        RowNumber = requestWithRow.RowNumber,
+                        Email = registerResponse.Email,
+                        FullName = registerResponse.FullName,
+                        UserId = registerResponse.UserId
+                    });
+                }
+                catch (Exception ex)
+                {
+                    response.FailureCount++;
+                    response.ErrorItems.Add(new BulkRegisterError
+                    {
+                        RowNumber = requestWithRow.RowNumber,
+                        Email = requestWithRow.Request.Email ?? "N/A",
+                        ErrorMessage = ex.Message
+                    });
+                }
+            }
+
+            return response;
+        }
     }
 }
 

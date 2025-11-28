@@ -158,6 +158,9 @@ builder.Services.AddMemoryCache();
 
 QuestPDF.Settings.License = LicenseType.Community;
 
+// Configure EPPlus license (EPPlus 8+)
+ExcelPackage.License.SetNonCommercialOrganization("Aviation Academy");
+
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 builder.Services.AddSingleton<NotificationHelper>();
 builder.Services.AddSignalR();
