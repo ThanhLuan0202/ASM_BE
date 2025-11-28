@@ -251,6 +251,34 @@ namespace ASM_Services.Services
             await SendEmailAsync(toEmail, subject, body);
         }
 
+        public async Task SendAuditPlanRejectedForCreatorAsync(string toEmail, string creatorFullName, string auditTitle, string directorFullName, string comment)
+        {
+            var sanitizedAuditTitle = string.IsNullOrWhiteSpace(auditTitle) ? "Audit Plan" : auditTitle;
+            string subject = $"[Audit Plan Rejected] Kế hoạch '{sanitizedAuditTitle}' bị từ chối bởi Director";
+            var commentSection = BuildCommentSection(comment, "Lý do từ chối");
+
+            string body = $@"
+<p>Xin chào <strong>{creatorFullName}</strong>,</p>
+
+<p>Kế hoạch kiểm định <strong>{sanitizedAuditTitle}</strong> bạn đã tạo đã được Director <strong>{directorFullName}</strong> xem xét và <span style='color:#d9534f;'><strong>từ chối phê duyệt</strong></span>.</p>
+
+{commentSection}
+
+<p>Vui lòng:</p>
+<ol>
+    <li>Xem lại các yêu cầu và lý do từ chối từ Director.</li>
+    <li>Chỉnh sửa lại Audit Plan theo phản hồi.</li>
+    <li>Gửi lại để Lead Auditor và Director xem xét lại.</li>
+</ol>
+
+<p>Nếu có thắc mắc, vui lòng liên hệ với Director hoặc Lead Auditor để được hỗ trợ.</p>
+
+<p>Cảm ơn bạn đã phối hợp.</p>
+<p><em>Hệ thống Audit Management System</em></p>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
+
         private static string FormatDate(DateTime? date) => date.HasValue ? date.Value.ToString("dd/MM/yyyy") : "Chưa ấn định";
 
         private static string BuildCommentSection(string comment, string title)

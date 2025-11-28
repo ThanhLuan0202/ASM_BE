@@ -13,6 +13,7 @@ namespace ASM_Services.Interfaces
         Task SendAuditPlanApprovedForLeadAsync(string toEmail, string leadFullName, string auditTitle, string directorFullName, DateTime? fieldworkStart, string comment);
         Task SendAuditPlanApprovedForAuditorAsync(string toEmail, string auditorFullName, string auditTitle, string leadFullName, string directorFullName, DateTime? fieldworkStart, string comment);
         Task SendAuditPlanApprovedForDepartmentHeadAsync(string toEmail, string deptHeadFullName, string deptName, string auditTitle, DateTime? fieldworkStart, string comment);
+        Task SendAuditPlanRejectedForCreatorAsync(string toEmail, string creatorFullName, string auditTitle, string directorFullName, string comment);
     }
 }
 

@@ -413,6 +413,25 @@ namespace ASM_Services.Services
                 Status = "Active",
             });
 
+            // Send email to creator (auditor who created the audit)
+            var creatorInfo = await _userRepo.GetUserShortInfoAsync(audit.CreatedBy.Value);
+            if (creatorInfo != null && !string.IsNullOrWhiteSpace(creatorInfo.Email))
+            {
+                try
+                {
+                    await _emailService.SendAuditPlanRejectedForCreatorAsync(
+                        creatorInfo.Email,
+                        creatorInfo.FullName,
+                        audit.Title,
+                        user.FullName,
+                        comment);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send rejection email to creator for audit {AuditId}", auditId);
+                }
+            }
+
             return new List<Notification> { notif1, notif2 };
         }
 
