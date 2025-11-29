@@ -391,6 +391,7 @@ namespace ASM_Repositories.Repositories
 
             entity.Status = "Declined";
             entity.ReviewFeedback = reviewFeedback;
+            entity.ProgressPercent = 0;
             _context.Actions.Update(entity);
             await _context.SaveChangesAsync();
             return true;
