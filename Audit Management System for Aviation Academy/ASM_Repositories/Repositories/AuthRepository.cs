@@ -100,7 +100,8 @@ namespace ASM_Repositories.Repositories
                 PasswordSalt = salt,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
-                FailedLoginCount = 0
+                FailedLoginCount = 0,
+                Status = "Active"
             };
 
             _DbContext.ChangeTracker.Clear();
@@ -113,7 +114,8 @@ namespace ASM_Repositories.Repositories
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = user.RoleName,
-                DeptId = user.DeptId
+                DeptId = user.DeptId,
+                Status = "Active"
             };
         }
         private bool VerifyPassword(string password, byte[] hash, byte[] salt)

@@ -13,6 +13,7 @@ namespace ASM_Repositories.Models.LoginDTO
         public string FullName { get; set; } = null!;
         public string Role { get; set; } = null!;
         public int? DeptId { get; set; }
+        public string Status { get; set; }
     }
 }
 
