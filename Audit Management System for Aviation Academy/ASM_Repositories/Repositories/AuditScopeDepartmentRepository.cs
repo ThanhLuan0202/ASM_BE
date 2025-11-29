@@ -2,6 +2,7 @@
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
+using ASM_Repositories.Models.DepartmentDTO;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -121,24 +122,24 @@ namespace ASM_Repositories.Repositories
             }
         }
 
-        public async Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId)
+        public async Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId)
         {
             if (auditId == Guid.Empty)
                 throw new ArgumentException("AuditId cannot be empty");
 
-            var departments = await _context.AuditScopeDepartments
+            var auditScopeDepts = await _context.AuditScopeDepartments
                 .Where(asc => asc.AuditId == auditId && asc.Status == "Active")
                 .Include(asc => asc.Dept)
-                .Select(asc => new Interfaces.DepartmentInfoDto
-                {
-                    DeptId = asc.DeptId,
-                    Name = asc.Dept != null ? asc.Dept.Name : string.Empty
-                })
-                .Distinct()
-                .OrderBy(d => d.Name)
                 .ToListAsync();
 
-            return departments;
+            var departments = auditScopeDepts
+                .Where(asc => asc.Dept != null)
+                .Select(asc => asc.Dept)
+                .Distinct()
+                .OrderBy(d => d.Name)
+                .ToList();
+
+            return _mapper.Map<IEnumerable<ViewDepartment>>(departments);
         }
 
     }

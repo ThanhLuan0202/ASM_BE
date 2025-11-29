@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
+using ASM_Repositories.Models.DepartmentDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> SoftDeleteAsync(Guid id);
         Task<List<AuditScopeDepartment>> GetAuditScopeDepartmentsAsync(Guid auditId);
         Task UpdateScopeDepartmentsAsync(Guid auditId, List<UpdateAuditScopeDepartment>? list);
-        Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId);
+        Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId);
     }
 
     public class DepartmentInfoDto

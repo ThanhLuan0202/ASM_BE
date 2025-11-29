@@ -1,5 +1,6 @@
 ﻿using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
+using ASM_Repositories.Models.DepartmentDTO;
 using ASM_Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,6 @@ namespace ASM_Services.Services
         public Task<ViewAuditScopeDepartment> CreateAsync(CreateAuditScopeDepartment dto) => _repo.AddAsync(dto);
         public Task<ViewAuditScopeDepartment?> UpdateAsync(Guid id, UpdateAuditScopeDepartment dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> SoftDeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
-        public Task<IEnumerable<DepartmentInfoDto>> GetDepartmentsByAuditIdAsync(Guid auditId) => _repo.GetDepartmentsByAuditIdAsync(auditId);
+        public Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId) => _repo.GetDepartmentsByAuditIdAsync(auditId);
     }
 }
