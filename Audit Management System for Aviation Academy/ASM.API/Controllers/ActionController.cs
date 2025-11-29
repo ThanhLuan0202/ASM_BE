@@ -17,6 +17,11 @@ public class ActionController : ControllerBase
         public byte ProgressPercent { get; set; }
     }
 
+    public class RejectActionRequest
+    {
+        public string Feedback { get; set; }
+    }
+
     public ActionController(IActionService service, ILogger<ActionController> logger)
     {
         _service = service;
@@ -233,18 +238,20 @@ public class ActionController : ControllerBase
     }
 
     [HttpPost("{id}/status/rejected")]
-    public async Task<IActionResult> SetStatusRejected(Guid id)
+    public async Task<IActionResult> SetStatusRejected(Guid id, [FromBody] RejectActionRequest request)
     {
         try
         {
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToRejectedAsync(id);
+            string feedback = request?.Feedback ?? string.Empty;
+
+            var updated = await _service.UpdateStatusToRejectedAsync(id, feedback);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
-            return Ok(new { message = "Action status updated to Rejected." });
+            return Ok(new { message = "Action status updated to Rejected.", progressPercent = 0 });
         }
         catch (InvalidOperationException ex)
         {

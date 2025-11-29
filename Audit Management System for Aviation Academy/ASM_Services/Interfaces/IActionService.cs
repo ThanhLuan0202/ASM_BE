@@ -19,6 +19,7 @@ namespace ASM_Services.Interfaces
         Task<bool> UpdateStatusToReviewedAsync(Guid id);
         Task<bool> UpdateStatusToApprovedAsync(Guid id);
         Task<bool> UpdateStatusToRejectedAsync(Guid id);
+        Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback);
         Task<bool> UpdateStatusToClosedAsync(Guid id);
         Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId);
         Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent);
