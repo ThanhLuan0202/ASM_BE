@@ -506,5 +506,11 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAction>>(list);
         }
+        
+        public async Task<List<ASM_Repositories.Entities.Action>> GetActionsByFindingIdsAsync(List<Guid> findingIds)
+        {
+            return await _context.Actions.Where(a => findingIds.Contains(a.FindingId)).ToListAsync();
+        }
+
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ASM_Repositories.Models.FindingDTO
 {
-    public class ViewFindingByMonth
+    public class ViewFindingInAudit 
     {
         public int Month { get; set; }
         public int Total { get; set; }

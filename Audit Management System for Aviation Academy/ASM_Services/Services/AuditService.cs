@@ -44,6 +44,7 @@ namespace ASM_Services.Services
         private readonly IAuditApprovalRepository _auditApprovalRepo;
         private readonly IAuditAssignmentRepository _auditAssignmentRepo;
         private readonly IAuditChecklistItemRepository _auditChecklistItemRepo;
+        private readonly IActionRepository _actionRepo;
 
         public AuditService(
             IAuditRepository repo,
@@ -64,7 +65,8 @@ namespace ASM_Services.Services
             IUsersRepository userRepo,
             IAuditApprovalRepository auditApprovalRepo,
             IAuditAssignmentRepository auditAssignmentRepo,
-            IAuditChecklistItemRepository auditChecklistItemRepo)
+            IAuditChecklistItemRepository auditChecklistItemRepo,
+            IActionRepository actionRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -85,6 +87,7 @@ namespace ASM_Services.Services
             _auditApprovalRepo = auditApprovalRepo;
             _auditAssignmentRepo = auditAssignmentRepo;
             _auditChecklistItemRepo = auditChecklistItemRepo;
+            _actionRepo = actionRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -452,23 +455,20 @@ namespace ASM_Services.Services
             var findings = await _findingRepo.GetFindingsAsync(auditId);
             var scopeDepts = await _auditScopeDepartmentRepo.GetAuditScopeDepartmentsAsync(auditId);
 
-            var now = DateTime.UtcNow;
 
-            var findingsThisMonth = findings
-                .Where(f => f.CreatedAt.Month == now.Month && f.CreatedAt.Year == now.Year)
-                .ToList();
+            var findingsThisAudit = findings.ToList();
 
-            var total = findingsThisMonth.Count;
-            var open = findingsThisMonth.Count(f => f.Status == "Open");
-            var closed = findingsThisMonth.Count(f => f.Status == "Closed");
-            var overdue = findingsThisMonth.Count(f => f.Deadline != null && f.Deadline < now && f.Status != "Closed");
+            var total = findingsThisAudit.Count;
+            var open = findingsThisAudit.Count(f => f.Status == "Open");
+            var closed = findingsThisAudit.Count(f => f.Status == "Closed");
+            var overdue = findingsThisAudit.Count(f => f.Status == "Overdue");
 
-            var severityGroups = findingsThisMonth
+            var severityGroups = findingsThisAudit
                 .GroupBy(f => f.Severity ?? "N/A")
                 .Select(g => new { Severity = g.Key, Count = g.Count() })
                 .ToList();
 
-            var findingDeptIds = findingsThisMonth
+            var findingDeptIds = findingsThisAudit
                 .Where(f => f.DeptId != null)
                 .Select(f => f.DeptId.Value)
                 .ToList();
@@ -486,7 +486,7 @@ namespace ASM_Services.Services
                 .Select(id => new ViewDepartmentCount
                 {
                     DeptName = deptNames.ContainsKey(id) ? deptNames[id] : "Unknown",
-                    Count = findingsThisMonth.Count(f => f.DeptId == id)
+                    Count = findingsThisAudit.Count(f => f.DeptId == id)
                 })
                 .GroupBy(x => x.DeptName)
                 .Select(g => new ViewDepartmentCount
@@ -496,8 +496,7 @@ namespace ASM_Services.Services
                 })
                 .ToList();
 
-            // RootCause summary
-            var byRootGroups = findingsThisMonth
+            var byRootGroups = findingsThisAudit
                 .GroupBy(f => f.RootCauseId)
                 .Select(g => new { RootId = g.Key, Count = g.Count() })
                 .ToList();
@@ -519,20 +518,25 @@ namespace ASM_Services.Services
                 })
                 .ToList();
 
-            var findingIds = findingsThisMonth.Select(f => f.FindingId).ToList();
+            var findingIds = findingsThisAudit.Select(f => f.FindingId).ToList();
             var attachments = await _attachmentRepo.GetAttachmentsByFindingIdAsync(findingIds);
+            var actions = await _actionRepo.GetActionsByFindingIdsAsync(findingIds);
 
-            // Mapping Findings
-            var mappedFindings = _mapper.Map<List<ViewFindingDetail>>(findingsThisMonth);
+            var mappedFindings = _mapper.Map<List<ViewFindingDetail>>(findingsThisAudit);
 
             foreach (var f in mappedFindings)
             {
                 f.Attachments = attachments.Where(a => a.EntityId == f.FindingId).ToList();
+
+                var fa = actions.Where(a => a.FindingId == f.FindingId).ToList();
+                var lastAction = fa.OrderByDescending(a => a.CreatedAt).FirstOrDefault();
+
+                f.ProgressPercent = lastAction?.ProgressPercent;
+
             }
 
-            var findingsByMonth = new ViewFindingByMonth
+            var findingsSummary = new ViewFindingInAudit
             {
-                Month = now.Month,
                 Total = total,
                 Open = open,
                 Closed = closed,
@@ -558,7 +562,7 @@ namespace ASM_Services.Services
                 SeverityBreakdown = severityGroups.ToDictionary(x => x.Severity, x => x.Count),
                 ByDepartment = byDepartment,
                 ByRootCause = byRootCause,
-                FindingsByMonth = new List<ViewFindingByMonth> { findingsByMonth }
+                FindingsInAudit = new List<ViewFindingInAudit> { findingsSummary }
             };
         }
 

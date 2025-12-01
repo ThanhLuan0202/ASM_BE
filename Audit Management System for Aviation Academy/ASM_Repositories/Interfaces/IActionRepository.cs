@@ -32,5 +32,6 @@ namespace ASM_Repositories.Interfaces
         Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id);
         Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId);
         Task<IEnumerable<ViewAction>> GetByAssignedDeptIdAsync(int assignedDeptId);
+        Task<List<ASM_Repositories.Entities.Action>> GetActionsByFindingIdsAsync(List<Guid> findingIds);
     }
 }

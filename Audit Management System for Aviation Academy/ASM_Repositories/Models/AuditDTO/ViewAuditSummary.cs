@@ -27,6 +27,6 @@ namespace ASM_Repositories.Models.AuditDTO
         public Dictionary<string, int> SeverityBreakdown { get; set; } = new();
         public List<ViewDepartmentCount> ByDepartment { get; set; } = new();
         public List<ViewRootCauseCount> ByRootCause { get; set; } = new();
-        public List<ViewFindingByMonth> FindingsByMonth { get; set; } = new();
+        public List<ViewFindingInAudit> FindingsInAudit { get; set; } = new();
     }
 }
