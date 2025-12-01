@@ -128,7 +128,7 @@ namespace ASM_Repositories.Repositories
                 await _context.AuditTeams.AddAsync(entity);
             }
         }
-
+        /*
         public async Task<Guid?> GetLeadUserIdByAuditIdAsync(Guid auditId)
         {
             var lead = await _context.AuditTeams
@@ -138,7 +138,7 @@ namespace ASM_Repositories.Repositories
 
             return lead == Guid.Empty ? null : lead;
         }
-
+        */
         public async Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId)
         {
             if (userId == Guid.Empty)

@@ -21,6 +21,7 @@ namespace ASM_Repositories.Interfaces
         Task<Guid?> GetAuditeeOwnerByDepartmentIdAsync(int deptId);
         Task<ViewUserShortInfo?> GetAuditeeOwnerInfoByDepartmentIdAsync(int deptId);
         Task<bool> UserExistsAsync(Guid userId);
+        Task<Guid?> GetLeadAuditorIdAsync();
 
     }
 }

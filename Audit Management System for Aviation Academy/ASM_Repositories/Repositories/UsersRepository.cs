@@ -186,5 +186,18 @@ namespace ASM_Repositories.Repositories
             return await _context.UserAccounts
                 .AnyAsync(u => u.UserId == userId && u.IsActive && u.Status == "Active");
         }
+
+        public async Task<Guid?> GetLeadAuditorIdAsync()
+        {
+            var lead = await _context.UserAccounts
+                .Where(t => t.RoleName == "LeadAuditor" &&
+                    t.IsActive &&
+                    t.Status != null &&
+                    t.Status.Equals("Active"))
+                .Select(t => t.UserId)
+                .FirstOrDefaultAsync();
+
+            return lead == Guid.Empty ? null : lead;
+        }
     }
 }

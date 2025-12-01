@@ -125,7 +125,7 @@ namespace ASM_Services.Services
             if (user == null)
                 throw new Exception("User not found");
 
-            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            var leadId = await _userRepo.GetLeadAuditorIdAsync();
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
 
@@ -276,7 +276,7 @@ namespace ASM_Services.Services
                     comment));
             }
 
-            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            var leadId = await _userRepo.GetLeadAuditorIdAsync();
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
 
@@ -397,7 +397,7 @@ namespace ASM_Services.Services
                 Status = "Active",
             });
 
-            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            var leadId = await _userRepo.GetLeadAuditorIdAsync();
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
 
@@ -568,7 +568,7 @@ namespace ASM_Services.Services
             if (user == null)
                 throw new Exception("User not found");
 
-            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId);
+            var leadId = await _userRepo.GetLeadAuditorIdAsync();
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
 

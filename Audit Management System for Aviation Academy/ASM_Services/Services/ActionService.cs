@@ -157,7 +157,7 @@ namespace ASM_Services.Services
             if (auditId == null)
                 throw new Exception("AuditId not found for this Finding");
 
-            var leadId = await _auditTeamRepo.GetLeadUserIdByAuditIdAsync(auditId.Value);
+            var leadId = await _userRepo.GetLeadAuditorIdAsync();
             if (leadId == null)
                 throw new Exception("LeadId not found for this Audit");
 
