@@ -52,6 +52,7 @@ namespace ASM_Repositories.Repositories
             if (existing == null) return null;
 
             _mapper.Map(dto, existing);
+            _context.Entry(existing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return _mapper.Map<ViewDepartment>(existing);
