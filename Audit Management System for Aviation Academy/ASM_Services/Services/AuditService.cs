@@ -760,6 +760,7 @@ namespace ASM_Services.Services
 
         public async Task AuditArchivedAsync(Guid auditId)
         {
+            await _repo.UpdateStatusToArchivedAsync(auditId);
             await _auditTeamRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditScopeDepartmentRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditCriteriaMapRepo.UpdateStatusToArchivedAsync(auditId);

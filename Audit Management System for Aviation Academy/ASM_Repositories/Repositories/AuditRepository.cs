@@ -467,6 +467,26 @@ namespace ASM_Repositories.Repositories
                 .FirstOrDefaultAsync(a => a.AuditId == auditId);
         }
 
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            var audit = await _context.Audits.FirstOrDefaultAsync(a => a.AuditId == auditId);
+            if (audit == null)
+                throw new InvalidOperationException($"Audit with ID '{auditId}' does not exist.");
+
+            var statusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Archived");
+            if (!statusExists)
+            {
+                throw new InvalidOperationException($"Status 'Archived' does not exist");
+            }
+
+            audit.Status = "Archived";
+            _context.Entry(audit).Property(x => x.Status).IsModified = true;
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
 
