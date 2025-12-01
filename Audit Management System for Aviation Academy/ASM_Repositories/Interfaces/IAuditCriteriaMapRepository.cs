@@ -13,5 +13,6 @@ namespace ASM_Repositories.Interfaces
         Task<bool> DeleteAsync(Guid auditId, Guid criteriaId);
         Task<bool> ExistsAsync(Guid auditId, Guid criteriaId);
         Task UpdateCriteriaMapAsync(Guid auditId, List<UpdateAuditCriteriaMap>? list);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }

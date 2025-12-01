@@ -41,6 +41,9 @@ namespace ASM_Services.Services
         private readonly IAuditScheduleRepository _auditScheduleRepo;
         private readonly INotificationRepository _notificationRepo;
         private readonly IUsersRepository _userRepo;
+        private readonly IAuditApprovalRepository _auditApprovalRepo;
+        private readonly IAuditAssignmentRepository _auditAssignmentRepo;
+        private readonly IAuditChecklistItemRepository _auditChecklistItemRepo;
 
         public AuditService(
             IAuditRepository repo,
@@ -58,7 +61,10 @@ namespace ASM_Services.Services
             IAuditTeamRepository auditTeamRepo,
             IAuditScheduleRepository auditScheduleRepo,
             INotificationRepository notificationRepo,
-            IUsersRepository userRepo)
+            IUsersRepository userRepo,
+            IAuditApprovalRepository auditApprovalRepo,
+            IAuditAssignmentRepository auditAssignmentRepo,
+            IAuditChecklistItemRepository auditChecklistItemRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -76,6 +82,9 @@ namespace ASM_Services.Services
             _auditScheduleRepo = auditScheduleRepo;
             _notificationRepo = notificationRepo;
             _userRepo = userRepo;
+            _auditApprovalRepo = auditApprovalRepo;
+            _auditAssignmentRepo = auditAssignmentRepo;
+            _auditChecklistItemRepo = auditChecklistItemRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -207,7 +216,7 @@ namespace ASM_Services.Services
             if (audit == null)
                 throw new Exception("Audit not found");
 
-            if(audit.CreatedBy == null)
+            if (audit.CreatedBy == null)
                 throw new Exception("Audit CreatedBy is null");
 
             await _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
@@ -745,5 +754,15 @@ namespace ASM_Services.Services
             return true;
         }
 
+        public async Task AuditArchivedAsync(Guid auditId)
+        {
+            await _auditTeamRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditScopeDepartmentRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditCriteriaMapRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditAssignmentRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditScheduleRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditChecklistItemRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditApprovalRepo.UpdateStatusToArchivedAsync(auditId);
+        }
     }
 }

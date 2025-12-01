@@ -14,5 +14,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditApproval> AddAsync(CreateAuditApproval dto);
         Task<ViewAuditApproval> UpdateAsync(Guid id, UpdateAuditApproval dto);
         Task<bool> SoftDeleteAsync(Guid id, Guid userId);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }

@@ -19,6 +19,7 @@ namespace ASM_Repositories.Interfaces
         Task<List<AuditScopeDepartment>> GetAuditScopeDepartmentsAsync(Guid auditId);
         Task UpdateScopeDepartmentsAsync(Guid auditId, List<UpdateAuditScopeDepartment>? list);
         Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 
     public class DepartmentInfoDto

@@ -105,6 +105,28 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            var entities = await _context.AuditApprovals
+                .Where(a => a.AuditId == auditId)
+                .ToListAsync();
+
+            if (!entities.Any())
+                throw new InvalidOperationException($"No AuditApproval found for AuditId '{auditId}'.");
+
+            foreach (var entity in entities)
+            {
+                entity.Status = "Archived";
+                _context.Entry(entity).Property(x => x.Status).IsModified = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 
 }

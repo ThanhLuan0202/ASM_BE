@@ -16,6 +16,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditAssignment?> UpdateAsync(Guid assignmentId, UpdateAuditAssignment dto);
         Task<bool> DeleteAsync(Guid assignmentId);
         Task<bool> ExistsAsync(Guid assignmentId);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }
 

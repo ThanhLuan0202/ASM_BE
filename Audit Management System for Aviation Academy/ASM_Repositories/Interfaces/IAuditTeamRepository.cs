@@ -20,5 +20,6 @@ namespace ASM_Repositories.Interfaces
         Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId);
         Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId);
         Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }

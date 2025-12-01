@@ -15,6 +15,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> DeleteAsync(Guid scheduleId);
         Task<bool> ExistsAsync(Guid scheduleId);
         Task UpdateSchedulesAsync(Guid auditId, List<UpdateAuditSchedule>? list);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }
 

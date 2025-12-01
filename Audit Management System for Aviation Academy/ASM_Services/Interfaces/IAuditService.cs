@@ -26,5 +26,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note);
         Task<Notification> ReportRejectedAsync(Guid auditId, Guid userBy, string note);
         Task<bool> UpdateAuditPlanAsync(Guid auditId, UpdateAuditPlan request);
+        Task AuditArchivedAsync(Guid auditId);
     }
 }

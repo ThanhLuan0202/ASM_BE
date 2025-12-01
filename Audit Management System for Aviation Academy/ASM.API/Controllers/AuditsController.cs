@@ -4,6 +4,7 @@ using ASM_Repositories.Models.AuditDTO;
 using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
+using ASM_Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using QuestPDF.Fluent;
@@ -559,6 +560,32 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { Message = "An error occurred while submitting the audit", Error = ex.Message });
             }
         }
+
+        [HttpPut("archive/{auditId}")]
+        public async Task<IActionResult> ArchiveAudit(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                return BadRequest("AuditId cannot be empty.");
+
+            try
+            {
+                await _service.AuditArchivedAsync(auditId);
+                return Ok("Audit archived successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
         [HttpGet("{auditId:guid}/chart/line")]
         public async Task<IActionResult> GetFindingsByMonthChart(Guid auditId)
