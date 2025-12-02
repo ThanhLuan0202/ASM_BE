@@ -12,6 +12,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewNotification> CreateAsync(CreateNotification dto);
         Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto);
         Task<bool> DeleteAsync(Guid notificationId);
+        Task MarkAsReadAsync(Guid notificationId);
     }
 }
 

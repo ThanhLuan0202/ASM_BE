@@ -14,6 +14,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto);
         Task<bool> DeleteAsync(Guid notificationId);
         Task<Notification> CreateNotificationAsync(Notification create);
+        Task MarkAsReadAsync(Guid notificationId);
     }
 }
 

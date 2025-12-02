@@ -133,6 +133,21 @@ namespace ASM_Repositories.Repositories
             return create; 
         }
 
+        public async Task MarkAsReadAsync(Guid notificationId)
+        {
+            if (notificationId == Guid.Empty)
+                throw new ArgumentException("NotificationId cannot be empty.");
+
+            var notif = await _context.Notifications.FirstOrDefaultAsync(a => a.NotificationId == notificationId);
+            if (notif == null)
+                throw new InvalidOperationException($"No Notification found for NotificationId '{notificationId}'.");
+
+            notif.IsRead = true;
+            notif.ReadAt = DateTime.UtcNow;
+            _context.Entry(notif).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
 

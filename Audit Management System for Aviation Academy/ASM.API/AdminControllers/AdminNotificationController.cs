@@ -1,5 +1,6 @@
 using ASM_Repositories.Models.NotificationDTO;
 using ASM_Services.Interfaces.AdminInterfaces;
+using ASM_Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -132,6 +133,24 @@ namespace ASM.API.AdminControllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while updating the notification", error = ex.Message });
+            }
+        }
+
+        [HttpPut("{notificationId:guid}/read")]
+        public async Task<IActionResult> MarkAsRead([FromRoute] Guid notificationId)
+        {
+            try
+            {
+                await _service.MarkAsReadAsync(notificationId);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
             }
         }
 

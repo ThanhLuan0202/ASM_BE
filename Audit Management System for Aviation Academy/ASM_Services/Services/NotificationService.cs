@@ -21,6 +21,7 @@ namespace ASM_Services.Services
         public Task<ViewNotification> CreateAsync(CreateNotification dto) => _repo.CreateAsync(dto);
         public Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto) => _repo.UpdateAsync(notificationId, dto);
         public Task<bool> DeleteAsync(Guid notificationId) => _repo.DeleteAsync(notificationId);
+        public async Task MarkAsReadAsync(Guid notificationId) => await _repo.MarkAsReadAsync(notificationId);
     }
 }
 
