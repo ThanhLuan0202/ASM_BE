@@ -768,6 +768,10 @@ namespace ASM_Services.Services
             await _auditScheduleRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditChecklistItemRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditApprovalRepo.UpdateStatusToArchivedAsync(auditId);
+            await _findingRepo.UpdateStatusToArchivedAsync(auditId);
+            await _actionRepo.UpdateStatusToArchivedAsync(auditId);
+            await _attachmentRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditDocumentRepo.UpdateStatusToArchivedAsync(auditId);
         }
     }
 }

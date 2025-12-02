@@ -1,4 +1,5 @@
 ﻿using ASM_Repositories.DBContext;
+using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.ActionDTO;
 using AutoMapper;
@@ -8,18 +9,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ASM_Repositories.Repositories
 {
     public class ActionRepository : IActionRepository
     {
         private readonly AuditManagementSystemForAviationAcademyContext _context;
+        private readonly IFindingRepository _findingRepo;
         private readonly IMapper _mapper;
 
-        public ActionRepository(AuditManagementSystemForAviationAcademyContext context, IMapper mapper)
+        public ActionRepository(AuditManagementSystemForAviationAcademyContext context, IFindingRepository findingRepo ,IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+            _findingRepo = findingRepo;
         }
 
         public async Task<IEnumerable<ViewAction>> GetAllAsync()
@@ -510,6 +514,28 @@ namespace ASM_Repositories.Repositories
         public async Task<List<ASM_Repositories.Entities.Action>> GetActionsByFindingIdsAsync(List<Guid> findingIds)
         {
             return await _context.Actions.Where(a => findingIds.Contains(a.FindingId)).ToListAsync();
+        }
+
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            var findings = await _findingRepo.GetByAuditIdIncludeActionsAsync(auditId);
+
+            if (!findings.Any())
+                throw new InvalidOperationException($"No Finding found for AuditId '{auditId}'.");
+
+            foreach (var finding in findings)
+            {
+                foreach (var action in finding.Actions)
+                {
+                    action.Status = "Archived";
+                    _context.Entry(action).Property(x => x.Status).IsModified = true;
+                }
+            }
+
+            await _context.SaveChangesAsync();
         }
 
     }

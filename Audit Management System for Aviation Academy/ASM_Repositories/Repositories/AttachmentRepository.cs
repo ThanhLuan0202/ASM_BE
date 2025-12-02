@@ -8,18 +8,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ASM_Repositories.Repositories
 {
     public class AttachmentRepository : IAttachmentRepository
     {
         private readonly AuditManagementSystemForAviationAcademyContext _context;
+        private readonly IFindingRepository _findingRepo;
         private readonly IMapper _mapper;
 
-        public AttachmentRepository(AuditManagementSystemForAviationAcademyContext context, IMapper mapper)
+        public AttachmentRepository(AuditManagementSystemForAviationAcademyContext context, IMapper mapper, IFindingRepository findingRepo)
         {
             _context = context;
             _mapper = mapper;
+            _findingRepo = findingRepo;
         }
 
         public async Task<IEnumerable<ViewAttachment>> GetAllAsync()
@@ -211,6 +214,40 @@ namespace ASM_Repositories.Repositories
             }
 
             _context.Attachments.UpdateRange(entities);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            var findings = await _findingRepo.GetByAuditIdIncludeActionsAsync(auditId);
+            if (!findings.Any())
+                return;
+
+            var findingIds = findings.Select(f => f.FindingId).ToList();
+            var actionIds = findings.SelectMany(f => f.Actions).Select(a => a.ActionId).ToList();
+
+            if (!findingIds.Any() && !actionIds.Any())
+                return;
+
+            var attachments = await _context.Attachments
+                .Where(a =>
+                    (a.EntityType == "Finding" && findingIds.Contains(a.EntityId)) ||
+                    (a.EntityType == "Action" && actionIds.Contains(a.EntityId)))
+                .ToListAsync();
+
+            if (!attachments.Any())
+                return;
+
+            foreach (var att in attachments)
+            {
+                att.Status = "Archived";
+                att.IsArchived = true;
+                _context.Entry(att).Property(x => x.Status).IsModified = true;
+            }
+
             await _context.SaveChangesAsync();
         }
 

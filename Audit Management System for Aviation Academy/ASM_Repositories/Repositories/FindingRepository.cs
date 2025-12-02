@@ -438,7 +438,34 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewFinding>>(findings);
         }
 
-        
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            var entities = await _context.Findings
+                .Where(a => a.AuditId == auditId)
+                .ToListAsync();
+
+            if (!entities.Any())
+                throw new InvalidOperationException($"No Finding found for AuditId '{auditId}'.");
+
+            foreach (var entity in entities)
+            {
+                entity.Status = "Archived";
+                _context.Entry(entity).Property(x => x.Status).IsModified = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Finding>> GetByAuditIdIncludeActionsAsync(Guid auditId)
+        {
+            return await _context.Findings
+            .Where(f => f.AuditId == auditId)
+            .Include(f => f.Actions)
+            .ToListAsync();
+        }
 
     }
 }

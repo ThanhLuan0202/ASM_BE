@@ -22,6 +22,7 @@ namespace ASM_Repositories.Interfaces
         Task<List<ViewAttachment>> GetAttachmentsByFindingIdAsync(List<Guid> findingIds);
         Task<List<Guid>> GetAttachmentIdsByActionIdAsync(Guid actionId);
         Task UpdateStatusAsync(IEnumerable<Guid> attachmentIds, string status);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }
 
