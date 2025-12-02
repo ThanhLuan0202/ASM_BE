@@ -426,7 +426,7 @@ namespace ASM_Repositories.Repositories
                 throw new ArgumentException("CreatedBy cannot be empty");
 
             var findings = await _DbContext.Findings
-                .Where(f => f.CreatedBy == createdBy)
+                .Where(f => f.CreatedBy == createdBy && f.Status != "Archived")
                 .Include(f => f.Audit)
                 .Include(f => f.Dept)
                 .Include(f => f.CreatedByNavigation)

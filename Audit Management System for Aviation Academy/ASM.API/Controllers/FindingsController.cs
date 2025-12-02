@@ -316,5 +316,28 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving findings by createdBy", error = ex.Message });
             }
         }
+
+        [HttpGet("my-findings")]
+        public async Task<ActionResult<IEnumerable<ViewFinding>>> GetMyFindings()
+        {
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.GetFindingsByCreatedByAsync(userId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving findings", error = ex.Message });
+            }
+        }
     }
 }

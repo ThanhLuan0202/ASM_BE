@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:5500")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:5500", "https://moca.mom:80")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
