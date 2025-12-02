@@ -16,7 +16,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> ExistsAsync(Guid id);
         Task<List<Finding>> GetFindingsAsync(Guid auditId);
         Task<List<ViewFindingByMonthCount>> GetFindingsByMonthAsync(Guid auditId);
-        Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId);
+        Task<List<(string Department, int Count)>> GetDepartmentFindingsInAuditAsync(Guid auditId);
         Task UpdateFindingStatusAsync(Guid findingId, string status);
         Task<IEnumerable<ViewFinding>> GetByDepartmentIdAsync(int departmentId);
         Task<Guid?> GetAuditIdByFindingIdAsync(Guid findingId);

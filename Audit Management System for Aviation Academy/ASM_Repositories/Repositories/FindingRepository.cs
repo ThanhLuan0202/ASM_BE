@@ -278,16 +278,11 @@ namespace ASM_Repositories.Repositories
             return result;
         }
 
-        public async Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId)
+        public async Task<List<(string Department, int Count)>> GetDepartmentFindingsInAuditAsync(Guid auditId)
         {
-            int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
-
-            var start = new DateTime(currentYear, currentMonth, 1);
-            var end = start.AddMonths(1);
-
+           
             var result = await _DbContext.Findings
-                .Where(f => f.AuditId == auditId && f.CreatedAt >= start && f.CreatedAt < end)
+                .Where(f => f.AuditId == auditId)
                 .Include(f => f.Dept) 
                 .GroupBy(f => f.Dept.Name)
                 .Select(g => new
@@ -442,6 +437,8 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewFinding>>(findings);
         }
+
+        
 
     }
 }

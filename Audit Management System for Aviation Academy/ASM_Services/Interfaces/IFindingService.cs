@@ -15,7 +15,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<bool> DeleteFindingAsync(Guid id);
         Task<List<Finding>> GetFindingsAsync(Guid auditId);
         Task<List<(DateTime Date, int Count)>> GetFindingsByMonthAsync(Guid auditId);
-        Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId);
+        Task<List<(string Department, int Count)>> GetDepartmentFindingsInAuditAsync(Guid auditId);
         Task<IEnumerable<ViewFinding>> GetFindingsByDepartmentAsync(int departmentId);
         Task<IEnumerable<ViewFinding>> GetFindingsByAuditItemIdAsync(Guid auditItemId);
         Task<ViewFinding?> SetReceivedAsync(Guid findingId);

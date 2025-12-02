@@ -520,7 +520,7 @@ namespace ASM.API.Controllers
 
             var attachments = await _attachmentService.GetAttachmentsAsync(findings.Select(f => f.FindingId).ToList());
 
-            var data = await _findingService.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+            var data = await _findingService.GetDepartmentFindingsInAuditAsync(auditId);
 
             var findingsByMonth = await _findingService.GetFindingsByMonthAsync(auditId);
 
@@ -622,7 +622,7 @@ namespace ASM.API.Controllers
         [HttpGet("{auditId:guid}/chart/bar")]
         public async Task<IActionResult> GetDepartmentBarChart(Guid auditId)
         {
-            var data = await _findingService.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+            var data = await _findingService.GetDepartmentFindingsInAuditAsync(auditId);
             if (data == null || !data.Any())
                 return Ok(new List<object>());
 
@@ -640,7 +640,7 @@ namespace ASM.API.Controllers
         {
             var summary = await _service.GetAuditSummaryAsync(auditId);
             if (summary == null) return NotFound("Audit not found");
-            var data = await _findingService.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+            var data = await _findingService.GetDepartmentFindingsInAuditAsync(auditId);
             var findingsByMonth = await _findingService.GetFindingsByMonthAsync(auditId);
             var findings = await _findingService.GetFindingsAsync(auditId);
             var attachments = await _attachmentService.GetAttachmentsAsync(findings.Select(f => f.FindingId).ToList());

@@ -69,9 +69,9 @@ namespace ASM_Services.Services
             return fullRange;
         }
 
-        public async Task<List<(string Department, int Count)>> GetDepartmentFindingsInCurrentMonthAsync(Guid auditId)
+        public async Task<List<(string Department, int Count)>> GetDepartmentFindingsInAuditAsync(Guid auditId)
         {
-            var result = await _repo.GetDepartmentFindingsInCurrentMonthAsync(auditId);
+            var result = await _repo.GetDepartmentFindingsInAuditAsync(auditId);
             return result;
         }
 
