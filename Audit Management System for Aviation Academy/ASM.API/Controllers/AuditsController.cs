@@ -586,6 +586,56 @@ namespace ASM.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Update audit cùng với tất cả các entities liên quan trong một lần
+        /// Có thể update: Audit, CriteriaMap, ScopeDepartment, AuditTeam, Schedule, ChecklistItem
+        /// </summary>
+        [HttpPut("{id}/complete-update")]
+        public async Task<ActionResult<ViewAudit>> UpdateAuditComplete(Guid id, [FromBody] UpdateAuditComplete dto)
+        {
+            try
+            {
+                if (id == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .SelectMany(x => x.Value.Errors.Select(e => new
+                        {
+                            Field = x.Key,
+                            Message = e.ErrorMessage
+                        }))
+                        .ToList();
+
+                    return BadRequest(new
+                    {
+                        message = "Validation failed",
+                        errors = errors
+                    });
+                }
+
+                var result = await _service.UpdateAuditCompleteAsync(id, dto);
+                if (result == null)
+                {
+                    return NotFound(new { message = $"Audit with ID {id} not found" });
+                }
+
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the audit", error = ex.Message });
+            }
+        }
+
 
         [HttpGet("{auditId:guid}/chart/line")]
         public async Task<IActionResult> GetFindingsByMonthChart(Guid auditId)

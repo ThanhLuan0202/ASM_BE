@@ -249,6 +249,28 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateChecklistItemsAsync(Guid auditId, List<UpdateAuditChecklistItem>? list)
+        {
+            if (list == null || !list.Any())
+                return; // Không có gì để update, bỏ qua
+
+            // Xóa checklist items cũ
+            var existing = _DbContext.AuditChecklistItems
+                .Where(x => x.AuditId == auditId);
+            _DbContext.AuditChecklistItems.RemoveRange(existing);
+
+            // Thêm checklist items mới
+            foreach (var item in list)
+            {
+                var entity = _mapper.Map<AuditChecklistItem>(item);
+                entity.AuditItemId = Guid.NewGuid();
+                entity.AuditId = auditId;
+                if (string.IsNullOrEmpty(entity.Status))
+                    entity.Status = "Active";
+                await _DbContext.AuditChecklistItems.AddAsync(entity);
+            }
+        }
+
 
     }
 }

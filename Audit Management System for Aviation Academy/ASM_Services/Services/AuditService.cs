@@ -773,5 +773,31 @@ namespace ASM_Services.Services
             await _attachmentRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditDocumentRepo.UpdateStatusToArchivedAsync(auditId);
         }
+
+        public async Task<ViewAudit?> UpdateAuditCompleteAsync(Guid auditId, UpdateAuditComplete dto)
+        {
+            try
+            {
+                // Update tất cả trong Repository method (bao gồm Audit, CriteriaMaps, ScopeDepartments, AuditTeams, Schedules, ChecklistItems)
+                // Repository method sẽ không save, để Service layer quản lý transaction
+                var updatedAudit = await _repo.UpdateAuditCompleteAsync(auditId, dto);
+                
+                if (updatedAudit == null)
+                {
+                    return null; // Audit không tồn tại
+                }
+
+                // Lưu tất cả thay đổi trong một transaction
+                await _repo.SaveChangesAsync();
+
+                // Lấy lại audit đã update với đầy đủ thông tin
+                return await _repo.GetAuditByIdAsync(auditId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating audit complete for audit {AuditId}", auditId);
+                throw;
+            }
+        }
     }
 }

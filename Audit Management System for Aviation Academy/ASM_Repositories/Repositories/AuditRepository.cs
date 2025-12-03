@@ -449,7 +449,7 @@ namespace ASM_Repositories.Repositories
             _mapper.Map(updateAudit, audit);
 
             // Chỉ update audit, EF tự theo dõi entity
-            _context.Audits.Update(audit);
+            _DbContext.Audits.Update(audit);
         }
 
 
@@ -483,8 +483,167 @@ namespace ASM_Repositories.Repositories
             }
 
             audit.Status = "Archived";
-            _context.Entry(audit).Property(x => x.Status).IsModified = true;
-            await _context.SaveChangesAsync();
+            _DbContext.Entry(audit).Property(x => x.Status).IsModified = true;
+            await _DbContext.SaveChangesAsync();
+        }
+
+        public async Task<ViewAudit?> UpdateAuditCompleteAsync(Guid auditId, UpdateAuditComplete dto)
+        {
+            // Kiểm tra audit có tồn tại không
+            var audit = await _DbContext.Audits
+                .AsTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            if (audit == null)
+            {
+                return null;
+            }
+
+            // Update audit nếu có
+            if (dto.Audit != null)
+            {
+                // Validate TemplateId nếu có
+                if (dto.Audit.TemplateId.HasValue)
+                {
+                    var templateExists = await _DbContext.ChecklistTemplates.AnyAsync(t => t.TemplateId == dto.Audit.TemplateId.Value);
+                    if (!templateExists)
+                    {
+                        throw new InvalidOperationException($"Template with ID {dto.Audit.TemplateId} does not exist");
+                    }
+                }
+
+                // Validate Status nếu có
+                if (!string.IsNullOrEmpty(dto.Audit.Status))
+                {
+                    var statusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == dto.Audit.Status);
+                    if (!statusExists)
+                    {
+                        throw new InvalidOperationException($"Status '{dto.Audit.Status}' does not exist");
+                    }
+                }
+
+                // Validate StartDate và EndDate
+                if (dto.Audit.StartDate.HasValue && dto.Audit.EndDate.HasValue && dto.Audit.StartDate.Value > dto.Audit.EndDate.Value)
+                {
+                    throw new InvalidOperationException("StartDate cannot be later than EndDate");
+                }
+
+                // Map và update audit
+                _mapper.Map(dto.Audit, audit);
+                _DbContext.Audits.Update(audit);
+            }
+
+            // Update CriteriaMaps nếu có
+            if (dto.CriteriaMaps != null && dto.CriteriaMaps.Any())
+            {
+                // Xóa criteria cũ
+                var existingCriteria = _DbContext.AuditCriteriaMaps
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditCriteriaMaps.RemoveRange(existingCriteria);
+
+                // Thêm criteria mới
+                foreach (var item in dto.CriteriaMaps)
+                {
+                    var entity = _mapper.Map<AuditCriteriaMap>(item);
+                    entity.AuditId = auditId;
+                    if (string.IsNullOrEmpty(entity.Status))
+                        entity.Status = "Active";
+                    await _DbContext.AuditCriteriaMaps.AddAsync(entity);
+                }
+            }
+
+            // Update ScopeDepartments nếu có
+            if (dto.ScopeDepartments != null && dto.ScopeDepartments.Any())
+            {
+                // Xóa scope cũ
+                var existingScope = _DbContext.AuditScopeDepartments
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditScopeDepartments.RemoveRange(existingScope);
+
+                // Thêm scope mới
+                foreach (var item in dto.ScopeDepartments)
+                {
+                    var entity = _mapper.Map<AuditScopeDepartment>(item);
+                    entity.AuditScopeId = Guid.NewGuid();
+                    entity.AuditId = auditId;
+                    if (string.IsNullOrEmpty(entity.Status))
+                        entity.Status = "Active";
+                    await _DbContext.AuditScopeDepartments.AddAsync(entity);
+                }
+            }
+
+            // Update AuditTeams nếu có
+            if (dto.AuditTeams != null && dto.AuditTeams.Any())
+            {
+                // Xóa team cũ
+                var existingTeams = _DbContext.AuditTeams
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditTeams.RemoveRange(existingTeams);
+
+                // Thêm team mới
+                foreach (var item in dto.AuditTeams)
+                {
+                    var entity = _mapper.Map<AuditTeam>(item);
+                    entity.AuditTeamId = Guid.NewGuid();
+                    entity.AuditId = auditId;
+                    if (string.IsNullOrEmpty(entity.Status))
+                        entity.Status = "Active";
+                    await _DbContext.AuditTeams.AddAsync(entity);
+                }
+            }
+
+            // Update Schedules nếu có
+            if (dto.Schedules != null && dto.Schedules.Any())
+            {
+                // Xóa schedule cũ
+                var existingSchedules = _DbContext.AuditSchedules
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditSchedules.RemoveRange(existingSchedules);
+
+                // Thêm schedule mới
+                foreach (var item in dto.Schedules)
+                {
+                    var entity = _mapper.Map<AuditSchedule>(item);
+                    entity.ScheduleId = Guid.NewGuid();
+                    entity.AuditId = auditId;
+                    entity.CreatedAt = DateTime.UtcNow;
+                    if (string.IsNullOrEmpty(entity.Status))
+                        entity.Status = "Active";
+                    await _DbContext.AuditSchedules.AddAsync(entity);
+                }
+            }
+
+            // Update ChecklistItems nếu có
+            if (dto.ChecklistItems != null && dto.ChecklistItems.Any())
+            {
+                // Xóa checklist items cũ
+                var existingChecklistItems = _DbContext.AuditChecklistItems
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditChecklistItems.RemoveRange(existingChecklistItems);
+
+                // Thêm checklist items mới
+                foreach (var item in dto.ChecklistItems)
+                {
+                    var entity = _mapper.Map<AuditChecklistItem>(item);
+                    entity.AuditItemId = Guid.NewGuid();
+                    entity.AuditId = auditId;
+                    if (string.IsNullOrEmpty(entity.Status))
+                        entity.Status = "Active";
+                    await _DbContext.AuditChecklistItems.AddAsync(entity);
+                }
+            }
+
+            // KHÔNG save ở đây - để Service layer quản lý transaction
+            // await _DbContext.SaveChangesAsync();
+
+            // Lấy lại audit đã update với các relations
+            var updatedAudit = await _DbContext.Audits
+                .Include(a => a.CreatedByNavigation)
+                .Include(a => a.Template)
+                .Include(a => a.StatusNavigation)
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            return updatedAudit == null ? null : _mapper.Map<ViewAudit>(updatedAudit);
         }
 
     }

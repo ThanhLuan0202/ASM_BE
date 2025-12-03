@@ -77,16 +77,16 @@ namespace ASM_Repositories.Repositories
                 return; // Không có gì để update, bỏ qua
 
             // Xóa criteria cũ
-            var existing = _context.AuditCriteriaMaps
+            var existing = _DbContext.AuditCriteriaMaps
                 .Where(x => x.AuditId == auditId);
-            _context.AuditCriteriaMaps.RemoveRange(existing);
+            _DbContext.AuditCriteriaMaps.RemoveRange(existing);
 
             // Thêm criteria mới
             foreach (var item in list)
             {
                 var entity = _mapper.Map<AuditCriteriaMap>(item);
                 entity.AuditId = auditId;
-                await _context.AuditCriteriaMaps.AddAsync(entity);
+                await _DbContext.AuditCriteriaMaps.AddAsync(entity);
             }
         }
 
@@ -95,7 +95,7 @@ namespace ASM_Repositories.Repositories
             if (auditId == Guid.Empty)
                 throw new ArgumentException("AuditId cannot be empty.");
 
-            var entities = await _context.AuditCriteriaMaps
+            var entities = await _DbContext.AuditCriteriaMaps
                 .Where(a => a.AuditId == auditId)
                 .ToListAsync();
 
@@ -105,10 +105,10 @@ namespace ASM_Repositories.Repositories
             foreach (var entity in entities)
             {
                 entity.Status = "Archived";
-                _context.Entry(entity).Property(x => x.Status).IsModified = true;
+                _DbContext.Entry(entity).Property(x => x.Status).IsModified = true;
             }
 
-            await _context.SaveChangesAsync();
+            await _DbContext.SaveChangesAsync();
         }
 
 
