@@ -35,6 +35,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<AuditChecklistItem> AuditChecklistItems { get; set; }
 
+    public virtual DbSet<AuditChecklistTemplateMap> AuditChecklistTemplateMaps { get; set; }
+
     public virtual DbSet<AuditCriteriaMap> AuditCriteriaMaps { get; set; }
 
     public virtual DbSet<AuditCriterion> AuditCriteria { get; set; }
@@ -88,6 +90,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -309,6 +312,32 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.AuditId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__AuditChec__Audit__76969D2E");
+        });
+
+        modelBuilder.Entity<AuditChecklistTemplateMap>(entity =>
+        {
+            entity.HasKey(e => new { e.AuditId, e.TemplateId });
+
+            entity.ToTable("Audit_ChecklistTemplate_Map", "ams");
+
+            entity.Property(e => e.AuditId).HasColumnName("AuditID");
+            entity.Property(e => e.TemplateId).HasColumnName("TemplateID");
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Status).HasMaxLength(50);
+
+            entity.HasOne(d => d.AssignedByNavigation).WithMany(p => p.AuditChecklistTemplateMaps)
+                .HasForeignKey(d => d.AssignedBy)
+                .HasConstraintName("FK__Audit_Che__Assig__7755B73D");
+
+            entity.HasOne(d => d.Audit).WithMany(p => p.AuditChecklistTemplateMaps)
+                .HasForeignKey(d => d.AuditId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AuditChecklist_Audit");
+
+            entity.HasOne(d => d.Template).WithMany(p => p.AuditChecklistTemplateMaps)
+                .HasForeignKey(d => d.TemplateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AuditChecklist_Template");
         });
 
         modelBuilder.Entity<AuditCriteriaMap>(entity =>

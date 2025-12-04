@@ -37,6 +37,8 @@ public partial class Audit
 
     public virtual ICollection<AuditChecklistItem> AuditChecklistItems { get; set; } = new List<AuditChecklistItem>();
 
+    public virtual ICollection<AuditChecklistTemplateMap> AuditChecklistTemplateMaps { get; set; } = new List<AuditChecklistTemplateMap>();
+
     public virtual ICollection<AuditCriteriaMap> AuditCriteriaMaps { get; set; } = new List<AuditCriteriaMap>();
 
     public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();

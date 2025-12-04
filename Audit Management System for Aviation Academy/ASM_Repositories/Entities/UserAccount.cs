@@ -41,6 +41,8 @@ public partial class UserAccount
 
     public virtual ICollection<AuditAssignment> AuditAssignments { get; set; } = new List<AuditAssignment>();
 
+    public virtual ICollection<AuditChecklistTemplateMap> AuditChecklistTemplateMaps { get; set; } = new List<AuditChecklistTemplateMap>();
+
     public virtual ICollection<AuditDocument> AuditDocuments { get; set; } = new List<AuditDocument>();
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();

@@ -25,6 +25,8 @@ public partial class ChecklistTemplate
 
     public int? DeptId { get; set; }
 
+    public virtual ICollection<AuditChecklistTemplateMap> AuditChecklistTemplateMaps { get; set; } = new List<AuditChecklistTemplateMap>();
+
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
 
     public virtual ICollection<ChecklistItem> ChecklistItems { get; set; } = new List<ChecklistItem>();
