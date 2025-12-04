@@ -173,35 +173,31 @@ namespace ASM_Repositories.Repositories
             if (deptId <= 0)
                 throw new ArgumentException("DeptId must be greater than zero");
 
-            // 1. Lấy Audit để lấy TemplateId
+            // 1. Kiểm tra Audit có tồn tại không
             var audit = await _DbContext.Audits
                 .FirstOrDefaultAsync(a => a.AuditId == auditId);
 
             if (audit == null)
                 throw new InvalidOperationException($"Audit with ID {auditId} not found");
 
-            if (audit.TemplateId == null || audit.TemplateId == Guid.Empty)
-                throw new InvalidOperationException($"Audit {auditId} does not have a TemplateId");
+            // 2. Tìm ChecklistTemplate có DeptId khớp với deptId người dùng nhập
+            var template = await _DbContext.ChecklistTemplates
+                .FirstOrDefaultAsync(t => t.DeptId == deptId && t.IsActive == true && t.Status == "Active");
 
-            // 2. Lấy Department name
-            var department = await _DbContext.Departments
-                .FirstOrDefaultAsync(d => d.DeptId == deptId);
+            if (template == null)
+                throw new InvalidOperationException($"No active ChecklistTemplate found for DeptId {deptId}");
 
-            if (department == null)
-                throw new InvalidOperationException($"Department with ID {deptId} not found");
-
-            string sectionName = department.Name;
-
-            // 3. Lấy tất cả ChecklistItem theo TemplateId
+            // 3. Lấy tất cả ChecklistItem từ template vừa tìm được
             var checklistItems = await _DbContext.ChecklistItems
-                .Where(ci => ci.TemplateId == audit.TemplateId)
+                .Where(ci => ci.TemplateId == template.TemplateId)
                 .OrderBy(ci => ci.Order)
                 .ToListAsync();
 
             if (!checklistItems.Any())
-                throw new InvalidOperationException($"No ChecklistItems found for TemplateId {audit.TemplateId}");
+                throw new InvalidOperationException($"No ChecklistItems found for TemplateId {template.TemplateId}");
 
             // 4. Tạo các AuditChecklistItem từ ChecklistItem
+            // Section sẽ lấy từ ChecklistItem.Section (có sẵn trong template)
             var auditChecklistItems = new List<AuditChecklistItem>();
 
             foreach (var checklistItem in checklistItems)
@@ -211,7 +207,7 @@ namespace ASM_Repositories.Repositories
                     AuditItemId = Guid.NewGuid(),
                     AuditId = auditId,
                     QuestionTextSnapshot = checklistItem.QuestionText,
-                    Section = sectionName,
+                    Section = checklistItem.Section, // Lấy Section từ template, không phải từ department name
                     Order = checklistItem.Order,
                     Status = "Active",
                     Comment = null
