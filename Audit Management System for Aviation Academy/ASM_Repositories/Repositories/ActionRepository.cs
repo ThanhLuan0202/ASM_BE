@@ -227,6 +227,7 @@ namespace ASM_Repositories.Repositories
                 throw new InvalidOperationException("Status 'Rejected' does not exist in ActionStatus.");
 
             entity.Status = "Rejected";
+            entity.ProgressPercent = 0; // Reset progress khi reject
             _context.Actions.Update(entity);
             await _context.SaveChangesAsync();
             return true;

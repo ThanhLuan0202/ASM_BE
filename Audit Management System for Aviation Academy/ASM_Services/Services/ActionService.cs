@@ -37,8 +37,57 @@ namespace ASM_Services.Services
         public Task<bool> UpdateStatusToInProgressAsync(Guid id) => _repo.UpdateStatusToInProgressAsync(id);
         public Task<bool> UpdateStatusToReviewedAsync(Guid id) => _repo.UpdateStatusToReviewedAsync(id);
         public Task<bool> UpdateStatusToApprovedAsync(Guid id) => _repo.UpdateStatusToApprovedAsync(id);
-        public Task<bool> UpdateStatusToRejectedAsync(Guid id) => _repo.UpdateStatusToRejectedAsync(id);
-        public Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback) => _repo.UpdateStatusToRejectedAsync(id, reviewFeedback);
+        
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id)
+        {
+            // Update action status
+            var updated = await _repo.UpdateStatusToRejectedAsync(id);
+            if (!updated)
+                return false;
+
+            // Update attachments status
+            try
+            {
+                var attachmentIds = await _attachmentRepo.GetAttachmentIdsByActionIdAsync(id);
+                if (attachmentIds != null && attachmentIds.Any())
+                {
+                    await _attachmentRepo.UpdateStatusAsync(attachmentIds, "Rejected");
+                }
+            }
+            catch (Exception)
+            {
+                // Log error nhưng không throw để không ảnh hưởng đến việc update action
+                // Có thể log vào logger nếu cần
+            }
+
+            return true;
+        }
+
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback)
+        {
+            // Update action status
+            var updated = await _repo.UpdateStatusToRejectedAsync(id, reviewFeedback);
+            if (!updated)
+                return false;
+
+            // Update attachments status
+            try
+            {
+                var attachmentIds = await _attachmentRepo.GetAttachmentIdsByActionIdAsync(id);
+                if (attachmentIds != null && attachmentIds.Any())
+                {
+                    await _attachmentRepo.UpdateStatusAsync(attachmentIds, "Rejected");
+                }
+            }
+            catch (Exception)
+            {
+                // Log error nhưng không throw để không ảnh hưởng đến việc update action
+                // Có thể log vào logger nếu cần
+            }
+
+            return true;
+        }
+        
         public Task<bool> UpdateStatusToClosedAsync(Guid id) => _repo.UpdateStatusToClosedAsync(id);
         public Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId) => _repo.GetByAssignedToAsync(userId);
         public Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent) => _repo.UpdateProgressPercentAsync(id, progressPercent);
