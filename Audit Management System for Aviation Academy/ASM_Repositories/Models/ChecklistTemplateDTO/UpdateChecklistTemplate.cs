@@ -16,6 +16,7 @@ namespace ASM_Repositories.Models.ChecklistTemplateDTO
         public string Description { get; set; }
 
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters")]
+        public int? DeptId { get; set; }
         public string Status { get; set; }
 
         public bool IsActive { get; set; }

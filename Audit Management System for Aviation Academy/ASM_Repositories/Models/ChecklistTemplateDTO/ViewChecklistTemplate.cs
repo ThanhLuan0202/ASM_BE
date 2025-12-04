@@ -15,6 +15,7 @@ namespace ASM_Repositories.Models.ChecklistTemplateDTO
         public Guid? CreatedBy { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public int? DeptId { get; set; }
 
         public string Status { get; set; }
 

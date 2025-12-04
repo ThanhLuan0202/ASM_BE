@@ -61,6 +61,7 @@ namespace ASM_Repositories.Repositories
             template.TemplateId = Guid.NewGuid();
             template.CreatedAt = DateTime.UtcNow;
             template.CreatedBy = createdByUserId;
+            template.DeptId = dto.DeptId;   
             template.IsActive = dto.IsActive;
 
             _DbContext.ChecklistTemplates.Add(template);

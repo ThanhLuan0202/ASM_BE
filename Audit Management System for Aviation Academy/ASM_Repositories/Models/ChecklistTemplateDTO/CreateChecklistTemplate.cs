@@ -19,7 +19,7 @@ namespace ASM_Repositories.Models.ChecklistTemplateDTO
         public string Status { get; set; }
 
         // CreatedBy will be automatically set from JWT token in backend
-
+        public int? DeptId { get; set; }
         public bool IsActive { get; set; }
     }
 }
