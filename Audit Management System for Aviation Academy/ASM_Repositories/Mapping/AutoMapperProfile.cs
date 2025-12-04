@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASM_Repositories.Models.AuditDocumentDTO;
+using ASM_Repositories.Models.AuditChecklistTemplateMapDTO;
 
 namespace ASM_Repositories.Mapping
 {
@@ -351,6 +352,12 @@ namespace ASM_Repositories.Mapping
 
             // AuditDocument
             CreateMap<AuditDocument, ViewAuditDocument>().ReverseMap();
+
+            // AuditChecklistTemplateMap
+            CreateMap<AuditChecklistTemplateMap, ViewAuditChecklistTemplateMap>();
+            CreateMap<CreateAuditChecklistTemplateMap, AuditChecklistTemplateMap>()
+                .ForMember(d => d.AssignedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+            CreateMap<UpdateAuditChecklistTemplateMap, AuditChecklistTemplateMap>();
         }
     }
 }

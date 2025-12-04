@@ -87,6 +87,7 @@ namespace ASM_Repositories.Repositories
             }
 
             _mapper.Map(dto, existing);
+            _DbContext.Entry(existing).State = EntityState.Modified;
             await _DbContext.SaveChangesAsync();
 
             var updatedTemplate = await _DbContext.ChecklistTemplates
