@@ -105,6 +105,7 @@ namespace ASM_Repositories.Repositories
             }
 
             existing.IsActive = false;
+            _DbContext.Entry(existing).State = EntityState.Modified;
             await _DbContext.SaveChangesAsync();
             return true;
         }
