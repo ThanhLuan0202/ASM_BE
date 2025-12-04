@@ -395,4 +395,36 @@ public class ActionController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
+
+    /// <summary>
+    /// Update status của Action thành "Rejected" - chỉ cần ActionId
+    /// </summary>
+    [HttpPut("{id}/reject")]
+    public async Task<IActionResult> RejectAction(Guid id)
+    {
+        try
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "Invalid ActionId" });
+
+            var updated = await _service.UpdateStatusToRejectedAsync(id);
+            if (!updated)
+                return NotFound(new { message = "Action not found or inactive." });
+
+            return Ok(new { 
+                message = "Action status updated to Rejected successfully.",
+                actionId = id,
+                status = "Rejected"
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating status of action {id} to Rejected");
+            return StatusCode(500, new { message = "Internal server error.", error = ex.Message });
+        }
+    }
 }
