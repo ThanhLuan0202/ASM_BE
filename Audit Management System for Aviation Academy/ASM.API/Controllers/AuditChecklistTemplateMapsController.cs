@@ -2,6 +2,7 @@
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ASM.API.Controllers
 {
@@ -34,6 +35,13 @@ namespace ASM.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ViewAuditChecklistTemplateMap>> Create([FromBody] CreateAuditChecklistTemplateMap dto)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            dto.AssignedBy = userId;
+
             var result = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get),
                 new { auditId = result.AuditId, templateId = result.TemplateId },
@@ -46,6 +54,13 @@ namespace ASM.API.Controllers
             Guid templateId,
             [FromBody] UpdateAuditChecklistTemplateMap dto)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            dto.AssignedBy = userId;
+
             var result = await _service.UpdateAsync(auditId, templateId, dto);
             if (result == null) return NotFound();
             return Ok(result);

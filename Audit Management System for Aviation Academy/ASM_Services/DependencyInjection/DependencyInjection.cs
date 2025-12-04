@@ -51,7 +51,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IPdfGeneratorService, PdfGeneratorService>();
             service.AddTransient<IAuditDocumentService, AuditDocumentService>();
             service.AddTransient<IEmailService, EmailService>();
-
+            service.AddTransient<IAuditChecklistTemplateMapService, AuditChecklistTemplateMapService>();
 
 
 

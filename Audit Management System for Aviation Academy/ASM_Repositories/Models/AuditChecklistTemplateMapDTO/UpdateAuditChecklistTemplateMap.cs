@@ -8,7 +8,8 @@ namespace ASM_Repositories.Models.AuditChecklistTemplateMapDTO
 {
     public class UpdateAuditChecklistTemplateMap
     {
-        public DateTime AssignedAt { get; set; }
+        public Guid AuditId { get; set; }
+        public Guid TemplateId { get; set; }
         public Guid? AssignedBy { get; set; }
         public string Status { get; set; }
     }
