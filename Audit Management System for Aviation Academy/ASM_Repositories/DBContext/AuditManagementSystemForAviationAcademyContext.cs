@@ -534,6 +534,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("TemplateID");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.DeptId).HasColumnName("DeptID");
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Name)
@@ -545,6 +546,10 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ChecklistTemplates)
                 .HasForeignKey(d => d.CreatedBy)
                 .HasConstraintName("FK__Checklist__Creat__5629CD9C");
+
+            entity.HasOne(d => d.Dept).WithMany(p => p.ChecklistTemplates)
+                .HasForeignKey(d => d.DeptId)
+                .HasConstraintName("FK_ChecklistTemplate_Department");
         });
 
         modelBuilder.Entity<Department>(entity =>

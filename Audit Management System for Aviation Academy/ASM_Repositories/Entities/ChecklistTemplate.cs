@@ -23,9 +23,13 @@ public partial class ChecklistTemplate
 
     public bool IsActive { get; set; }
 
+    public int? DeptId { get; set; }
+
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
 
     public virtual ICollection<ChecklistItem> ChecklistItems { get; set; } = new List<ChecklistItem>();
 
     public virtual UserAccount CreatedByNavigation { get; set; }
+
+    public virtual Department Dept { get; set; }
 }

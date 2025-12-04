@@ -25,6 +25,8 @@ public partial class Department
 
     public virtual ICollection<AuditScopeDepartment> AuditScopeDepartments { get; set; } = new List<AuditScopeDepartment>();
 
+    public virtual ICollection<ChecklistTemplate> ChecklistTemplates { get; set; } = new List<ChecklistTemplate>();
+
     public virtual ICollection<DepartmentHead> DepartmentHeads { get; set; } = new List<DepartmentHead>();
 
     public virtual ICollection<Finding> Findings { get; set; } = new List<Finding>();
