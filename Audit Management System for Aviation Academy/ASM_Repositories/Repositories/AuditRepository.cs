@@ -575,6 +575,33 @@ namespace ASM_Repositories.Repositories
             // Update AuditTeams nếu có
             if (dto.AuditTeams != null && dto.AuditTeams.Any())
             {
+                // Validate trước khi xóa và thêm mới
+                // 1. Kiểm tra UserId có trong mỗi item không
+                var itemsWithoutUserId = dto.AuditTeams.Where(t => !t.UserId.HasValue || t.UserId.Value == Guid.Empty).ToList();
+                if (itemsWithoutUserId.Any())
+                    throw new InvalidOperationException("UserId is required for all AuditTeam items in complete-update");
+
+                // 2. Kiểm tra duplicate UserId trong cùng một request
+                var userIds = dto.AuditTeams.Select(t => t.UserId.Value).ToList();
+                var duplicateUserIds = userIds.GroupBy(u => u).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+                if (duplicateUserIds.Any())
+                    throw new InvalidOperationException($"Duplicate UserId found in AuditTeams: {string.Join(", ", duplicateUserIds)}. Each user can only be assigned once per audit.");
+
+                // 3. Kiểm tra chỉ có 1 Lead Auditor
+                var leadCount = dto.AuditTeams.Count(t => t.IsLead.HasValue && t.IsLead.Value);
+                if (leadCount > 1)
+                    throw new InvalidOperationException("Only one Lead Auditor (IsLead = true) is allowed per audit");
+                if (leadCount == 0)
+                    throw new InvalidOperationException("At least one Lead Auditor (IsLead = true) is required");
+
+                // 4. Validate tất cả UserId tồn tại
+                foreach (var item in dto.AuditTeams)
+                {
+                    var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == item.UserId.Value);
+                    if (!userExists)
+                        throw new InvalidOperationException($"User with ID {item.UserId} does not exist");
+                }
+
                 // Xóa team cũ
                 var existingTeams = _DbContext.AuditTeams
                     .Where(x => x.AuditId == auditId);
@@ -586,8 +613,14 @@ namespace ASM_Repositories.Repositories
                     var entity = _mapper.Map<AuditTeam>(item);
                     entity.AuditTeamId = Guid.NewGuid();
                     entity.AuditId = auditId;
+                    entity.UserId = item.UserId.Value; // Đảm bảo UserId được set
                     if (string.IsNullOrEmpty(entity.Status))
                         entity.Status = "Active";
+                    
+                    if (item.IsLead.HasValue)
+                        entity.IsLead = item.IsLead.Value;
+                    else
+                        entity.IsLead = false;
                     await _DbContext.AuditTeams.AddAsync(entity);
                 }
             }
@@ -595,6 +628,26 @@ namespace ASM_Repositories.Repositories
             // Update Schedules nếu có
             if (dto.Schedules != null && dto.Schedules.Any())
             {
+                // Validate trước khi xóa và thêm mới
+                // 1. Kiểm tra MilestoneName và DueDate có trong mỗi item không
+                foreach (var item in dto.Schedules)
+                {
+                    if (string.IsNullOrWhiteSpace(item.MilestoneName))
+                        throw new InvalidOperationException("MilestoneName is required for all AuditSchedule items");
+                    
+                    if (item.DueDate == default(DateTime))
+                        throw new InvalidOperationException("DueDate is required for all AuditSchedule items");
+                }
+
+                // 2. Kiểm tra duplicate MilestoneName trong cùng một request
+                var milestoneNames = dto.Schedules.Select(s => s.MilestoneName.Trim()).ToList();
+                var duplicateMilestones = milestoneNames.GroupBy(m => m, StringComparer.OrdinalIgnoreCase)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => g.Key)
+                    .ToList();
+                if (duplicateMilestones.Any())
+                    throw new InvalidOperationException($"Duplicate MilestoneName found in Schedules: {string.Join(", ", duplicateMilestones)}. Each milestone name must be unique per audit.");
+
                 // Xóa schedule cũ
                 var existingSchedules = _DbContext.AuditSchedules
                     .Where(x => x.AuditId == auditId);
@@ -613,23 +666,51 @@ namespace ASM_Repositories.Repositories
                 }
             }
 
-            // Update ChecklistItems nếu có
-            if (dto.ChecklistItems != null && dto.ChecklistItems.Any())
-            {
-                // Xóa checklist items cũ
-                var existingChecklistItems = _DbContext.AuditChecklistItems
-                    .Where(x => x.AuditId == auditId);
-                _DbContext.AuditChecklistItems.RemoveRange(existingChecklistItems);
 
-                // Thêm checklist items mới
-                foreach (var item in dto.ChecklistItems)
+            // Update AuditChecklistTemplateMaps nếu có
+            if (dto.AuditChecklistTemplateMaps != null && dto.AuditChecklistTemplateMaps.Any())
+            {
+                // Xóa tất cả mapping cũ của audit này
+                var existingMaps = _DbContext.AuditChecklistTemplateMaps
+                    .Where(x => x.AuditId == auditId);
+                _DbContext.AuditChecklistTemplateMaps.RemoveRange(existingMaps);
+
+                // Thêm mapping mới
+                foreach (var mapDto in dto.AuditChecklistTemplateMaps)
                 {
-                    var entity = _mapper.Map<AuditChecklistItem>(item);
-                    entity.AuditItemId = Guid.NewGuid();
-                    entity.AuditId = auditId;
+                    // Validate AuditId phải khớp với auditId trong URL (hoặc không cần gửi, sẽ tự set)
+                    // Nếu có gửi AuditId thì phải khớp
+                    if (mapDto.AuditId != Guid.Empty && mapDto.AuditId != auditId)
+                        throw new InvalidOperationException($"AuditId in map ({mapDto.AuditId}) does not match auditId in URL ({auditId})");
+
+                    // Validate TemplateId bắt buộc phải có
+                    if (mapDto.TemplateId == Guid.Empty)
+                        throw new InvalidOperationException("TemplateId is required in AuditChecklistTemplateMap");
+
+                    // Validate TemplateId tồn tại
+                    var templateExists = await _DbContext.ChecklistTemplates.AnyAsync(t => t.TemplateId == mapDto.TemplateId);
+                    if (!templateExists)
+                        throw new InvalidOperationException($"ChecklistTemplate with ID {mapDto.TemplateId} does not exist");
+
+                    // Validate AssignedBy nếu có
+                    if (mapDto.AssignedBy.HasValue)
+                    {
+                        var userExists = await _DbContext.UserAccounts.AnyAsync(u => u.UserId == mapDto.AssignedBy.Value);
+                        if (!userExists)
+                            throw new InvalidOperationException($"User with ID {mapDto.AssignedBy} does not exist");
+                    }
+
+                    // Kiểm tra duplicate TemplateId trong cùng một request
+                    var duplicateCount = dto.AuditChecklistTemplateMaps.Count(m => m.TemplateId == mapDto.TemplateId);
+                    if (duplicateCount > 1)
+                        throw new InvalidOperationException($"Duplicate TemplateId {mapDto.TemplateId} found in AuditChecklistTemplateMaps. Each template can only be mapped once per audit.");
+
+                    var entity = _mapper.Map<AuditChecklistTemplateMap>(mapDto);
+                    entity.AuditId = auditId; // Đảm bảo AuditId đúng từ URL
+                    entity.AssignedAt = DateTime.UtcNow;
                     if (string.IsNullOrEmpty(entity.Status))
                         entity.Status = "Active";
-                    await _DbContext.AuditChecklistItems.AddAsync(entity);
+                    await _DbContext.AuditChecklistTemplateMaps.AddAsync(entity);
                 }
             }
 

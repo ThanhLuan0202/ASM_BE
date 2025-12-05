@@ -588,7 +588,7 @@ namespace ASM.API.Controllers
 
         /// <summary>
         /// Update audit cùng với tất cả các entities liên quan trong một lần
-        /// Có thể update: Audit, CriteriaMap, ScopeDepartment, AuditTeam, Schedule, ChecklistItem
+        /// Có thể update: Audit, CriteriaMap, ScopeDepartment, AuditTeam, Schedule, ChecklistItem, ChecklistTemplate, AuditChecklistTemplateMap
         /// </summary>
         [HttpPut("{id}/complete-update")]
         public async Task<ActionResult<ViewAudit>> UpdateAuditComplete(Guid id, [FromBody] UpdateAuditComplete dto)

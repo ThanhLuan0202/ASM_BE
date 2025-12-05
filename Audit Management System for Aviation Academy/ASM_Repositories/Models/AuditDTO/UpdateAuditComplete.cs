@@ -1,4 +1,4 @@
-using ASM_Repositories.Models.AuditChecklistItemDTO;
+using ASM_Repositories.Models.AuditChecklistTemplateMapDTO;
 using ASM_Repositories.Models.AuditCriteriaMapDTO;
 using ASM_Repositories.Models.AuditScheduleDTO;
 using ASM_Repositories.Models.AuditScopeDepartmentDTO;
@@ -39,9 +39,9 @@ namespace ASM_Repositories.Models.AuditDTO
         public List<UpdateAuditSchedule>? Schedules { get; set; }
 
         /// <summary>
-        /// Danh sách AuditChecklistItem cần update (optional - nếu null hoặc empty thì không update)
+        /// Danh sách AuditChecklistTemplateMap cần update (optional - nếu null hoặc empty thì không update)
         /// </summary>
-        public List<UpdateAuditChecklistItem>? ChecklistItems { get; set; }
+        public List<UpdateAuditChecklistTemplateMap>? AuditChecklistTemplateMaps { get; set; }
     }
 }
 
