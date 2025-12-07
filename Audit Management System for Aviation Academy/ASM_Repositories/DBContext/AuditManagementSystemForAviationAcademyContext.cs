@@ -57,6 +57,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<ChecklistItem> ChecklistItems { get; set; }
 
+    public virtual DbSet<ChecklistItemNoFinding> ChecklistItemNoFindings { get; set; }
+
     public virtual DbSet<ChecklistTemplate> ChecklistTemplates { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
@@ -79,8 +81,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
-
-
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -91,9 +91,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
         string connectionString = config.GetConnectionString(connectionStringName);
         return connectionString;
     }
-
-
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -569,6 +566,22 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.TemplateId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Checklist__Templ__5BE2A6F2");
+        });
+
+        modelBuilder.Entity<ChecklistItemNoFinding>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Checklis__3214EC07C9816FC6");
+
+            entity.ToTable("ChecklistItem_NoFinding", "ams");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Department).HasMaxLength(100);
+            entity.Property(e => e.Reason).HasMaxLength(500);
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(255);
         });
 
         modelBuilder.Entity<ChecklistTemplate>(entity =>
