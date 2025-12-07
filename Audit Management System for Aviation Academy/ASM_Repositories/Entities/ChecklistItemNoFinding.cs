@@ -7,25 +7,25 @@ namespace ASM_Repositories.Entities;
 
 public partial class ChecklistItemNoFinding
 {
-    public int Id { get; set; }
+public int Id { get; set; }
 
-    public int AuditChecklistItemId { get; set; }
+public int AuditChecklistItemId { get; set; }
 
-    public string Title { get; set; }
+public string Title { get; set; }
 
-    public string Reason { get; set; }
+public string Reason { get; set; }
 
-    public DateOnly? DateOfCompliance { get; set; }
+public DateOnly? DateOfCompliance { get; set; }
 
-    public TimeOnly? TimeOfCompliance { get; set; }
+public TimeOnly? TimeOfCompliance { get; set; }
 
-    public string Department { get; set; }
+public string Department { get; set; }
 
-    public int CreatedBy { get; set; }
+public int CreatedBy { get; set; }
 
-    public DateTime CreatedDate { get; set; }
+public DateTime CreatedDate { get; set; }
 
-    public Guid WitnessId { get; set; }
+public Guid WitnessId { get; set; }
 
-    public virtual UserAccount Witness { get; set; }
+public virtual UserAccount Witness { get; set; }
 }
