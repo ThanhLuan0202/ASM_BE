@@ -30,6 +30,8 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public DateTime? Deadline { get; set; }
 
+        public int? WitnessId { get; set; }
+
         public Guid? ReviewerId { get; set; }
 
         [MaxLength(50, ErrorMessage = "Source cannot exceed 50 characters")]
