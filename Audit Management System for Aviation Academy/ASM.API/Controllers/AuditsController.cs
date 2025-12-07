@@ -766,6 +766,25 @@ namespace ASM.API.Controllers
             }
         }
 
+        [HttpGet("period-status")]
+        public async Task<ActionResult<PeriodStatusResponse>> GetPeriodStatus([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            try
+            {
+                if (startDate >= endDate)
+                {
+                    return BadRequest(new { message = "StartDate must be earlier than EndDate" });
+                }
+
+                var result = await _service.GetPeriodStatusAsync(startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving period status", error = ex.Message });
+            }
+        }
+
         // ================= Helpers =================
 
         private byte[]? GetLogoBytes(string relativePath)

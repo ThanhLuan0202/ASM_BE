@@ -847,5 +847,30 @@ namespace ASM_Services.Services
 
             return response;
         }
+
+        public async Task<PeriodStatusResponse> GetPeriodStatusAsync(DateTime startDate, DateTime endDate)
+        {
+            var now = DateTime.UtcNow;
+            var isExpired = endDate < now;
+            var isActive = startDate <= now && endDate >= now;
+            
+            var audits = await _repo.GetAuditsByPeriodAsync(startDate, endDate);
+            var currentCount = audits.Count();
+            const int maxAllowed = 5;
+            var remainingSlots = Math.Max(0, maxAllowed - currentCount);
+            
+            // Có thể assign plan mới nếu: chưa hết hạn và còn slot
+            var canAssignNewPlans = !isExpired && remainingSlots > 0;
+
+            return new PeriodStatusResponse
+            {
+                IsExpired = isExpired,
+                IsActive = isActive,
+                CanAssignNewPlans = canAssignNewPlans,
+                CurrentAuditCount = currentCount,
+                MaxAuditsAllowed = maxAllowed,
+                RemainingSlots = remainingSlots
+            };
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ASM_Repositories.Models.AuditTeamDTO;
+﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AuditTeamDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,6 @@ namespace ASM_Services.Interfaces
         Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId);
         Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId);
         Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId);
-        Task<IEnumerable<Entities.UserAccount>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null);
+        Task<IEnumerable<UserAccount>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null);
     }
 }
