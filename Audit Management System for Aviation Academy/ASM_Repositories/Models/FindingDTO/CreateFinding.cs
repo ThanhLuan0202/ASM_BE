@@ -30,7 +30,8 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public DateTime? Deadline { get; set; }
 
-        public int? WitnessId { get; set; }
+        [Required(ErrorMessage = "WitnessId is required")]
+        public Guid WitnessId { get; set; }
 
         public Guid? ReviewerId { get; set; }
 

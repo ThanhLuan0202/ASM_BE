@@ -94,6 +94,11 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "AuditId is required" });
                 }
 
+                if (dto.WitnessId == Guid.Empty)
+                {
+                    return BadRequest(new { message = "WitnessId is required" });
+                }
+
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 Guid? userId = null;
                 if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
@@ -141,6 +146,12 @@ namespace ASM.API.Controllers
                         message = "Validation failed",
                         errors = errors
                     });
+                }
+
+                // Validate WitnessId if provided
+                if (dto.WitnessId.HasValue && dto.WitnessId.Value == Guid.Empty)
+                {
+                    return BadRequest(new { message = "WitnessId cannot be empty" });
                 }
 
                 var result = await _service.UpdateFindingAsync(id, dto);

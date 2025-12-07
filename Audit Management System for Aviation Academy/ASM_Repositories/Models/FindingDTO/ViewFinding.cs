@@ -24,7 +24,7 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public int? DeptId { get; set; }
 
-        public int? WitnessId { get; set; }
+        public Guid WitnessId { get; set; }
 
         public Guid? CreatedBy { get; set; }
 
