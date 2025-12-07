@@ -737,6 +737,35 @@ namespace ASM.API.Controllers
             }
         }
 
+        [HttpPost("validate-department")]
+        public async Task<ActionResult<ValidateDepartmentResponse>> ValidateDepartment([FromBody] ValidateDepartmentRequest request)
+        {
+            try
+            {
+                if (request.StartDate >= request.EndDate)
+                {
+                    return BadRequest(new { message = "StartDate must be earlier than EndDate" });
+                }
+
+                if (request.DepartmentIds == null || !request.DepartmentIds.Any())
+                {
+                    return BadRequest(new { message = "DepartmentIds is required and cannot be empty" });
+                }
+
+                var result = await _service.ValidateDepartmentUniquenessAsync(
+                    request.AuditId, 
+                    request.DepartmentIds, 
+                    request.StartDate, 
+                    request.EndDate);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while validating departments", error = ex.Message });
+            }
+        }
+
         // ================= Helpers =================
 
         private byte[]? GetLogoBytes(string relativePath)

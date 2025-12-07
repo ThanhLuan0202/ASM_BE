@@ -742,6 +742,28 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewAudit>>(audits);
         }
 
+        public async Task<List<int>> GetUsedDepartmentsByPeriodAsync(DateTime startDate, DateTime endDate, Guid? excludeAuditId = null)
+        {
+            var query = _DbContext.AuditScopeDepartments
+                .Include(asd => asd.Audit)
+                .Where(asd => asd.Audit.StartDate >= startDate 
+                    && asd.Audit.EndDate <= endDate
+                    && asd.Status == "Active"
+                    && asd.Audit.Status != "Inactive");
+
+            if (excludeAuditId.HasValue)
+            {
+                query = query.Where(asd => asd.AuditId != excludeAuditId.Value);
+            }
+
+            var departmentIds = await query
+                .Select(asd => asd.DeptId)
+                .Distinct()
+                .ToListAsync();
+
+            return departmentIds;
+        }
+
     }
 }
 

@@ -804,5 +804,48 @@ namespace ASM_Services.Services
         {
             return await _repo.GetAuditsByPeriodAsync(startDate, endDate);
         }
+
+        public async Task<ValidateDepartmentResponse> ValidateDepartmentUniquenessAsync(Guid? auditId, List<int> departmentIds, DateTime periodStart, DateTime periodEnd)
+        {
+            var usedDepartments = await _repo.GetUsedDepartmentsByPeriodAsync(periodStart, periodEnd, auditId);
+            var conflictingDepartments = departmentIds.Where(deptId => usedDepartments.Contains(deptId)).ToList();
+
+            var response = new ValidateDepartmentResponse
+            {
+                IsValid = conflictingDepartments.Count == 0,
+                ConflictingDepartments = conflictingDepartments
+            };
+
+            if (conflictingDepartments.Any())
+            {
+                // Lấy thông tin các audits xung đột
+                var auditsInPeriod = await _repo.GetAuditsByPeriodAsync(periodStart, periodEnd);
+                var conflictingAudits = new List<ConflictingAuditInfo>();
+
+                foreach (var audit in auditsInPeriod)
+                {
+                    if (auditId.HasValue && audit.AuditId == auditId.Value)
+                        continue;
+
+                    var auditDepartments = await _auditScopeDepartmentRepo.GetAuditScopeDepartmentsAsync(audit.AuditId);
+                    var auditDeptIds = auditDepartments.Select(ad => ad.DeptId).ToList();
+                    var hasConflict = conflictingDepartments.Any(cd => auditDeptIds.Contains(cd));
+
+                    if (hasConflict)
+                    {
+                        conflictingAudits.Add(new ConflictingAuditInfo
+                        {
+                            AuditId = audit.AuditId,
+                            Title = audit.Title,
+                            Departments = auditDeptIds.Where(ad => conflictingDepartments.Contains(ad)).ToList()
+                        });
+                    }
+                }
+
+                response.ConflictingAudits = conflictingAudits;
+            }
+
+            return response;
+        }
     }
 }

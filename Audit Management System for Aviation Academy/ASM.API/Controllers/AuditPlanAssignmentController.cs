@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ValidateAssignmentRequest = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentRequest;
 
 namespace ASM.API.Controllers
 {

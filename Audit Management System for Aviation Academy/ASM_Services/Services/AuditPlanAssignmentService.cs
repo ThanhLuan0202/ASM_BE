@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ValidateAssignmentRequest = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentRequest;
-using ValidateAssignmentResponse = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentResponse;
 
 namespace ASM_Services.Services
 {
