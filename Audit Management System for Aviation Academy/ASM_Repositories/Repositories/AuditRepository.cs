@@ -588,12 +588,13 @@ namespace ASM_Repositories.Repositories
                     throw new InvalidOperationException($"Duplicate UserId found in AuditTeams: {string.Join(", ", duplicateUserIds)}. Each user can only be assigned once per audit.");
 
                 // 3. Kiểm tra chỉ có 1 Lead Auditor
+                /*
                 var leadCount = dto.AuditTeams.Count(t => t.IsLead.HasValue && t.IsLead.Value);
                 if (leadCount > 1)
                     throw new InvalidOperationException("Only one Lead Auditor (IsLead = true) is allowed per audit");
                 if (leadCount == 0)
                     throw new InvalidOperationException("At least one Lead Auditor (IsLead = true) is required");
-
+                */
                 // 4. Validate tất cả UserId tồn tại
                 foreach (var item in dto.AuditTeams)
                 {
