@@ -29,5 +29,6 @@ namespace ASM_Repositories.Interfaces
         Task<Audit?> GetAuditPlanAsync(Guid auditId);
         Task UpdateStatusToArchivedAsync(Guid auditId);
         Task<ViewAudit?> UpdateAuditCompleteAsync(Guid auditId, UpdateAuditComplete dto);
+        Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate);
     }
 }

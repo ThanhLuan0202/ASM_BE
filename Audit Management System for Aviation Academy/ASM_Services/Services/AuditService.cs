@@ -799,5 +799,10 @@ namespace ASM_Services.Services
                 throw;
             }
         }
+
+        public async Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _repo.GetAuditsByPeriodAsync(startDate, endDate);
+        }
     }
 }

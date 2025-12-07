@@ -728,6 +728,20 @@ namespace ASM_Repositories.Repositories
             return updatedAudit == null ? null : _mapper.Map<ViewAudit>(updatedAudit);
         }
 
+        public async Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            var audits = await _DbContext.Audits
+                .Include(a => a.CreatedByNavigation)
+                .Include(a => a.Template)
+                .Include(a => a.StatusNavigation)
+                .Where(a => a.StartDate >= startDate 
+                    && a.EndDate <= endDate 
+                    && a.Status != "Inactive")
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViewAudit>>(audits);
+        }
+
     }
 }
 

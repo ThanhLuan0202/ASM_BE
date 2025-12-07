@@ -718,6 +718,25 @@ namespace ASM.API.Controllers
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Audit_{auditId}.xlsx");
         }
 
+        [HttpGet("by-period")]
+        public async Task<ActionResult<IEnumerable<ViewAudit>>> GetAuditsByPeriod([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            try
+            {
+                if (startDate >= endDate)
+                {
+                    return BadRequest(new { message = "StartDate must be earlier than EndDate" });
+                }
+
+                var result = await _service.GetAuditsByPeriodAsync(startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving audits by period", error = ex.Message });
+            }
+        }
+
         // ================= Helpers =================
 
         private byte[]? GetLogoBytes(string relativePath)
