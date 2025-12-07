@@ -65,22 +65,22 @@ namespace ASM.API.Controllers
                     return Unauthorized("User not authenticated");
 
                 // Set CreatedBy từ UserId trong token
-                if (Guid.TryParse(userIdClaim, out Guid userIdGuid))
-                {
-                    // Convert Guid to int using hash code (ensure positive)
-                    dto.CreatedBy = Math.Abs(userIdGuid.GetHashCode());
-                }
-                else if (int.TryParse(userIdClaim, out int userIdInt))
-                {
-                    dto.CreatedBy = userIdInt;
-                }
-                else
+                if (!Guid.TryParse(userIdClaim, out Guid userIdGuid))
                 {
                     return BadRequest(new { message = "Invalid UserId format in token." });
                 }
 
+                dto.CreatedBy = userIdGuid;
+
+                // Validate required fields
+                if (dto.AuditChecklistItemId == Guid.Empty)
+                    return BadRequest(new { message = "AuditChecklistItemId is required." });
+
+                if (dto.WitnessId == Guid.Empty)
+                    return BadRequest(new { message = "WitnessId is required." });
+
                 var result = await _service.CreateAsync(dto);
-                return Ok(result);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (ArgumentException ex)
             {
@@ -101,6 +101,13 @@ namespace ASM.API.Controllers
                 var existing = await _service.GetByIdAsync(id);
                 if (existing == null)
                     return NotFound(new { message = "Checklist item no finding not found." });
+
+                // Validate Guid fields if provided
+                if (dto.AuditChecklistItemId.HasValue && dto.AuditChecklistItemId.Value == Guid.Empty)
+                    return BadRequest(new { message = "AuditChecklistItemId cannot be empty." });
+
+                if (dto.WitnessId.HasValue && dto.WitnessId.Value == Guid.Empty)
+                    return BadRequest(new { message = "WitnessId cannot be empty." });
 
                 var result = await _service.UpdateAsync(id, dto);
                 if (result == null)
