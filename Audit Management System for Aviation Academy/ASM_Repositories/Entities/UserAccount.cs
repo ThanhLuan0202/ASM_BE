@@ -47,9 +47,15 @@ public partial class UserAccount
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
+    public virtual ICollection<AuditPlanAssignment> AuditPlanAssignmentAssignByNavigations { get; set; } = new List<AuditPlanAssignment>();
+
+    public virtual ICollection<AuditPlanAssignment> AuditPlanAssignmentAuditors { get; set; } = new List<AuditPlanAssignment>();
+
     public virtual ICollection<AuditTeam> AuditTeams { get; set; } = new List<AuditTeam>();
 
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
+
+    public virtual ICollection<ChecklistItemNoFinding> ChecklistItemNoFindings { get; set; } = new List<ChecklistItemNoFinding>();
 
     public virtual ICollection<ChecklistTemplate> ChecklistTemplates { get; set; } = new List<ChecklistTemplate>();
 
@@ -60,6 +66,8 @@ public partial class UserAccount
     public virtual ICollection<Finding> FindingCreatedByNavigations { get; set; } = new List<Finding>();
 
     public virtual ICollection<Finding> FindingReviewers { get; set; } = new List<Finding>();
+
+    public virtual ICollection<Finding> FindingWitnesses { get; set; } = new List<Finding>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 

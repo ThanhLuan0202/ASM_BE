@@ -37,11 +37,11 @@ public partial class Finding
 
     public string ExternalAuditorName { get; set; }
 
-    public int? WitnessId { get; set; }
-
     public string FindingType { get; set; }
 
     public DateTime? ClosedAt { get; set; }
+
+    public Guid WitnessId { get; set; }
 
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 
@@ -60,4 +60,6 @@ public partial class Finding
     public virtual FindingSeverity SeverityNavigation { get; set; }
 
     public virtual FindingStatus StatusNavigation { get; set; }
+
+    public virtual UserAccount Witness { get; set; }
 }

@@ -132,7 +132,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[AuditPlanAssignment]",
+         "Name": "[dbo].[AuditPlan_Assignment]",
          "ObjectType": 0
       },
       {

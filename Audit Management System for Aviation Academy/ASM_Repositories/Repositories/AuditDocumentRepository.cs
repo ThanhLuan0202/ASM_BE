@@ -1,7 +1,6 @@
 ﻿using ASM_Repositories.DBContext;
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
-using ASM_Repositories.Migrations;
 using ASM_Repositories.Models.AuditCriterionDTO;
 using ASM_Repositories.Models.AuditDocumentDTO;
 using AutoMapper;

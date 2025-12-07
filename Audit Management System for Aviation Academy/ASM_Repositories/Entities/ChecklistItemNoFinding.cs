@@ -21,9 +21,11 @@ public partial class ChecklistItemNoFinding
 
     public string Department { get; set; }
 
-    public int? WitnessId { get; set; }
-
     public int CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; }
+
+    public Guid WitnessId { get; set; }
+
+    public virtual UserAccount Witness { get; set; }
 }

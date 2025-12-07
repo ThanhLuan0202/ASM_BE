@@ -92,6 +92,9 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
         return connectionString;
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ASM_Repositories.Entities.Action>(entity =>
@@ -436,17 +439,26 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
         modelBuilder.Entity<AuditPlanAssignment>(entity =>
         {
-            entity.HasKey(e => e.AssignmentId).HasName("PK__AuditPla__32499E77ADC23C83");
+            entity.HasKey(e => e.AssignmentId).HasName("PK__AuditPla__32499E77504F35C6");
 
-            entity.ToTable("AuditPlanAssignment");
+            entity.ToTable("AuditPlan_Assignment");
 
-            entity.Property(e => e.AssignedDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.AssignmentId).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.AssignedDate).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Remarks).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .IsRequired()
                 .HasMaxLength(50);
+
+            entity.HasOne(d => d.AssignByNavigation).WithMany(p => p.AuditPlanAssignmentAssignByNavigations)
+                .HasForeignKey(d => d.AssignBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AuditPlan__Assig__1D7B6025");
+
+            entity.HasOne(d => d.Auditor).WithMany(p => p.AuditPlanAssignmentAuditors)
+                .HasForeignKey(d => d.AuditorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AuditPlan__Audit__1C873BEC");
         });
 
         modelBuilder.Entity<AuditSchedule>(entity =>
@@ -582,6 +594,12 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.Title)
                 .IsRequired()
                 .HasMaxLength(255);
+            entity.Property(e => e.WitnessId).HasColumnName("WitnessID");
+
+            entity.HasOne(d => d.Witness).WithMany(p => p.ChecklistItemNoFindings)
+                .HasForeignKey(d => d.WitnessId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Checklist__Witne__2057CCD0");
         });
 
         modelBuilder.Entity<ChecklistTemplate>(entity =>
@@ -723,6 +741,11 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.Status)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Finding__Status__03F0984C");
+
+            entity.HasOne(d => d.Witness).WithMany(p => p.FindingWitnesses)
+                .HasForeignKey(d => d.WitnessId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Finding__Witness__1F63A897");
         });
 
         modelBuilder.Entity<FindingSeverity>(entity =>

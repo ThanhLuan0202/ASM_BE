@@ -32,14 +32,14 @@ namespace ASM_Repositories.Repositories
             return _mapper.Map<IEnumerable<ViewAuditPlanAssignment>>(list);
         }
 
-        public async Task<ViewAuditPlanAssignment?> GetByIdAsync(int id)
-        {
-            var entity = await _context.AuditPlanAssignments
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
+        //public async Task<ViewAuditPlanAssignment?> GetByIdAsync(int id)
+        //{
+        //    var entity = await _context.AuditPlanAssignments
+        //    //    .AsNoTracking()
+        //    //    .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
 
-            return entity == null ? null : _mapper.Map<ViewAuditPlanAssignment>(entity);
-        }
+        //    return entity == null ? null : _mapper.Map<ViewAuditPlanAssignment>(entity);
+        //}
 
         public async Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto)
         {
@@ -61,43 +61,58 @@ namespace ASM_Repositories.Repositories
             }
         }
 
-        public async Task<ViewAuditPlanAssignment?> UpdateAsync(int id, UpdateAuditPlanAssignment dto)
+        //public async Task<ViewAuditPlanAssignment?> UpdateAsync(int id, UpdateAuditPlanAssignment dto)
+        //{
+        //    try
+        //    {
+        //        var existing = await _context.AuditPlanAssignments
+        //            .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
+
+        //        if (existing == null)
+        //            return null;
+
+        //        _mapper.Map(dto, existing);
+        //        _context.AuditPlanAssignments.Update(existing);
+        //        await _context.SaveChangesAsync();
+
+        //        return _mapper.Map<ViewAuditPlanAssignment>(existing);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("[AuditPlanAssignmentRepository.UpdateAsync] Error: " + ex.Message);
+        //        Console.WriteLine(ex.InnerException?.Message);
+        //        throw new Exception("An unexpected error occurred while updating the audit plan assignment.", ex);
+        //    }
+        //}
+
+        //public async Task<bool> DeleteAsync(int id)
+        //{
+        //    var entity = await _context.AuditPlanAssignments
+        //        .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
+
+        //    if (entity == null)
+        //        return false;
+
+        //    entity.Status = "Inactive";
+        //    _context.AuditPlanAssignments.Update(entity);
+        //    await _context.SaveChangesAsync();
+
+        //    return true;
+        //}
+
+        public Task<ViewAuditPlanAssignment?> GetByIdAsync(int id)
         {
-            try
-            {
-                var existing = await _context.AuditPlanAssignments
-                    .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
-
-                if (existing == null)
-                    return null;
-
-                _mapper.Map(dto, existing);
-                _context.AuditPlanAssignments.Update(existing);
-                await _context.SaveChangesAsync();
-
-                return _mapper.Map<ViewAuditPlanAssignment>(existing);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("[AuditPlanAssignmentRepository.UpdateAsync] Error: " + ex.Message);
-                Console.WriteLine(ex.InnerException?.Message);
-                throw new Exception("An unexpected error occurred while updating the audit plan assignment.", ex);
-            }
+            throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public Task<ViewAuditPlanAssignment?> UpdateAsync(int id, UpdateAuditPlanAssignment dto)
         {
-            var entity = await _context.AuditPlanAssignments
-                .FirstOrDefaultAsync(a => a.AssignmentId == id && a.Status != "Inactive");
+            throw new NotImplementedException();
+        }
 
-            if (entity == null)
-                return false;
-
-            entity.Status = "Inactive";
-            _context.AuditPlanAssignments.Update(entity);
-            await _context.SaveChangesAsync();
-
-            return true;
+        public Task<bool> DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
