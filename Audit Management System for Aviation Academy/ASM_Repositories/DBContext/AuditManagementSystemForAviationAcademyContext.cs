@@ -45,6 +45,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
+    public virtual DbSet<AuditPlanAssignment> AuditPlanAssignments { get; set; }
+
     public virtual DbSet<AuditSchedule> AuditSchedules { get; set; }
 
     public virtual DbSet<AuditScopeDepartment> AuditScopeDepartments { get; set; }
@@ -77,6 +79,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
+
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -88,8 +92,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
         return connectionString;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -434,6 +437,21 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasConstraintName("FK__AuditLog__Perfor__2645B050");
         });
 
+        modelBuilder.Entity<AuditPlanAssignment>(entity =>
+        {
+            entity.HasKey(e => e.AssignmentId).HasName("PK__AuditPla__32499E77ADC23C83");
+
+            entity.ToTable("AuditPlanAssignment");
+
+            entity.Property(e => e.AssignedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Remarks).HasMaxLength(255);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
         modelBuilder.Entity<AuditSchedule>(entity =>
         {
             entity.HasKey(e => e.ScheduleId).HasName("PK__AuditSch__9C8A5B698B88D86C");
@@ -641,9 +659,11 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasColumnName("FindingID");
             entity.Property(e => e.AuditId).HasColumnName("AuditID");
             entity.Property(e => e.AuditItemId).HasColumnName("AuditItemID");
+            entity.Property(e => e.ClosedAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.DeptId).HasColumnName("DeptID");
             entity.Property(e => e.ExternalAuditorName).HasMaxLength(200);
+            entity.Property(e => e.FindingType).HasMaxLength(50);
             entity.Property(e => e.ReviewerId).HasColumnName("ReviewerID");
             entity.Property(e => e.RootCauseId).HasColumnName("RootCauseID");
             entity.Property(e => e.Severity).HasMaxLength(20);
@@ -655,6 +675,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.Title)
                 .IsRequired()
                 .HasMaxLength(300);
+            entity.Property(e => e.WitnessId).HasColumnName("WitnessID");
 
             entity.HasOne(d => d.Audit).WithMany(p => p.Findings)
                 .HasForeignKey(d => d.AuditId)

@@ -37,6 +37,12 @@ public partial class Finding
 
     public string ExternalAuditorName { get; set; }
 
+    public int? WitnessId { get; set; }
+
+    public string FindingType { get; set; }
+
+    public DateTime? ClosedAt { get; set; }
+
     public virtual ICollection<Action> Actions { get; set; } = new List<Action>();
 
     public virtual Audit Audit { get; set; }
