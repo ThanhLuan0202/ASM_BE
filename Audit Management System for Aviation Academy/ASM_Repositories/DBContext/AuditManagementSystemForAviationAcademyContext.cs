@@ -81,6 +81,7 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
