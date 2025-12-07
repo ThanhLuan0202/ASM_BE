@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ValidateAssignmentRequest = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentRequest;
+using ValidateAssignmentResponse = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentResponse;
 
 namespace ASM_Services.Interfaces
 {
@@ -15,5 +17,6 @@ namespace ASM_Services.Interfaces
         Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto);
         Task<bool> DeleteAsync(Guid id);
         Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate);
+        Task<ValidateAssignmentResponse> ValidateAssignmentAsync(ValidateAssignmentRequest request);
     }
 }

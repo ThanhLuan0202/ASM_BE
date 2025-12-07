@@ -119,5 +119,22 @@ namespace ASM_Repositories.Repositories
 
             return _mapper.Map<IEnumerable<ViewAuditPlanAssignment>>(assignments);
         }
+
+        public async Task<int> GetAssignmentCountByPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            // Đếm số lượng auditors đã được assign và đã tạo audits trong thời kỳ này
+            var count = await _context.AuditPlanAssignments
+                .Where(apa => apa.Status == "Active")
+                .Join(
+                    _context.Audits.Where(a => a.StartDate >= startDate && a.EndDate <= endDate && a.Status != "Inactive"),
+                    apa => apa.AuditorId,
+                    a => a.CreatedBy,
+                    (apa, a) => apa.AuditorId
+                )
+                .Distinct()
+                .CountAsync();
+
+            return count;
+        }
     }
 }

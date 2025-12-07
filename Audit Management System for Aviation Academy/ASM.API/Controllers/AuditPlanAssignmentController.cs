@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ValidateAssignmentRequest = ASM_Repositories.Models.AuditPlanAssignmentDTO.ValidateAssignmentRequest;
 
 namespace ASM.API.Controllers
 {
@@ -155,6 +156,26 @@ namespace ASM.API.Controllers
             {
                 _logger.LogError(ex, "Error retrieving audit plan assignments by period.");
                 return StatusCode(500, new { message = "An error occurred while retrieving assignments by period", error = ex.Message });
+            }
+        }
+
+        [HttpPost("validate")]
+        public async Task<IActionResult> ValidateAssignment([FromBody] ValidateAssignmentRequest request)
+        {
+            try
+            {
+                if (request.StartDate >= request.EndDate)
+                {
+                    return BadRequest(new { message = "StartDate must be earlier than EndDate" });
+                }
+
+                var result = await _service.ValidateAssignmentAsync(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating audit plan assignment.");
+                return StatusCode(500, new { message = "An error occurred while validating assignment", error = ex.Message });
             }
         }
     }
