@@ -1,4 +1,4 @@
-﻿using ASM_Repositories.Interfaces;
+using ASM_Repositories.Interfaces;
 using ASM_Repositories.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -46,6 +46,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IAuditDocumentRepository, AuditDocumentRepository>();
             service.AddTransient<IAuditAssignmentRepository, AuditAssignmentRepository>();
             service.AddTransient<IAuditChecklistTemplateMapRepository, AuditChecklistTemplateMapRepository>();
+            service.AddTransient<IAuditPlanAssignmentRepository, AuditPlanAssignmentRepository>();
 
 
 

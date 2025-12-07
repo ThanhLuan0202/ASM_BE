@@ -1,4 +1,4 @@
-﻿using ASM_Services.Interfaces;
+using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
@@ -52,6 +52,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditDocumentService, AuditDocumentService>();
             service.AddTransient<IEmailService, EmailService>();
             service.AddTransient<IAuditChecklistTemplateMapService, AuditChecklistTemplateMapService>();
+            service.AddTransient<IAuditPlanAssignmentService, AuditPlanAssignmentService>();
 
 
 

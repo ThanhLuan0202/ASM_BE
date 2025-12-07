@@ -1,4 +1,4 @@
-﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AttachmentDTO;
@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ASM_Repositories.Models.AuditDocumentDTO;
 using ASM_Repositories.Models.AuditChecklistTemplateMapDTO;
+using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 
 namespace ASM_Repositories.Mapping
 {
@@ -358,6 +359,16 @@ namespace ASM_Repositories.Mapping
             CreateMap<CreateAuditChecklistTemplateMap, AuditChecklistTemplateMap>()
                 .ForMember(d => d.AssignedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
             CreateMap<UpdateAuditChecklistTemplateMap, AuditChecklistTemplateMap>();
+
+            // AuditPlanAssignment
+            CreateMap<AuditPlanAssignment, ViewAuditPlanAssignment>().ReverseMap();
+            CreateMap<CreateAuditPlanAssignment, AuditPlanAssignment>()
+                .ForMember(dest => dest.AssignmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"));
+            CreateMap<UpdateAuditPlanAssignment, AuditPlanAssignment>()
+                .ForMember(dest => dest.AssignmentId, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
