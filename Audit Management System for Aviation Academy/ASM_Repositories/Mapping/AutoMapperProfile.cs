@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using ASM_Repositories.Models.AuditDocumentDTO;
 using ASM_Repositories.Models.AuditChecklistTemplateMapDTO;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
+using ASM_Repositories.Models.ChecklistItemNoFindingDTO;
 
 namespace ASM_Repositories.Mapping
 {
@@ -368,6 +369,17 @@ namespace ASM_Repositories.Mapping
             CreateMap<UpdateAuditPlanAssignment, AuditPlanAssignment>()
                 .ForMember(dest => dest.AssignmentId, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // ChecklistItemNoFinding
+            CreateMap<ChecklistItemNoFinding, ViewChecklistItemNoFinding>().ReverseMap();
+            CreateMap<CreateChecklistItemNoFinding, ChecklistItemNoFinding>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+            CreateMap<UpdateChecklistItemNoFinding, ChecklistItemNoFinding>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }

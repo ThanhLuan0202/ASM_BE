@@ -47,6 +47,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IAuditAssignmentRepository, AuditAssignmentRepository>();
             service.AddTransient<IAuditChecklistTemplateMapRepository, AuditChecklistTemplateMapRepository>();
             service.AddTransient<IAuditPlanAssignmentRepository, AuditPlanAssignmentRepository>();
+            service.AddTransient<IChecklistItemNoFindingRepository, ChecklistItemNoFindingRepository>();
 
 
 

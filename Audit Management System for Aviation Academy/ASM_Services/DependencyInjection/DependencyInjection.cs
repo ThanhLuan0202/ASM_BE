@@ -53,6 +53,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IEmailService, EmailService>();
             service.AddTransient<IAuditChecklistTemplateMapService, AuditChecklistTemplateMapService>();
             service.AddTransient<IAuditPlanAssignmentService, AuditPlanAssignmentService>();
+            service.AddTransient<IChecklistItemNoFindingService, ChecklistItemNoFindingService>();
 
 
 
