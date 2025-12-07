@@ -37,10 +37,13 @@ namespace ASM.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             try
             {
+                if (id == Guid.Empty)
+                    return BadRequest(new { message = "Invalid AssignmentId" });
+
                 var result = await _service.GetByIdAsync(id);
                 if (result == null)
                     return NotFound("Audit plan assignment not found.");
@@ -64,22 +67,15 @@ namespace ASM.API.Controllers
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("User not authenticated");
 
-                if (Guid.TryParse(userIdClaim, out Guid userIdGuid))
-                {
-                    // Convert Guid to int using hash code (ensure positive)
-                    dto.AssignBy = Math.Abs(userIdGuid.GetHashCode());
-                }
-                else if (int.TryParse(userIdClaim, out int userIdInt))
-                {
-                    dto.AssignBy = userIdInt;
-                }
-                else
+                if (!Guid.TryParse(userIdClaim, out Guid userIdGuid))
                 {
                     return BadRequest(new { message = "Invalid UserId format in token." });
                 }
 
+                dto.AssignBy = userIdGuid;
+
                 var result = await _service.CreateAsync(dto);
-                return Ok(result);
+                return CreatedAtAction(nameof(GetById), new { id = result.AssignmentId }, result);
             }
             catch (ArgumentException ex)
             {
@@ -93,10 +89,13 @@ namespace ASM.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateAuditPlanAssignment dto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAuditPlanAssignment dto)
         {
             try
             {
+                if (id == Guid.Empty)
+                    return BadRequest(new { message = "Invalid AssignmentId" });
+
                 var existing = await _service.GetByIdAsync(id);
                 if (existing == null)
                     return NotFound(new { message = "Audit plan assignment not found." });
@@ -119,10 +118,13 @@ namespace ASM.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
+                if (id == Guid.Empty)
+                    return BadRequest(new { message = "Invalid AssignmentId" });
+
                 var success = await _service.DeleteAsync(id);
                 if (!success)
                     return NotFound("Audit plan assignment not found or already inactive.");

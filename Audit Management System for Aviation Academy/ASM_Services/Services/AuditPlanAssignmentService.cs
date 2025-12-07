@@ -19,9 +19,9 @@ namespace ASM_Services.Services
         }
 
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAllAsync() => _repo.GetAllAsync();
-        public Task<ViewAuditPlanAssignment?> GetByIdAsync(int id) => _repo.GetByIdAsync(id);
+        public Task<ViewAuditPlanAssignment?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
         public Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto) => _repo.CreateAsync(dto);
-        public Task<ViewAuditPlanAssignment?> UpdateAsync(int id, UpdateAuditPlanAssignment dto) => _repo.UpdateAsync(id, dto);
-        public Task<bool> DeleteAsync(int id) => _repo.DeleteAsync(id);
+        public Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto) => _repo.UpdateAsync(id, dto);
+        public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
     }
 }

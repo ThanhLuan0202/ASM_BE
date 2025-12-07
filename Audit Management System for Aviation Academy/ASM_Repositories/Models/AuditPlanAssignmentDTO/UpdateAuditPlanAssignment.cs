@@ -8,8 +8,8 @@ namespace ASM_Repositories.Models.AuditPlanAssignmentDTO
 {
     public class UpdateAuditPlanAssignment
     {
-        public int? AuditorId { get; set; }
-        public int? AssignBy { get; set; }
+        public Guid? AuditorId { get; set; }
+        public Guid? AssignBy { get; set; }
         public DateTime? AssignedDate { get; set; }
         public string Remarks { get; set; }
     }
