@@ -55,7 +55,9 @@ public partial class UserAccount
 
     public virtual ICollection<Audit> Audits { get; set; } = new List<Audit>();
 
-    public virtual ICollection<ChecklistItemNoFinding> ChecklistItemNoFindings { get; set; } = new List<ChecklistItemNoFinding>();
+    public virtual ICollection<ChecklistItemNoFinding> ChecklistItemNoFindingCreatedByNavigations { get; set; } = new List<ChecklistItemNoFinding>();
+
+    public virtual ICollection<ChecklistItemNoFinding> ChecklistItemNoFindingWitnesses { get; set; } = new List<ChecklistItemNoFinding>();
 
     public virtual ICollection<ChecklistTemplate> ChecklistTemplates { get; set; } = new List<ChecklistTemplate>();
 

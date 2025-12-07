@@ -81,7 +81,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
-
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -95,7 +94,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ASM_Repositories.Entities.Action>(entity =>
@@ -597,7 +595,17 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasMaxLength(255);
             entity.Property(e => e.WitnessId).HasColumnName("WitnessID");
 
-            entity.HasOne(d => d.Witness).WithMany(p => p.ChecklistItemNoFindings)
+            entity.HasOne(d => d.AuditChecklistItem).WithMany(p => p.ChecklistItemNoFindings)
+                .HasForeignKey(d => d.AuditChecklistItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Checklist__Audit__22401542");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ChecklistItemNoFindingCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Checklist__Creat__214BF109");
+
+            entity.HasOne(d => d.Witness).WithMany(p => p.ChecklistItemNoFindingWitnesses)
                 .HasForeignKey(d => d.WitnessId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Checklist__Witne__2057CCD0");

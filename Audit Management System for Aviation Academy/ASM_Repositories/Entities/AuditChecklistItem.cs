@@ -23,5 +23,7 @@ public partial class AuditChecklistItem
 
     public virtual Audit Audit { get; set; }
 
+    public virtual ICollection<ChecklistItemNoFinding> ChecklistItemNoFindings { get; set; } = new List<ChecklistItemNoFinding>();
+
     public virtual ICollection<Finding> Findings { get; set; } = new List<Finding>();
 }

@@ -9,8 +9,6 @@ public partial class ChecklistItemNoFinding
 {
     public int Id { get; set; }
 
-    public int AuditChecklistItemId { get; set; }
-
     public string Title { get; set; }
 
     public string Reason { get; set; }
@@ -21,11 +19,17 @@ public partial class ChecklistItemNoFinding
 
     public string Department { get; set; }
 
-    public int CreatedBy { get; set; }
-
     public DateTime CreatedDate { get; set; }
 
     public Guid WitnessId { get; set; }
+
+    public Guid CreatedBy { get; set; }
+
+    public Guid AuditChecklistItemId { get; set; }
+
+    public virtual AuditChecklistItem AuditChecklistItem { get; set; }
+
+    public virtual UserAccount CreatedByNavigation { get; set; }
 
     public virtual UserAccount Witness { get; set; }
 }
