@@ -169,5 +169,50 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving auditors", error = ex.Message });
             }
         }
+
+        [HttpGet("available-members")]
+        public async Task<IActionResult> GetAvailableTeamMembers(
+            [FromQuery] Guid auditId,
+            [FromQuery] bool excludePreviousPeriod = false,
+            [FromQuery] DateTime? previousPeriodStartDate = null,
+            [FromQuery] DateTime? previousPeriodEndDate = null)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid audit ID" });
+                }
+
+                if (excludePreviousPeriod)
+                {
+                    if (!previousPeriodStartDate.HasValue || !previousPeriodEndDate.HasValue)
+                    {
+                        return BadRequest(new { message = "previousPeriodStartDate and previousPeriodEndDate are required when excludePreviousPeriod is true" });
+                    }
+
+                    if (previousPeriodStartDate.Value >= previousPeriodEndDate.Value)
+                    {
+                        return BadRequest(new { message = "previousPeriodStartDate must be earlier than previousPeriodEndDate" });
+                    }
+                }
+
+                var result = await _service.GetAvailableTeamMembersAsync(
+                    auditId, 
+                    excludePreviousPeriod, 
+                    previousPeriodStartDate, 
+                    previousPeriodEndDate);
+
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving available team members", error = ex.Message });
+            }
+        }
     }
 }

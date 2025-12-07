@@ -199,5 +199,17 @@ namespace ASM_Repositories.Repositories
 
             return lead == Guid.Empty ? null : lead;
         }
+
+        public async Task<IEnumerable<Entities.UserAccount>> GetUsersByRolesAsync(string[] roleNames)
+        {
+            var users = await _context.UserAccounts
+                .Where(u => roleNames.Contains(u.RoleName) 
+                    && u.IsActive 
+                    && u.Status == "Active")
+                .OrderBy(u => u.FullName)
+                .ToListAsync();
+
+            return users;
+        }
     }
 }

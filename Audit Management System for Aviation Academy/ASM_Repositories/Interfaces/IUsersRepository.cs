@@ -22,6 +22,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewUserShortInfo?> GetAuditeeOwnerInfoByDepartmentIdAsync(int deptId);
         Task<bool> UserExistsAsync(Guid userId);
         Task<Guid?> GetLeadAuditorIdAsync();
-
+        Task<IEnumerable<Entities.UserAccount>> GetUsersByRolesAsync(string[] roleNames);
     }
 }

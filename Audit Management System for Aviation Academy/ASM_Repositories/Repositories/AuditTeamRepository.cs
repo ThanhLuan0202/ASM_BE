@@ -214,6 +214,21 @@ namespace ASM_Repositories.Repositories
             }
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Guid>> GetUsersInPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            var userIds = await _context.AuditTeams
+                .Include(at => at.Audit)
+                .Where(at => at.Audit.StartDate >= startDate 
+                    && at.Audit.EndDate <= endDate
+                    && at.Status == "Active"
+                    && at.Audit.Status != "Inactive")
+                .Select(at => at.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            return userIds;
+        }
     }
 
 }
