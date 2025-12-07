@@ -42,6 +42,8 @@ namespace ASM_Repositories.Models.FindingDTO
 
         public string Source { get; set; }
 
+        public int? WitnessId { get; set; }
+
         public string ExternalAuditorName { get; set; }
 
         public byte? ProgressPercent { get; set; }
