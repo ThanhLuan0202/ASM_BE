@@ -14,5 +14,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto);
         Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto);
         Task<bool> DeleteAsync(Guid id);
+        Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate);
     }
 }

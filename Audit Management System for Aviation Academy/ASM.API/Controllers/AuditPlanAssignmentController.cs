@@ -137,5 +137,25 @@ namespace ASM.API.Controllers
                 return StatusCode(500, "Internal server error.");
             }
         }
+
+        [HttpGet("by-period")]
+        public async Task<IActionResult> GetAssignmentsByPeriod([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            try
+            {
+                if (startDate >= endDate)
+                {
+                    return BadRequest(new { message = "StartDate must be earlier than EndDate" });
+                }
+
+                var result = await _service.GetAssignmentsByPeriodAsync(startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving audit plan assignments by period.");
+                return StatusCode(500, new { message = "An error occurred while retrieving assignments by period", error = ex.Message });
+            }
+        }
     }
 }

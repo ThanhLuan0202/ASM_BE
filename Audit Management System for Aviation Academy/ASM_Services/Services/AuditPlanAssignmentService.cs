@@ -23,5 +23,6 @@ namespace ASM_Services.Services
         public Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto) => _repo.CreateAsync(dto);
         public Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
+        public Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate) => _repo.GetAssignmentsByPeriodAsync(startDate, endDate);
     }
 }
