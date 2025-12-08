@@ -25,6 +25,6 @@ namespace ASM_Repositories.Interfaces
     public class DepartmentInfoDto
     {
         public int DeptId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
