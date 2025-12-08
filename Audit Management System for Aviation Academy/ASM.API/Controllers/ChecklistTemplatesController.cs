@@ -63,6 +63,12 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState
@@ -86,13 +92,6 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Name is required" });
                 }
 
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                Guid? userId = null;
-                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
-                {
-                    userId = parsedUserId;
-                }
-
                 var result = await _service.CreateChecklistTemplateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { id = result.TemplateId }, result);
             }
@@ -111,6 +110,12 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (id == Guid.Empty)
                 {
                     return BadRequest(new { message = "Invalid template ID" });
@@ -134,7 +139,7 @@ namespace ASM.API.Controllers
                     });
                 }
 
-                var result = await _service.UpdateChecklistTemplateAsync(id, dto);
+                var result = await _service.UpdateChecklistTemplateAsync(id, dto, userId);
                 if (result == null)
                 {
                     return NotFound(new { message = $"Checklist template with ID {id} not found" });
@@ -157,12 +162,18 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (id == Guid.Empty)
                 {
                     return BadRequest(new { message = "Invalid template ID" });
                 }
 
-                var result = await _service.DeleteChecklistTemplateAsync(id);
+                var result = await _service.DeleteChecklistTemplateAsync(id, userId);
                 if (!result)
                 {
                     return NotFound(new { message = $"Checklist template with ID {id} not found" });
