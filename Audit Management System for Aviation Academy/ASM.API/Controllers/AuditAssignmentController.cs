@@ -133,6 +133,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -150,7 +154,7 @@ namespace ASM.API.Controllers
                 if (dto.AuditorId == Guid.Empty)
                     return BadRequest(new { message = "AuditorId is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { assignmentId = result.AssignmentId }, result);
             }
             catch (InvalidOperationException ex)
@@ -168,6 +172,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (assignmentId == Guid.Empty)
                     return BadRequest(new { message = "Invalid AssignmentId" });
 
@@ -179,7 +187,7 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Validation failed", errors });
                 }
 
-                var result = await _service.UpdateAsync(assignmentId, dto);
+                var result = await _service.UpdateAsync(assignmentId, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "Audit assignment not found" });
 
@@ -200,10 +208,14 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (assignmentId == Guid.Empty)
                     return BadRequest(new { message = "Invalid AssignmentId" });
 
-                var result = await _service.DeleteAsync(assignmentId);
+                var result = await _service.DeleteAsync(assignmentId, userId);
                 if (!result)
                     return NotFound(new { message = "Audit assignment not found" });
 
