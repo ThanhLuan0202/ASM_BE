@@ -13,13 +13,13 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewAttachment?> GetByIdAsync(Guid attachmentId);
         Task<IEnumerable<ViewAttachment>> GetByEntityAsync(string entityType, Guid entityId);
         Task<ViewAttachment> CreateAsync(CreateAttachment dto, IFormFile file, Guid? uploadedBy);
-        Task<ViewAttachment?> UpdateAsync(Guid attachmentId, UpdateAttachment dto);
-        Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, IFormFile file);
-        Task<bool> DeleteAsync(Guid attachmentId);
+        Task<ViewAttachment?> UpdateAsync(Guid attachmentId, UpdateAttachment dto, Guid userId);
+        Task<ViewAttachment?> UpdateFileAsync(Guid attachmentId, IFormFile file, Guid userId);
+        Task<bool> DeleteAsync(Guid attachmentId, Guid userId);
         Task<List<Attachment>> GetAttachmentsAsync(List<Guid> findingIds);
-        Task UpdateAttachmentStatusAsync(Guid attachmentId, string status);
-        Task ApproveByHigherLevel(Guid attachmentId);
-        Task RejectByHigherLevel(Guid attachmentId);
+        Task UpdateAttachmentStatusAsync(Guid attachmentId, string status, Guid userId);
+        Task ApproveByHigherLevel(Guid attachmentId, Guid userId);
+        Task RejectByHigherLevel(Guid attachmentId, Guid userId);
         Task RejectAttachmentAsync(Guid attachmentId, Guid rejectedBy, string reason);
         Task<Notification> AttachmentRejectedAsync(Guid attachmentId, Guid rejectedBy, string reason);
     }

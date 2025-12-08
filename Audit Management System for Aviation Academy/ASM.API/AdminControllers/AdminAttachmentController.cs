@@ -82,6 +82,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -98,14 +102,6 @@ namespace ASM.API.AdminControllers
 
                 if (dto.EntityId == Guid.Empty)
                     return BadRequest(new { message = "EntityId is required" });
-
-                // Get userId from JWT token
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                Guid? userId = null;
-                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
-                {
-                    userId = parsedUserId;
-                }
 
                 var result = await _service.CreateAsync(dto, file, userId);
                 return CreatedAtAction(nameof(GetById), new { attachmentId = result.AttachmentId }, result);
@@ -129,6 +125,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (attachmentId == Guid.Empty)
                     return BadRequest(new { message = "Invalid AttachmentId" });
 
@@ -140,7 +140,7 @@ namespace ASM.API.AdminControllers
                     return BadRequest(new { message = "Validation failed", errors });
                 }
 
-                var result = await _service.UpdateAsync(attachmentId, dto);
+                var result = await _service.UpdateAsync(attachmentId, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "Attachment not found" });
 
@@ -158,13 +158,17 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (attachmentId == Guid.Empty)
                     return BadRequest(new { message = "Invalid AttachmentId" });
 
                 if (file == null || file.Length == 0)
                     return BadRequest(new { message = "File is required" });
 
-                var result = await _service.UpdateFileAsync(attachmentId, file);
+                var result = await _service.UpdateFileAsync(attachmentId, file, userId);
                 if (result == null)
                     return NotFound(new { message = "Attachment not found" });
 
@@ -185,10 +189,14 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (attachmentId == Guid.Empty)
                     return BadRequest(new { message = "Invalid AttachmentId" });
 
-                var result = await _service.DeleteAsync(attachmentId);
+                var result = await _service.DeleteAsync(attachmentId, userId);
                 if (!result)
                     return NotFound(new { message = "Attachment not found" });
 
