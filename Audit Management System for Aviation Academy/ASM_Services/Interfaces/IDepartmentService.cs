@@ -12,8 +12,8 @@ namespace ASM_Services.Interfaces.AdminInterfaces.AdminServices
     {
         Task<IEnumerable<ViewDepartment>> GetAllDepartmentsAsync();
         Task<ViewDepartment?> GetDepartmentByIdAsync(int id);
-        Task<ViewDepartment> CreateDepartmentAsync(CreateDepartment dto);
-        Task<ViewDepartment?> UpdateDepartmentAsync(int id, UpdateDepartment dto);
-        Task<bool> DeleteDepartmentAsync(int id);
+        Task<ViewDepartment> CreateDepartmentAsync(CreateDepartment dto, Guid userId);
+        Task<ViewDepartment?> UpdateDepartmentAsync(int id, UpdateDepartment dto, Guid userId);
+        Task<bool> DeleteDepartmentAsync(int id, Guid userId);
     }
 }
