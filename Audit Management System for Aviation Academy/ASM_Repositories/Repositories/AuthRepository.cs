@@ -94,13 +94,6 @@ namespace ASM_Repositories.Repositories
             if (string.IsNullOrWhiteSpace(request.RoleName))
                 throw new InvalidOperationException("Role is required");
 
-            // Check if email already exists
-            var existing = await _DbContext.UserAccounts.AsNoTracking().FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (existing != null)
-            {
-                throw new InvalidOperationException($"Email '{request.Email}' is already registered");
-            }
-
             // Validate Department if provided
             // Note: DeptId đã được tìm và gán từ tên Department trong AuthController
             // Ở đây chỉ validate lại để đảm bảo DeptId tồn tại và active
@@ -116,34 +109,83 @@ namespace ASM_Repositories.Repositories
                 }
             }
 
-            byte[] salt = new byte[32];
-            RandomNumberGenerator.Fill(salt); // DB column allows 32 bytes for PasswordSalt
-            byte[] hash;
-            using (var hmac = new HMACSHA512(salt))
-            {
-                hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
-            }
+            // Check if email already exists
+            var existing = await _DbContext.UserAccounts
+                .AsTracking()
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            // Tạo UserAccount với DeptId đã được tìm từ tên Department
-            var user = new UserAccount
+            UserAccount user;
+            bool isReactivating = false;
+
+            if (existing != null)
             {
-                UserId = Guid.NewGuid(),
-                Email = request.Email,
-                FullName = request.FullName,
-                RoleName = request.RoleName,
-                DeptId = request.DeptId, // DeptId đã được gán từ tên Department trong AuthController
-                PasswordHash = hash,
-                PasswordSalt = salt,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                FailedLoginCount = 0,
-                Status = "Active"
-            };
+                // Nếu email đã tồn tại và status là "Active" → throw exception
+                if (existing.Status == "Active")
+                {
+                    throw new InvalidOperationException($"Email '{request.Email}' is already registered and active");
+                }
+
+                // Nếu email đã tồn tại nhưng status không phải "Active" → Reactivate account
+                isReactivating = true;
+                
+                // Hash password mới
+                byte[] salt = new byte[32];
+                RandomNumberGenerator.Fill(salt);
+                byte[] hash;
+                using (var hmac = new HMACSHA512(salt))
+                {
+                    hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
+                }
+
+                // Update existing user để reactivate
+                existing.FullName = request.FullName;
+                existing.RoleName = request.RoleName;
+                existing.DeptId = request.DeptId;
+                existing.PasswordHash = hash;
+                existing.PasswordSalt = salt;
+                existing.Status = "Active";
+                existing.IsActive = true;
+                existing.FailedLoginCount = 0; // Reset failed login count
+                // Giữ nguyên CreatedAt và UserId
+
+                user = existing;
+            }
+            else
+            {
+                // Tạo user mới
+                byte[] salt = new byte[32];
+                RandomNumberGenerator.Fill(salt); // DB column allows 32 bytes for PasswordSalt
+                byte[] hash;
+                using (var hmac = new HMACSHA512(salt))
+                {
+                    hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
+                }
+
+                // Tạo UserAccount với DeptId đã được tìm từ tên Department
+                user = new UserAccount
+                {
+                    UserId = Guid.NewGuid(),
+                    Email = request.Email,
+                    FullName = request.FullName,
+                    RoleName = request.RoleName,
+                    DeptId = request.DeptId, // DeptId đã được gán từ tên Department trong AuthController
+                    PasswordHash = hash,
+                    PasswordSalt = salt,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    FailedLoginCount = 0,
+                    Status = "Active"
+                };
+
+                _DbContext.UserAccounts.Add(user);
+            }
 
             try
             {
-                _DbContext.ChangeTracker.Clear();
-                await _DbContext.UserAccounts.AddAsync(user);
+                if (!isReactivating)
+                {
+                    _DbContext.ChangeTracker.Clear();
+                }
                 await _DbContext.SaveChangesAsync();
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
