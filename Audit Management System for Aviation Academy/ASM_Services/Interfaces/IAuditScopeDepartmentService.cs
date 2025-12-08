@@ -14,9 +14,9 @@ namespace ASM_Services.Interfaces
     {
         Task<IEnumerable<ViewAuditScopeDepartment>> GetAllAsync();
         Task<ViewAuditScopeDepartment?> GetByIdAsync(Guid id);
-        Task<ViewAuditScopeDepartment> CreateAsync(CreateAuditScopeDepartment dto);
-        Task<ViewAuditScopeDepartment?> UpdateAsync(Guid id, UpdateAuditScopeDepartment dto);
-        Task<bool> SoftDeleteAsync(Guid id);
+        Task<ViewAuditScopeDepartment> CreateAsync(CreateAuditScopeDepartment dto, Guid userId);
+        Task<ViewAuditScopeDepartment?> UpdateAsync(Guid id, UpdateAuditScopeDepartment dto, Guid userId);
+        Task<bool> SoftDeleteAsync(Guid id, Guid userId);
         Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId);
     }
 }
