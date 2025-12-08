@@ -378,10 +378,10 @@ namespace ASM_Repositories.Repositories
                 throw new InvalidOperationException($"ApproverId '{approverId}' does not exist");
             }
 
-            var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "InProgress");
+            var approveStatusExists = await _DbContext.AuditStatuses.AnyAsync(s => s.AuditStatus1 == "Approved");
             if (!approveStatusExists)
             {
-                throw new InvalidOperationException("Status 'InProgress' does not exist in AuditStatus");
+                throw new InvalidOperationException("Status 'Approved' does not exist in AuditStatus");
             }
 
             audit.Status = "InProgress";
@@ -773,6 +773,46 @@ namespace ASM_Repositories.Repositories
                 .ToListAsync();
 
             return departmentIds;
+        }
+
+        public async Task<List<Guid>> UpdateAuditsToInProgressByStartDateAsync()
+        {
+            var now = DateTime.UtcNow;
+            var today = now.Date;
+            
+            
+            var auditsToUpdate = await _DbContext.Audits
+                .Where(a => a.StartDate.HasValue 
+                    && a.StartDate.Value.Date == today 
+                    && a.StartDate.Value <= now
+                    && a.Status == "Approved")
+                .ToListAsync();
+
+            if (!auditsToUpdate.Any())
+                return new List<Guid>();
+
+            var inProgressStatusExists = await _DbContext.AuditStatuses
+                .AnyAsync(s => s.AuditStatus1 == "InProgress");
+
+            if (!inProgressStatusExists)
+            {
+                throw new InvalidOperationException("Status 'InProgress' does not exist in AuditStatus");
+            }
+
+            var updatedAuditIds = new List<Guid>();
+            foreach (var audit in auditsToUpdate)
+            {
+                audit.Status = "InProgress";
+                _DbContext.Entry(audit).State = EntityState.Modified;
+                updatedAuditIds.Add(audit.AuditId);
+            }
+
+            if (updatedAuditIds.Any())
+            {
+                await _DbContext.SaveChangesAsync();
+            }
+
+            return updatedAuditIds;
         }
 
     }

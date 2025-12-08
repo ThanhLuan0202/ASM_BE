@@ -42,6 +42,9 @@ builder.Services.AddHttpClient();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddRepository().AddServices();
 
+// Register Background Services
+builder.Services.AddHostedService<ASM.API.BackgroundServices.AuditStatusUpdateService>();
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
