@@ -11,8 +11,8 @@ namespace ASM_Services.Interfaces
     {
         Task<List<ViewFindingStatus>> GetAllAsync();
         Task<ViewFindingStatus> GetByIdAsync(string status);
-        Task<ViewFindingStatus> CreateAsync(CreateFindingStatus dto);
-        Task<bool> UpdateAsync(string status, UpdateFindingStatus dto);
-        Task<bool> DeleteAsync(string status);
+        Task<ViewFindingStatus> CreateAsync(CreateFindingStatus dto, Guid userId);
+        Task<bool> UpdateAsync(string status, UpdateFindingStatus dto, Guid userId);
+        Task<bool> DeleteAsync(string status, Guid userId);
     }
 }

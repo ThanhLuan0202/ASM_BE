@@ -2,6 +2,7 @@
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ASM.API.Controllers
 {
@@ -52,7 +53,11 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var result = await _service.CreateAsync(dto);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.CreateAsync(dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -74,7 +79,11 @@ namespace ASM.API.Controllers
                 if (exists == null)
                     return NotFound(new { message = $"FindingStatus '{status}' not found." });
 
-                var success = await _service.UpdateAsync(status, dto);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var success = await _service.UpdateAsync(status, dto, userId);
                 if (!success)
                     return BadRequest(new { message = "Update failed." });
 
@@ -99,7 +108,11 @@ namespace ASM.API.Controllers
                 if (exists == null)
                     return NotFound(new { message = $"FindingStatus '{status}' not found." });
 
-                var success = await _service.DeleteAsync(status);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var success = await _service.DeleteAsync(status, userId);
                 if (!success)
                     return BadRequest(new { message = "Delete failed." });
 
