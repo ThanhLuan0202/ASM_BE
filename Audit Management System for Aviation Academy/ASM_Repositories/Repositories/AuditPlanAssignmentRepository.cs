@@ -103,18 +103,13 @@ namespace ASM_Repositories.Repositories
 
         public async Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate)
         {
-            // Lấy assignments mà auditor đã tạo audits trong thời kỳ này
             var assignments = await _context.AuditPlanAssignments
                 .Include(apa => apa.Auditor)
                 .Include(apa => apa.AssignByNavigation)
-                .Where(apa => apa.Status == "Active")
-                .Join(
-                    _context.Audits.Where(a => a.StartDate >= startDate && a.EndDate <= endDate && a.Status != "Inactive"),
-                    apa => apa.AuditorId,
-                    a => a.CreatedBy,
-                    (apa, a) => apa
-                )
-                .Distinct()
+                .Where(apa => apa.Status == "Active" 
+                    && apa.AssignedDate >= startDate 
+                    && apa.AssignedDate <= endDate)
+                .OrderBy(apa => apa.AssignedDate)
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<ViewAuditPlanAssignment>>(assignments);
