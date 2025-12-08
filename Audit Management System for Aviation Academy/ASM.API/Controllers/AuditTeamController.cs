@@ -42,7 +42,11 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var result = await _service.CreateAsync(dto);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.CreateAsync(dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -60,7 +64,11 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var result = await _service.UpdateAsync(id, dto);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.UpdateAsync(id, dto, userId);
                 if (result == null) return NotFound(new { message = "Audit team not found." });
                 return Ok(result);
             }
@@ -77,10 +85,21 @@ namespace ASM.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDelete(Guid id)
         {
-            var success = await _service.SoftDeleteAsync(id);
-            if (!success)
-                return NotFound(new { message = "Record not found or already inactive." });
-            return Ok(new { message = "Audit team member marked as inactive successfully." });
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var success = await _service.SoftDeleteAsync(id, userId);
+                if (!success)
+                    return NotFound(new { message = "Record not found or already inactive." });
+                return Ok(new { message = "Audit team member marked as inactive successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
         }
 
         [HttpGet("check-lead-auditor/{auditId}")]
