@@ -12,6 +12,11 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<ViewAuditLog> CreateAsync(CreateAuditLog dto);
         Task<ViewAuditLog?> UpdateAsync(Guid logId, UpdateAuditLog dto);
         Task<bool> DeleteAsync(Guid logId);
+        Task LogCreateAsync<T>(T newData, Guid entityId, Guid userId, string entityType);
+        Task LogUpdateAsync<T>(T oldData, T newData, Guid entityId, Guid userId, string entityType);
+        Task LogSoftDeleteAsync<T>(T oldData, T newData, Guid entityId, Guid userId, string entityType);
+        Task LogDeleteAsync<T>(T oldData, Guid entityId, Guid userId, string entityType);
+
     }
 }
 
