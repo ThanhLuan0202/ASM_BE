@@ -9,7 +9,7 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
     {
         Task<IEnumerable<ViewAuditCriteriaMap>> GetByAuditIdAsync(Guid auditId);
         Task<ViewAuditCriteriaMap?> GetAsync(Guid auditId, Guid criteriaId);
-        Task<ViewAuditCriteriaMap> CreateAsync(CreateAuditCriteriaMap dto);
-        Task<bool> DeleteAsync(Guid auditId, Guid criteriaId);
+        Task<ViewAuditCriteriaMap> CreateAsync(CreateAuditCriteriaMap dto, Guid userId);
+        Task<bool> DeleteAsync(Guid auditId, Guid criteriaId, Guid userId);
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASM.API.Controllers
@@ -55,6 +56,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -64,7 +69,7 @@ namespace ASM.API.Controllers
                 }
                 if (dto.AuditId == Guid.Empty || dto.CriteriaId == Guid.Empty) return BadRequest(new { message = "AuditId and CriteriaId are required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(Get), new { auditId = result.AuditId, criteriaId = result.CriteriaId }, result);
             }
             catch (InvalidOperationException ex)
@@ -82,8 +87,12 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditId == Guid.Empty || criteriaId == Guid.Empty) return BadRequest(new { message = "Invalid IDs" });
-                var ok = await _service.DeleteAsync(auditId, criteriaId);
+                var ok = await _service.DeleteAsync(auditId, criteriaId, userId);
                 if (!ok) return NotFound(new { message = "Mapping not found" });
                 return Ok(new { message = "Mapping deleted successfully" });
             }
