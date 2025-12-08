@@ -57,7 +57,6 @@ namespace ASM_Services.Services
             string body = $@"
 <p>Xin chào <strong>{leadFullName}</strong>,</p>
 
-<p>Bạn được chỉ định là <strong>Lead Auditor</strong> cho cuộc kiểm định:</p>
 
 <p style='margin-left:20px'>
     <strong>Tên Audit:</strong> {auditTitle}<br/>

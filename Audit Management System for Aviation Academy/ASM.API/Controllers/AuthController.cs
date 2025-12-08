@@ -1,8 +1,10 @@
-﻿using ASM_Repositories.Models.LoginDTO;
+﻿using ASM_Repositories.DBContext;
+using ASM_Repositories.Models.LoginDTO;
 using ASM_Services.Interfaces;
 using ASM_Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -15,10 +17,12 @@ namespace ASM.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
+        private readonly AuditManagementSystemForAviationAcademyContext _dbContext;
 
-        public AuthController(IAuthService service)
+        public AuthController(IAuthService service, AuditManagementSystemForAviationAcademyContext dbContext)
         {
             _service = service;
+            _dbContext = dbContext;
         }
 
         [HttpPost("login")]
@@ -58,6 +62,8 @@ namespace ASM.API.Controllers
         [HttpPost("bulk-register")]
         public async Task<IActionResult> BulkRegister(IFormFile file)
         {
+            var validationErrors = new List<BulkRegisterError>();
+            
             try
             {
                 if (file == null || file.Length == 0)
@@ -100,12 +106,18 @@ namespace ASM.API.Controllers
                                 fullnameCol = col;
                             else if (headerValue == "role")
                                 roleCol = col;
-                            else if (headerValue == "dept" || headerValue == "department")
+                            else if (headerValue == "dept" || headerValue == "department" || headerValue == "department name")
                                 deptCol = col;
                         }
 
                         if (emailCol == -1 || passwordCol == -1 || fullnameCol == -1 || roleCol == -1)
-                            return BadRequest(new { message = "Excel file must have columns: Email, Password, Fullname, Role. Dept is optional." });
+                            return BadRequest(new { message = "Excel file must have columns: Email, Password, Fullname, Role. Department Name is optional." });
+
+                        // Load all departments into memory for faster lookup
+                        var departments = await _dbContext.Departments
+                            .Where(d => d.Status == "Active")
+                            .ToListAsync();
+                        var departmentDict = departments.ToDictionary(d => d.Name.Trim(), StringComparer.OrdinalIgnoreCase);
 
                         // Read data rows (starting from row 2)
                         for (int row = 2; row <= rowCount; row++)
@@ -114,29 +126,68 @@ namespace ASM.API.Controllers
                             var password = worksheet.Cells[row, passwordCol].Value?.ToString()?.Trim();
                             var fullname = worksheet.Cells[row, fullnameCol].Value?.ToString()?.Trim();
                             var role = worksheet.Cells[row, roleCol].Value?.ToString()?.Trim();
-                            var deptValue = deptCol > 0 ? worksheet.Cells[row, deptCol].Value?.ToString()?.Trim() : null;
+                            var deptName = deptCol > 0 ? worksheet.Cells[row, deptCol].Value?.ToString()?.Trim() : null;
 
-                            // Skip empty rows
-                            if (string.IsNullOrWhiteSpace(email) || 
-                                string.IsNullOrWhiteSpace(password) || 
-                                string.IsNullOrWhiteSpace(fullname) || 
-                                string.IsNullOrWhiteSpace(role))
-                                continue;
+                            // Validate required fields
+                            var rowErrors = new List<string>();
 
+                            if (string.IsNullOrWhiteSpace(email))
+                                rowErrors.Add("Email is required");
+                            else if (!IsValidEmail(email))
+                                rowErrors.Add($"Email format is invalid: {email}");
+
+                            if (string.IsNullOrWhiteSpace(password))
+                                rowErrors.Add("Password is required");
+                            else if (password.Length < 6)
+                                rowErrors.Add("Password must be at least 6 characters long");
+
+                            if (string.IsNullOrWhiteSpace(fullname))
+                                rowErrors.Add("Fullname is required");
+
+                            if (string.IsNullOrWhiteSpace(role))
+                                rowErrors.Add("Role is required");
+
+                            // Validate Department Name if provided and find DeptId
                             int? deptId = null;
-                            if (!string.IsNullOrWhiteSpace(deptValue) && int.TryParse(deptValue, out int deptIdParsed))
+                            if (!string.IsNullOrWhiteSpace(deptName))
                             {
-                                deptId = deptIdParsed;
+                                // Trim deptName để đảm bảo so sánh chính xác
+                                var trimmedDeptName = deptName.Trim();
+                                
+                                // Tìm department theo tên (không phân biệt hoa thường)
+                                if (departmentDict.TryGetValue(trimmedDeptName, out var department))
+                                {
+                                    // Tìm thấy department, gán DeptId vào user
+                                    deptId = department.DeptId;
+                                }
+                                else
+                                {
+                                    // Không tìm thấy department, báo lỗi
+                                    rowErrors.Add($"Department '{deptName}' not found. Available departments: {string.Join(", ", departmentDict.Keys.Take(10))}");
+                                }
                             }
 
+                            // If there are validation errors for this row, add to error list
+                            if (rowErrors.Any())
+                            {
+                                validationErrors.Add(new BulkRegisterError
+                                {
+                                    RowNumber = row,
+                                    Email = email ?? "N/A",
+                                    ErrorMessage = string.Join("; ", rowErrors)
+                                });
+                                continue;
+                            }
+
+                            // All validations passed, add to register requests
                             registerRequests.Add(new RegisterRequestWithRow
                             {
                                 Request = new RegisterRequest
                                 {
-                                    Email = email,
-                                    Password = password,
-                                    FullName = fullname,
-                                    RoleName = role,
+                                    Email = email!,
+                                    Password = password!,
+                                    FullName = fullname!,
+                                    RoleName = role!,
                                     DeptId = deptId
                                 },
                                 RowNumber = row
@@ -145,15 +196,39 @@ namespace ASM.API.Controllers
                     }
                 }
 
-                if (registerRequests.Count == 0)
+                if (registerRequests.Count == 0 && validationErrors.Count == 0)
                     return BadRequest(new { message = "No valid data rows found in Excel file" });
 
+                // Process registration
                 var result = await _service.BulkRegisterAsync(registerRequests);
+
+                // Merge validation errors with registration errors
+                result.ErrorItems.AddRange(validationErrors);
+                result.FailureCount += validationErrors.Count;
+                result.TotalRows = registerRequests.Count + validationErrors.Count;
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while processing the file", error = ex.Message });
+                return StatusCode(500, new { 
+                    message = "An error occurred while processing the file", 
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
             }
         }
         

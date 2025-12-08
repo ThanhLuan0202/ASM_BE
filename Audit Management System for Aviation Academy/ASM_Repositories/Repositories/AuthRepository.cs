@@ -75,10 +75,45 @@ namespace ASM_Repositories.Repositories
         }
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
         {
+            // Validate email
+            if (string.IsNullOrWhiteSpace(request.Email))
+                throw new InvalidOperationException("Email is required");
+
+            // Validate password
+            if (string.IsNullOrWhiteSpace(request.Password))
+                throw new InvalidOperationException("Password is required");
+
+            if (request.Password.Length < 6)
+                throw new InvalidOperationException("Password must be at least 6 characters long");
+
+            // Validate fullname
+            if (string.IsNullOrWhiteSpace(request.FullName))
+                throw new InvalidOperationException("Fullname is required");
+
+            // Validate role
+            if (string.IsNullOrWhiteSpace(request.RoleName))
+                throw new InvalidOperationException("Role is required");
+
+            // Check if email already exists
             var existing = await _DbContext.UserAccounts.AsNoTracking().FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existing != null)
             {
-                throw new InvalidOperationException("Email already registered");
+                throw new InvalidOperationException($"Email '{request.Email}' is already registered");
+            }
+
+            // Validate Department if provided
+            // Note: DeptId đã được tìm và gán từ tên Department trong AuthController
+            // Ở đây chỉ validate lại để đảm bảo DeptId tồn tại và active
+            if (request.DeptId.HasValue)
+            {
+                var departmentExists = await _DbContext.Departments
+                    .AsNoTracking()
+                    .AnyAsync(d => d.DeptId == request.DeptId.Value && d.Status == "Active");
+                
+                if (!departmentExists)
+                {
+                    throw new InvalidOperationException($"Department with ID {request.DeptId.Value} not found or is inactive");
+                }
             }
 
             byte[] salt = new byte[32];
@@ -89,13 +124,14 @@ namespace ASM_Repositories.Repositories
                 hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
             }
 
+            // Tạo UserAccount với DeptId đã được tìm từ tên Department
             var user = new UserAccount
             {
                 UserId = Guid.NewGuid(),
                 Email = request.Email,
                 FullName = request.FullName,
                 RoleName = request.RoleName,
-                DeptId = request.DeptId,
+                DeptId = request.DeptId, // DeptId đã được gán từ tên Department trong AuthController
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 IsActive = true,
@@ -104,9 +140,20 @@ namespace ASM_Repositories.Repositories
                 Status = "Active"
             };
 
-            _DbContext.ChangeTracker.Clear();
-            await _DbContext.UserAccounts.AddAsync(user);
-            await _DbContext.SaveChangesAsync();
+            try
+            {
+                _DbContext.ChangeTracker.Clear();
+                await _DbContext.UserAccounts.AddAsync(user);
+                await _DbContext.SaveChangesAsync();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                throw new InvalidOperationException($"Database error while registering user: {ex.InnerException?.Message ?? ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error while registering user: {ex.Message}");
+            }
 
             return new RegisterResponse
             {
@@ -171,14 +218,38 @@ namespace ASM_Repositories.Repositories
                         UserId = registerResponse.UserId
                     });
                 }
-                catch (Exception ex)
+                catch (InvalidOperationException ex)
                 {
+                    // Business logic errors - provide detailed message
                     response.FailureCount++;
                     response.ErrorItems.Add(new BulkRegisterError
                     {
                         RowNumber = requestWithRow.RowNumber,
                         Email = requestWithRow.Request.Email ?? "N/A",
-                        ErrorMessage = ex.Message
+                        ErrorMessage = $"Row {requestWithRow.RowNumber}: {ex.Message}"
+                    });
+                }
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+                {
+                    // Database errors - provide detailed message
+                    response.FailureCount++;
+                    var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                    response.ErrorItems.Add(new BulkRegisterError
+                    {
+                        RowNumber = requestWithRow.RowNumber,
+                        Email = requestWithRow.Request.Email ?? "N/A",
+                        ErrorMessage = $"Row {requestWithRow.RowNumber}: Database error - {innerMessage}"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Unexpected errors - provide full details
+                    response.FailureCount++;
+                    response.ErrorItems.Add(new BulkRegisterError
+                    {
+                        RowNumber = requestWithRow.RowNumber,
+                        Email = requestWithRow.Request.Email ?? "N/A",
+                        ErrorMessage = $"Row {requestWithRow.RowNumber}: Unexpected error - {ex.GetType().Name}: {ex.Message}"
                     });
                 }
             }
