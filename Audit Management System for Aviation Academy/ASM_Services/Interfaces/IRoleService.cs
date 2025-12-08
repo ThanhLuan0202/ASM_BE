@@ -11,8 +11,8 @@ namespace ASM_Services.Interfaces.AdminInterfaces
     {
         Task<IEnumerable<ViewRole>> GetAllAsync();
         Task<ViewRole?> GetByIdAsync(string roleName);
-        Task<ViewRole> CreateAsync(CreateRole dto);
-        Task<ViewRole?> UpdateAsync(string roleName, UpdateRole dto);
-        Task<bool> DeleteAsync(string roleName);
+        Task<ViewRole> CreateAsync(CreateRole dto, Guid userId);
+        Task<ViewRole?> UpdateAsync(string roleName, UpdateRole dto, Guid userId);
+        Task<bool> DeleteAsync(string roleName, Guid userId);
     }
 }
