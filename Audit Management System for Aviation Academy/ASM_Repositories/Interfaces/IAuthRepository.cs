@@ -13,5 +13,6 @@ namespace ASM_Repositories.Interfaces
         Task<LoginResponse?> LoginAsync(LoginRequest loginRequest);
         Task<RegisterResponse> RegisterAsync(RegisterRequest request);
         Task<BulkRegisterResponse> BulkRegisterAsync(List<RegisterRequestWithRow> requests);
+        Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
     }
 }

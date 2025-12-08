@@ -256,6 +256,123 @@ namespace ASM_Repositories.Repositories
 
             return response;
         }
+
+        public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            // Validate email
+            if (string.IsNullOrWhiteSpace(request.Email))
+                throw new InvalidOperationException("Email is required");
+
+            // Tìm user theo email
+            var user = await _DbContext.UserAccounts
+                .AsTracking()
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null)
+                throw new InvalidOperationException($"User with email '{request.Email}' not found");
+
+            // Kiểm tra user có bị blocked không
+            if (user.Status == "Blocked")
+                throw new InvalidOperationException($"User account with email '{request.Email}' is blocked. Please contact administrator.");
+
+            // Generate password mới nếu không có NewPassword
+            string newPassword;
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                // Generate password mới (8-12 ký tự, có chữ hoa, chữ thường, số)
+                newPassword = GenerateRandomPassword();
+            }
+            else
+            {
+                // Validate password mới
+                if (request.NewPassword.Length < 6)
+                    throw new InvalidOperationException("New password must be at least 6 characters long");
+
+                newPassword = request.NewPassword;
+            }
+
+            // Hash password mới
+            byte[] salt = new byte[32];
+            RandomNumberGenerator.Fill(salt);
+            byte[] hash;
+            using (var hmac = new HMACSHA512(salt))
+            {
+                hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(newPassword));
+            }
+
+            // Update password và reset failed login count
+            user.PasswordHash = hash;
+            user.PasswordSalt = salt;
+            user.FailedLoginCount = 0; // Reset failed login count
+            user.Status = "Active"; // Đảm bảo status là Active
+
+            try
+            {
+                _DbContext.UserAccounts.Update(user);
+                await _DbContext.SaveChangesAsync();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                throw new InvalidOperationException($"Database error while resetting password: {ex.InnerException?.Message ?? ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error while resetting password: {ex.Message}");
+            }
+
+            // Trả về response
+            var response = new ResetPasswordResponse
+            {
+                Email = user.Email,
+                Message = "Password has been reset successfully"
+            };
+
+            // Chỉ trả về password mới nếu được generate tự động (không có trong request)
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                response.NewPassword = newPassword;
+                response.Message = "Password has been reset successfully. Please use the new password provided.";
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Generate random password (8-12 ký tự, có chữ hoa, chữ thường, số)
+        /// </summary>
+        private string GenerateRandomPassword()
+        {
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string numbers = "0123456789";
+            const string allChars = lowercase + uppercase + numbers;
+
+            var random = new Random();
+            int length = random.Next(8, 13); // 8-12 ký tự
+
+            var password = new StringBuilder(length);
+            
+            // Đảm bảo có ít nhất 1 chữ hoa, 1 chữ thường, 1 số
+            password.Append(lowercase[random.Next(lowercase.Length)]);
+            password.Append(uppercase[random.Next(uppercase.Length)]);
+            password.Append(numbers[random.Next(numbers.Length)]);
+
+            // Thêm các ký tự ngẫu nhiên
+            for (int i = 3; i < length; i++)
+            {
+                password.Append(allChars[random.Next(allChars.Length)]);
+            }
+
+            // Shuffle password để không có pattern rõ ràng
+            var passwordArray = password.ToString().ToCharArray();
+            for (int i = passwordArray.Length - 1; i > 0; i--)
+            {
+                int j = random.Next(i + 1);
+                (passwordArray[i], passwordArray[j]) = (passwordArray[j], passwordArray[i]);
+            }
+
+            return new string(passwordArray);
+        }
     }
 }
 

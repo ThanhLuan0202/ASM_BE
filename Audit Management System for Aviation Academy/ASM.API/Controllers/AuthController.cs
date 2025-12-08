@@ -219,6 +219,41 @@ namespace ASM.API.Controllers
             }
         }
 
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                if (request == null)
+                    return BadRequest(new { message = "Request body is required" });
+
+                if (string.IsNullOrWhiteSpace(request.Email))
+                    return BadRequest(new { message = "Email is required" });
+
+                // Validate email format
+                if (!IsValidEmail(request.Email))
+                    return BadRequest(new { message = $"Email format is invalid: {request.Email}" });
+
+                // Validate new password if provided
+                if (!string.IsNullOrWhiteSpace(request.NewPassword) && request.NewPassword.Length < 6)
+                    return BadRequest(new { message = "New password must be at least 6 characters long" });
+
+                var result = await _service.ResetPasswordAsync(request);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = "An error occurred while resetting password", 
+                    error = ex.Message 
+                });
+            }
+        }
+
         private bool IsValidEmail(string email)
         {
             try

@@ -31,5 +31,10 @@ namespace ASM_Services.Services
         {
             return await _authRepository.BulkRegisterAsync(requests);
         }
+
+        public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            return await _authRepository.ResetPasswordAsync(request);
+        }
     }
 }
