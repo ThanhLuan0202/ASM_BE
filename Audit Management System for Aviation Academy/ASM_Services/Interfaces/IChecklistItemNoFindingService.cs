@@ -11,8 +11,8 @@ namespace ASM_Services.Interfaces
     {
         Task<IEnumerable<ViewChecklistItemNoFinding>> GetAllAsync();
         Task<ViewChecklistItemNoFinding?> GetByIdAsync(int id);
-        Task<ViewChecklistItemNoFinding> CreateAsync(CreateChecklistItemNoFinding dto);
-        Task<ViewChecklistItemNoFinding?> UpdateAsync(int id, UpdateChecklistItemNoFinding dto);
-        Task<bool> DeleteAsync(int id);
+        Task<ViewChecklistItemNoFinding> CreateAsync(CreateChecklistItemNoFinding dto, Guid userId);
+        Task<ViewChecklistItemNoFinding?> UpdateAsync(int id, UpdateChecklistItemNoFinding dto, Guid userId);
+        Task<bool> DeleteAsync(int id, Guid userId);
     }
 }

@@ -79,7 +79,7 @@ namespace ASM.API.Controllers
                 if (dto.WitnessId == Guid.Empty)
                     return BadRequest(new { message = "WitnessId is required." });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userIdGuid);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (ArgumentException ex)
@@ -98,6 +98,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userIdGuid))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 var existing = await _service.GetByIdAsync(id);
                 if (existing == null)
                     return NotFound(new { message = "Checklist item no finding not found." });
@@ -109,7 +113,7 @@ namespace ASM.API.Controllers
                 if (dto.WitnessId.HasValue && dto.WitnessId.Value == Guid.Empty)
                     return BadRequest(new { message = "WitnessId cannot be empty." });
 
-                var result = await _service.UpdateAsync(id, dto);
+                var result = await _service.UpdateAsync(id, dto, userIdGuid);
                 if (result == null)
                     return NotFound(new { message = "Checklist item no finding not found." });
 
@@ -131,7 +135,11 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var success = await _service.DeleteAsync(id);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userIdGuid))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var success = await _service.DeleteAsync(id, userIdGuid);
                 if (!success)
                     return NotFound("Checklist item no finding not found.");
 
