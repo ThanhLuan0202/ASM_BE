@@ -16,10 +16,12 @@ namespace ASM.API.Controllers
     public class AuditAssignmentController : ControllerBase
     {
         private readonly IAuditAssignmentService _service;
+        private readonly IAuthService _authService;
 
-        public AuditAssignmentController(IAuditAssignmentService service)
+        public AuditAssignmentController(IAuditAssignmentService service, IAuthService authService)
         {
             _service = service;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -210,6 +212,23 @@ namespace ASM.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while deleting the audit assignment", error = ex.Message });
+            }
+        }
+
+        [HttpGet("auditors-with-schedule")]
+        public async Task<IActionResult> GetAuditorsWithSchedule()
+        {
+            try
+            {
+                var result = await _authService.GetAuditorsWithScheduleAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = "An error occurred while retrieving auditors", 
+                    error = ex.Message 
+                });
             }
         }
     }

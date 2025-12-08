@@ -13,5 +13,6 @@ namespace ASM_Services.Interfaces
         Task<RegisterResponse> RegisterAsync(RegisterRequest request);
         Task<BulkRegisterResponse> BulkRegisterAsync(List<RegisterRequestWithRow> requests);
         Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request);
+        Task<AuditorWithScheduleResponse> GetAuditorsWithScheduleAsync();
     }
 }

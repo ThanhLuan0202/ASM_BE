@@ -415,6 +415,55 @@ namespace ASM_Repositories.Repositories
 
             return new string(passwordArray);
         }
+
+        public async Task<AuditorWithScheduleResponse> GetAuditorsWithScheduleAsync()
+        {
+            // Lấy tất cả user có role "Auditor"
+            var auditors = await _DbContext.UserAccounts
+                .AsNoTracking()
+                .Where(u => u.RoleName == "Auditor" && u.Status == "Active")
+                .ToListAsync();
+
+            // Lấy tất cả AuditAssignment có status = "Assigned" và group theo AuditorId
+            var assignedAuditorIds = await _DbContext.AuditAssignments
+                .AsNoTracking()
+                .Where(aa => aa.Status == "Assigned")
+                .GroupBy(aa => aa.AuditorId)
+                .Select(g => new
+                {
+                    AuditorId = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var assignedAuditorDict = assignedAuditorIds.ToDictionary(x => x.AuditorId, x => x.Count);
+
+            // Map sang response - CHỈ lấy những auditor CHƯA có schedule (chưa được assign)
+            var response = new AuditorWithScheduleResponse();
+            
+            foreach (var auditor in auditors)
+            {
+                var hasSchedule = assignedAuditorDict.ContainsKey(auditor.UserId);
+                
+                // CHỈ thêm vào response những auditor CHƯA có schedule (hasSchedule = false)
+                if (!hasSchedule)
+                {
+                    response.Auditors.Add(new AuditorWithScheduleItem
+                    {
+                        UserId = auditor.UserId,
+                        Email = auditor.Email,
+                        FullName = auditor.FullName,
+                        RoleName = auditor.RoleName,
+                        DeptId = auditor.DeptId,
+                        Status = auditor.Status,
+                        HasSchedule = false,
+                        ActiveAssignmentCount = 0
+                    });
+                }
+            }
+
+            return response;
+        }
     }
 }
 

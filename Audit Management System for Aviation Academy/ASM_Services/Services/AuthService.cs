@@ -86,5 +86,10 @@ namespace ASM_Services.Services
         {
             return await _authRepository.ResetPasswordAsync(request);
         }
+
+        public async Task<AuditorWithScheduleResponse> GetAuditorsWithScheduleAsync()
+        {
+            return await _authRepository.GetAuditorsWithScheduleAsync();
+        }
     }
 }
