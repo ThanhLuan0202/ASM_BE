@@ -3,6 +3,8 @@ using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System;
+using System.Linq;
 
 namespace ASM.API.Controllers
 {
@@ -51,7 +53,7 @@ namespace ASM.API.Controllers
                 dto.ApproverId = Guid.Parse(userIdClaim);
                 dto.ApprovalLevel = roleClaim ?? "Unknown";
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, dto.ApproverId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -80,7 +82,7 @@ namespace ASM.API.Controllers
                 if (existing.ApproverId != userId)
                     return Forbid("You are not authorized to update this approval.");
 
-                var result = await _service.UpdateAsync(id, dto);
+                var result = await _service.UpdateAsync(id, dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
