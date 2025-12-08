@@ -289,6 +289,83 @@ namespace ASM_Services.Services
             return $@"<p><strong>{title}:</strong></p>
 <p style='margin-left:20px; color:#555;'>{encoded}</p>";
         }
+
+        public async Task SendRegistrationEmailAsync(string toEmail, string fullName, string email, string password, string roleName)
+        {
+            string subject = "[Account Registration] Thông tin tài khoản đăng nhập hệ thống Audit Management";
+
+            string body = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background-color: #0b70ff; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
+        .content {{ background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }}
+        .credentials {{ background-color: white; padding: 20px; margin: 20px 0; border-left: 4px solid #0b70ff; border-radius: 4px; }}
+        .credential-item {{ margin: 10px 0; }}
+        .label {{ font-weight: bold; color: #555; }}
+        .value {{ color: #0b70ff; font-size: 16px; font-family: monospace; }}
+        .warning {{ background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .footer {{ text-align: center; margin-top: 20px; color: #777; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h2>Chào mừng đến với Hệ thống Audit Management</h2>
+        </div>
+        <div class='content'>
+            <p>Xin chào <strong>{WebUtility.HtmlEncode(fullName)}</strong>,</p>
+
+            <p>Tài khoản của bạn đã được tạo thành công trong hệ thống <strong>Audit Management System for Aviation Academy</strong>.</p>
+
+            <p><strong>Vai trò của bạn:</strong> {WebUtility.HtmlEncode(roleName)}</p>
+
+            <div class='credentials'>
+                <h3 style='margin-top: 0; color: #0b70ff;'>Thông tin đăng nhập:</h3>
+                <div class='credential-item'>
+                    <span class='label'>Email:</span><br/>
+                    <span class='value'>{WebUtility.HtmlEncode(email)}</span>
+                </div>
+                <div class='credential-item'>
+                    <span class='label'>Mật khẩu:</span><br/>
+                    <span class='value'>{WebUtility.HtmlEncode(password)}</span>
+                </div>
+            </div>
+
+            <div class='warning'>
+                <p><strong>⚠️ Lưu ý quan trọng:</strong></p>
+                <ul style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Vui lòng <strong>đổi mật khẩu</strong> ngay sau lần đăng nhập đầu tiên để bảo mật tài khoản.</li>
+                    <li>Không chia sẻ thông tin đăng nhập với người khác.</li>
+                    <li>Nếu bạn không yêu cầu tạo tài khoản này, vui lòng liên hệ quản trị viên ngay lập tức.</li>
+                </ul>
+            </div>
+
+            <p><strong>Hướng dẫn đăng nhập:</strong></p>
+            <ol>
+                <li>Truy cập hệ thống Audit Management System</li>
+                <li>Sử dụng Email và Mật khẩu được cung cấp ở trên để đăng nhập</li>
+                <li>Thay đổi mật khẩu trong lần đăng nhập đầu tiên</li>
+            </ol>
+
+            <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với quản trị viên hệ thống.</p>
+
+            <p>Chúc bạn làm việc hiệu quả!</p>
+        </div>
+        <div class='footer'>
+            <p><em>Hệ thống Audit Management System for Aviation Academy</em></p>
+            <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
     }
 }
 //< p >
