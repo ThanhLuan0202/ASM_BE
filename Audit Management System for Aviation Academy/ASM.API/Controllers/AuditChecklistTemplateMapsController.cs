@@ -42,7 +42,7 @@ namespace ASM.API.Controllers
 
             dto.AssignedBy = userId;
 
-            var result = await _service.CreateAsync(dto);
+            var result = await _service.CreateAsync(dto, userId);
             return CreatedAtAction(nameof(Get),
                 new { auditId = result.AuditId, templateId = result.TemplateId },
                 result);
@@ -61,7 +61,7 @@ namespace ASM.API.Controllers
 
             dto.AssignedBy = userId;
 
-            var result = await _service.UpdateAsync(auditId, templateId, dto);
+            var result = await _service.UpdateAsync(auditId, templateId, dto, userId);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -69,7 +69,11 @@ namespace ASM.API.Controllers
         [HttpDelete("{auditId:guid}/{templateId:guid}")]
         public async Task<IActionResult> Delete(Guid auditId, Guid templateId)
         {
-            await _service.DeleteAsync(auditId, templateId);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            await _service.DeleteAsync(auditId, templateId, userId);
             return NoContent();
         }
     }
