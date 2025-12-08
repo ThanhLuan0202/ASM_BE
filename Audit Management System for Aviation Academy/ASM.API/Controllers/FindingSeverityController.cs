@@ -2,6 +2,7 @@
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ASM.API.Controllers
@@ -60,7 +61,13 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var result = await _service.CreateAsync(dto);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.CreateAsync(dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -81,7 +88,13 @@ namespace ASM.API.Controllers
         {
             try
             {
-                var result = await _service.UpdateAsync(severity, dto);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.UpdateAsync(severity, dto, userId);
                 return Ok(result); 
             }
             catch (ArgumentException ex)
@@ -99,7 +112,13 @@ namespace ASM.API.Controllers
         {
             try
             {
-                await _service.DeleteAsync(severity);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                await _service.DeleteAsync(severity, userId);
                 return Ok(new { message = "Deleted successfully." });
             }
             catch (ArgumentException ex)

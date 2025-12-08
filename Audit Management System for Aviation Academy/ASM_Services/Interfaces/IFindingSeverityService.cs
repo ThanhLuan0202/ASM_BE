@@ -11,8 +11,8 @@ namespace ASM_Services.Interfaces
     {
         Task<List<ViewFindingSeverity>> GetAllAsync();
         Task<ViewFindingSeverity?> GetByIdAsync(string severity);
-        Task<ViewFindingSeverity> CreateAsync(CreateFindingSeverity dto);
-        Task<ViewFindingSeverity> UpdateAsync(string severity, UpdateFindingSeverity dto);
-        Task<bool> DeleteAsync(string severity);
+        Task<ViewFindingSeverity> CreateAsync(CreateFindingSeverity dto, Guid userId);
+        Task<ViewFindingSeverity> UpdateAsync(string severity, UpdateFindingSeverity dto, Guid userId);
+        Task<bool> DeleteAsync(string severity, Guid userId);
     }
 }
