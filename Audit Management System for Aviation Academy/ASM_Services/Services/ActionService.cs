@@ -2,6 +2,7 @@
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AdminInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,8 @@ namespace ASM_Services.Services
         private readonly IAttachmentRepository _attachmentRepo;
         private readonly IFindingRepository _findingRepo;
         private readonly IAuditTeamRepository _auditTeamRepo;
-        public ActionService(IActionRepository repo, IUsersRepository userRepo, INotificationRepository notificationRepo, IAttachmentRepository attachmentRepo, IFindingRepository findingRepo, IAuditTeamRepository auditTeamRepo)
+        private readonly IAuditLogService _logService;
+        public ActionService(IActionRepository repo, IUsersRepository userRepo, INotificationRepository notificationRepo, IAttachmentRepository attachmentRepo, IFindingRepository findingRepo, IAuditTeamRepository auditTeamRepo, IAuditLogService auditLogService)
         {
             _repo = repo;
             _userRepo = userRepo;
@@ -27,20 +29,94 @@ namespace ASM_Services.Services
             _attachmentRepo = attachmentRepo;
             _findingRepo = findingRepo;
             _auditTeamRepo = auditTeamRepo;
+            _logService = auditLogService;
         }
 
         public Task<IEnumerable<ViewAction>> GetAllAsync() => _repo.GetAllAsync();
         public Task<ViewAction?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
-        public Task<ViewAction> CreateAsync(CreateAction dto) => _repo.CreateAsync(dto);
-        public Task<ViewAction> UpdateAsync(Guid id, UpdateAction dto) => _repo.UpdateAsync(id, dto);
-        public Task<bool> DeleteAsync(Guid id) => _repo.SoftDeleteAsync(id);
-        public Task<bool> UpdateStatusToInProgressAsync(Guid id) => _repo.UpdateStatusToInProgressAsync(id);
-        public Task<bool> UpdateStatusToReviewedAsync(Guid id) => _repo.UpdateStatusToReviewedAsync(id);
-        public Task<bool> UpdateStatusToApprovedAsync(Guid id) => _repo.UpdateStatusToApprovedAsync(id);
+        public async Task<ViewAction> CreateAsync(CreateAction dto, Guid userId)
+        {
+            var created = await _repo.CreateAsync(dto);
+
+            await _logService.LogCreateAsync(created, created.ActionId, userId,"Action");
+
+            return created;
+        }
+        public async Task<ViewAction> UpdateAsync(Guid id, UpdateAction dto, Guid userId)
+        {
+            var existing = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateAsync(id, dto);
+
+            if (updated != null && existing != null)
+            {
+                await _logService.LogUpdateAsync(existing, updated, id, userId, "Action");
+            }
+
+            return updated;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id, Guid userId)
+        {
+            var existing = await _repo.GetByIdAsync(id);
+            var success = await _repo.SoftDeleteAsync(id);
+
+            if (success && existing != null)
+            {
+                await _logService.LogSoftDeleteAsync(existing, existing, id, userId, "Action");
+            }
+
+            return success;
+        }
+
+        public async Task<bool> UpdateStatusToInProgressAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateStatusToInProgressAsync(id);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
+
+        public async Task<bool> UpdateStatusToReviewedAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateStatusToReviewedAsync(id);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
+
+        public async Task<bool> UpdateStatusToApprovedAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateStatusToApprovedAsync(id);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
         
-        public async Task<bool> UpdateStatusToRejectedAsync(Guid id)
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id, Guid userId)
         {
             // Update action status
+            var before = await _repo.GetByIdAsync(id);
             var updated = await _repo.UpdateStatusToRejectedAsync(id);
             if (!updated)
                 return false;
@@ -60,12 +136,22 @@ namespace ASM_Services.Services
                 // Có thể log vào logger nếu cần
             }
 
+            if (before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+
             return true;
         }
 
-        public async Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback)
+        public async Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback, Guid userId)
         {
             // Update action status
+            var before = await _repo.GetByIdAsync(id);
             var updated = await _repo.UpdateStatusToRejectedAsync(id, reviewFeedback);
             if (!updated)
                 return false;
@@ -85,23 +171,78 @@ namespace ASM_Services.Services
                 // Có thể log vào logger nếu cần
             }
 
+            if (before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+
             return true;
         }
         
-        public Task<bool> UpdateStatusToClosedAsync(Guid id) => _repo.UpdateStatusToClosedAsync(id);
+        public async Task<bool> UpdateStatusToClosedAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateStatusToClosedAsync(id);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
         public Task<IEnumerable<ViewAction>> GetByAssignedToAsync(Guid userId) => _repo.GetByAssignedToAsync(userId);
-        public Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent) => _repo.UpdateProgressPercentAsync(id, progressPercent);
-        public Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id) => _repo.UpdateStatusToApprovedAuditorAsync(id);
+        public async Task<bool> UpdateProgressPercentAsync(Guid id, byte progressPercent, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateProgressPercentAsync(id, progressPercent);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
+
+        public async Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateStatusToApprovedAuditorAsync(id);
+            if (updated && before != null)
+            {
+                var after = await _repo.GetByIdAsync(id);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, id, userId, "Action");
+                }
+            }
+            return updated;
+        }
         public Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId) => _repo.GetByFindingIdAsync(findingId);
         public Task<IEnumerable<ViewAction>> GetByAssignedDeptIdAsync(int assignedDeptId) => _repo.GetByAssignedDeptIdAsync(assignedDeptId);
 
         public async Task<List<Notification>> ActionVerifiedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
             await _repo.UpdateStatusToVerifiedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -143,11 +284,17 @@ namespace ASM_Services.Services
         }
         public async Task<Notification> ActionDeclinedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
             await _repo.UpdateStatusToDeclinedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -173,11 +320,17 @@ namespace ASM_Services.Services
 
         public async Task<List<Notification>> ActionApprovedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
             await _repo.UpdateStatusToApprovedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -229,11 +382,17 @@ namespace ASM_Services.Services
 
         public async Task<Notification> ActionRejectedAsync(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
             await _repo.UpdateStatusToReturnedAsync(actionId, reviewFeedback);
 
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -259,6 +418,9 @@ namespace ASM_Services.Services
 
         public async Task<List<Notification>> ApproveByHigherLevel(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
+            var beforeAttachments = await _attachmentRepo.GetByEntityAsync("Action", actionId);
+
             var attachmentId = await _attachmentRepo.GetAttachmentIdsByActionIdAsync(actionId);
             if (attachmentId == null || !attachmentId.Any())
                 throw new InvalidOperationException($"Attachment not found for ActionId = {actionId}");
@@ -266,6 +428,7 @@ namespace ASM_Services.Services
             var findingId = await _repo.GetFindingIdByActionIdAsync(actionId);
             if (!findingId.HasValue)
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId}");
+            var beforeFinding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
 
             await _repo.UpdateStatusToCompletedAsync(actionId, reviewFeedback);
             await _attachmentRepo.UpdateStatusAsync(attachmentId, "Completed");
@@ -274,6 +437,21 @@ namespace ASM_Services.Services
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
+            var afterAttachments = await _attachmentRepo.GetByEntityAsync("Action", actionId);
+            if (beforeAttachments != null && afterAttachments != null)
+            {
+                await _logService.LogUpdateAsync(beforeAttachments, afterAttachments, actionId, userBy, "Attachment");
+            }
+            var afterFinding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
+            if (beforeFinding != null && afterFinding != null)
+            {
+                await _logService.LogUpdateAsync(beforeFinding, afterFinding, findingId.Value, userBy, "Finding");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)
@@ -317,6 +495,9 @@ namespace ASM_Services.Services
 
         public async Task<List<Notification>> RejectByHigherLevel(Guid actionId, Guid userBy, string reviewFeedback)
         {
+            var before = await _repo.GetByIdAsync(actionId);
+            var beforeAttachments = await _attachmentRepo.GetByEntityAsync("Action", actionId);
+
             var attachmentId = await _attachmentRepo.GetAttachmentIdsByActionIdAsync(actionId);
             if (attachmentId == null || !attachmentId.Any())
                 throw new InvalidOperationException($"Attachment not found for ActionId = {actionId}");
@@ -324,6 +505,7 @@ namespace ASM_Services.Services
             var findingId = await _repo.GetFindingIdByActionIdAsync(actionId);
             if (!findingId.HasValue)
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId}");
+            var beforeFinding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
 
             await _repo.UpdateStatusToRejectedAsync(actionId, reviewFeedback);
             await _attachmentRepo.UpdateStatusAsync(attachmentId, "Rejected");
@@ -332,6 +514,21 @@ namespace ASM_Services.Services
             var action = await _repo.GetByIdAsync(actionId);
             if (action == null)
                 throw new Exception("Action not found");
+
+            if (before != null)
+            {
+                await _logService.LogUpdateAsync(before, action, actionId, userBy, "Action");
+            }
+            var afterAttachments = await _attachmentRepo.GetByEntityAsync("Action", actionId);
+            if (beforeAttachments != null && afterAttachments != null)
+            {
+                await _logService.LogUpdateAsync(beforeAttachments, afterAttachments, actionId, userBy, "Attachment");
+            }
+            var afterFinding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
+            if (beforeFinding != null && afterFinding != null)
+            {
+                await _logService.LogUpdateAsync(beforeFinding, afterFinding, findingId.Value, userBy, "Finding");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(userBy);
             if (user == null)

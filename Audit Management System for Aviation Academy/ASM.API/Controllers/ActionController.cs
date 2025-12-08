@@ -97,7 +97,7 @@ public class ActionController : ControllerBase
 
             dto.AssignedBy = userId;
 
-            var result = await _service.CreateAsync(dto);
+            var result = await _service.CreateAsync(dto, userId);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -130,7 +130,7 @@ public class ActionController : ControllerBase
             if (existing.AssignedBy != userId)
                 return Forbid("You are not authorized to update this action.");
 
-            var result = await _service.UpdateAsync(id, dto);
+            var result = await _service.UpdateAsync(id, dto, userId);
             return Ok(result);
         }
         catch (ArgumentException ex)
@@ -149,7 +149,11 @@ public class ActionController : ControllerBase
     {
         try
         {
-            var success = await _service.DeleteAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var success = await _service.DeleteAsync(id, userId);
             if (!success)
                 return NotFound("Action not found or already inactive.");
 
@@ -170,7 +174,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToInProgressAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToInProgressAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -195,7 +203,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToReviewedAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToReviewedAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -220,7 +232,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToApprovedAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToApprovedAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -245,9 +261,13 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
             string feedback = request?.Feedback ?? string.Empty;
 
-            var updated = await _service.UpdateStatusToRejectedAsync(id, feedback);
+            var updated = await _service.UpdateStatusToRejectedAsync(id, feedback, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -272,6 +292,10 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
             if (request == null)
                 return BadRequest(new { message = "Request body is required." });
 
@@ -281,7 +305,7 @@ public class ActionController : ControllerBase
                 return BadRequest(new { message = "Validation failed", errors });
             }
 
-            var updated = await _service.UpdateProgressPercentAsync(id, request.ProgressPercent);
+            var updated = await _service.UpdateProgressPercentAsync(id, request.ProgressPercent, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -310,7 +334,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToClosedAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToClosedAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -335,7 +363,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToApprovedAuditorAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToApprovedAuditorAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
@@ -407,7 +439,11 @@ public class ActionController : ControllerBase
             if (id == Guid.Empty)
                 return BadRequest(new { message = "Invalid ActionId" });
 
-            var updated = await _service.UpdateStatusToRejectedAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var updated = await _service.UpdateStatusToRejectedAsync(id, userId);
             if (!updated)
                 return NotFound(new { message = "Action not found or inactive." });
 
