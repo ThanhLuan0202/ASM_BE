@@ -10,9 +10,9 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
     {
         Task<IEnumerable<ViewAudit>> GetAllAuditAsync();
         Task<ViewAudit?> GetAuditByIdAsync(Guid id);
-        Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid? createdByUserId);
-        Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto);
-        Task<bool> DeleteAuditAsync(Guid id);
+        Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid userId);
+        Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto, Guid userId);
+        Task<bool> DeleteAuditAsync(Guid id, Guid userId);
         Task<List<ViewAuditPlan>> GetAuditPlansAsync();
         Task<ViewAuditPlan?> GetAuditPlanDetailsAsync(Guid auditId);
         Task<bool> UpdateStatusAsync(Guid auditId, string status);

@@ -45,6 +45,7 @@ namespace ASM_Services.Services
         private readonly IAuditAssignmentRepository _auditAssignmentRepo;
         private readonly IAuditChecklistItemRepository _auditChecklistItemRepo;
         private readonly IActionRepository _actionRepo;
+        private readonly IAuditLogService _logService;
 
         public AuditService(
             IAuditRepository repo,
@@ -66,7 +67,8 @@ namespace ASM_Services.Services
             IAuditApprovalRepository auditApprovalRepo,
             IAuditAssignmentRepository auditAssignmentRepo,
             IAuditChecklistItemRepository auditChecklistItemRepo,
-            IActionRepository actionRepo)
+            IActionRepository actionRepo,
+            IAuditLogService logService)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -88,6 +90,7 @@ namespace ASM_Services.Services
             _auditAssignmentRepo = auditAssignmentRepo;
             _auditChecklistItemRepo = auditChecklistItemRepo;
             _actionRepo = actionRepo;
+            _logService = logService;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -100,19 +103,37 @@ namespace ASM_Services.Services
             return await _repo.GetAuditByIdAsync(id);
         }
 
-        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid? createdByUserId)
+        public async Task<ViewAudit> CreateAuditAsync(CreateAudit dto, Guid userId)
         {
-            return await _repo.CreateAuditAsync(dto, createdByUserId);
+            var created = await _repo.CreateAuditAsync(dto, userId);
+            await _logService.LogCreateAsync(created, created.AuditId, userId, "Audit");
+            return created;
         }
 
-        public async Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto)
+        public async Task<ViewAudit?> UpdateAuditAsync(Guid id, UpdateAudit dto, Guid userId)
         {
-            return await _repo.UpdateAuditAsync(id, dto);
+            var existing = await _repo.GetAuditByIdAsync(id);
+            var updated = await _repo.UpdateAuditAsync(id, dto);
+            
+            if (updated != null && existing != null)
+            {
+                await _logService.LogUpdateAsync(existing, updated, id, userId, "Audit");
+            }
+            
+            return updated;
         }
 
-        public async Task<bool> DeleteAuditAsync(Guid id)
+        public async Task<bool> DeleteAuditAsync(Guid id, Guid userId)
         {
-            return await _repo.DeleteAuditAsync(id);
+            var existing = await _repo.GetAuditByIdAsync(id);
+            var deleted = await _repo.DeleteAuditAsync(id);
+            
+            if (deleted && existing != null)
+            {
+                await _logService.LogDeleteAsync(existing, id, userId, "Audit");
+            }
+            
+            return deleted;
         }
 
         public Task<List<ViewAuditPlan>> GetAuditPlansAsync() => _repo.GetAllAuditPlansAsync();
@@ -123,13 +144,19 @@ namespace ASM_Services.Services
 
         public async Task<Notification> SubmitToLeadAuditorAsync(Guid auditId, Guid userBy)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null)
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null)
                 throw new Exception("Audit not found");
 
             var updated = await _repo.SubmitToLeadAuditorAsync(auditId);
             if (!updated)
                 throw new Exception($"Submit failed for audit {auditId}.");
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, userBy, "Audit");
+            }
 
             await NotifyLeadAuditorsAsync(auditId);
 
@@ -158,14 +185,20 @@ namespace ASM_Services.Services
 
         public async Task<List<Notification>> ApproveAndForwardToDirectorAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null)
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null)
                 throw new Exception("Audit not found");
 
-            if (audit.CreatedBy == null)
+            if (auditBefore.CreatedBy == null)
                 throw new Exception("Audit CreatedBy is null");
 
             await _repo.ApproveAndForwardToDirectorAsync(auditId, approverId, comment);
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, approverId, "Audit");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(approverId);
             if (user == null)
@@ -215,14 +248,20 @@ namespace ASM_Services.Services
 
         public async Task<Notification> DeclinedPlanContentAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null)
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null)
                 throw new Exception("Audit not found");
 
-            if (audit.CreatedBy == null)
+            if (auditBefore.CreatedBy == null)
                 throw new Exception("Audit CreatedBy is null");
 
             await _repo.DeclinedPlanContentAsync(auditId, approverId, comment);
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, approverId, "Audit");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(approverId);
             if (user == null)
@@ -247,14 +286,20 @@ namespace ASM_Services.Services
 
         public async Task<List<Notification>> ApprovePlanAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null)
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null)
                 throw new Exception("Audit not found");
 
-            if (audit.CreatedBy == null)
+            if (auditBefore.CreatedBy == null)
                 throw new Exception("Audit CreatedBy is null");
 
             await _repo.ApprovePlanAsync(auditId, approverId, comment);
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, approverId, "Audit");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(approverId);
             if (user == null)
@@ -384,14 +429,20 @@ namespace ASM_Services.Services
         }
         public async Task<List<Notification>> RejectPlanContentAsync(Guid auditId, Guid approverId, string comment)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null)
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null)
                 throw new Exception("Audit not found");
 
-            if (audit.CreatedBy == null)
+            if (auditBefore.CreatedBy == null)
                 throw new Exception("Audit CreatedBy is null");
 
             await _repo.RejectPlanContentAsync(auditId, approverId, comment);
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, approverId, "Audit");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(approverId);
             if (user == null)
@@ -570,12 +621,18 @@ namespace ASM_Services.Services
 
         public async Task<Notification> SubmitAuditAsync(Guid auditId, string pdfUrl, Guid requestedBy)
         {
-            var audit = await _repo.GetAuditByIdAsync(auditId);
-            if (audit == null) throw new Exception("Audit not found");
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore == null) throw new Exception("Audit not found");
 
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Submitted");
 
             var rr = await _reportRequestRepo.CreateReportRequestAsync(auditId, pdfUrl, requestedBy);
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, requestedBy, "Audit");
+            }
 
             var user = await _userRepo.GetUserShortInfoAsync(requestedBy);
             if (user == null)
@@ -672,6 +729,8 @@ namespace ASM_Services.Services
 
         public async Task<Notification> ReportApproveAsync(Guid auditId, Guid userBy, string note)
         {
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Closed");
             await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, "Approved", note);
 
@@ -686,6 +745,12 @@ namespace ASM_Services.Services
             var audit = await _repo.GetAuditByIdAsync(auditId);
             if (audit == null)
                 throw new Exception("Audit not found");
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore != null && auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, userBy, "Audit");
+            }
 
             var notif = await _notificationRepo.CreateNotificationAsync(new Notification
             {
@@ -705,6 +770,8 @@ namespace ASM_Services.Services
 
         public async Task<Notification> ReportRejectedAsync(Guid auditId, Guid userBy, string note)
         {
+            var auditBefore = await _repo.GetAuditByIdAsync(auditId);
+
             await _repo.UpdateStatusByAuditIdAsync(auditId, "Returned");
             await _reportRequestRepo.UpdateStatusAndNoteByAuditIdAsync(auditId, "Rejected", note);
 
@@ -719,6 +786,12 @@ namespace ASM_Services.Services
             var audit = await _repo.GetAuditByIdAsync(auditId);
             if (audit == null)
                 throw new Exception("Audit not found");
+
+            var auditAfter = await _repo.GetAuditByIdAsync(auditId);
+            if (auditBefore != null && auditAfter != null)
+            {
+                await _logService.LogUpdateAsync(auditBefore, auditAfter, auditId, userBy, "Audit");
+            }
 
             var notif = await _notificationRepo.CreateNotificationAsync(new Notification
             {

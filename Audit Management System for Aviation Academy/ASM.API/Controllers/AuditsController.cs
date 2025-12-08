@@ -115,19 +115,13 @@ namespace ASM.API.Controllers
                 }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                Guid? userId = null;
-                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
-                {
-                    userId = parsedUserId;
-                }
-
-                if (userId == null)
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
                     return Unauthorized(new { message = "User ID not found in token" });
                 }
 
                 // Kiểm tra xem user có trong AuditPlanAssignment với status = "Active" không
-                var hasActiveAssignment = await _auditPlanAssignmentRepository.HasActiveAssignmentByAuditorIdAsync(userId.Value);
+                var hasActiveAssignment = await _auditPlanAssignmentRepository.HasActiveAssignmentByAuditorIdAsync(userId);
                 if (hasActiveAssignment)
                 {
                     return BadRequest(new { message = "You have used the plan creation permission." });
@@ -174,7 +168,13 @@ namespace ASM.API.Controllers
                     });
                 }
 
-                var result = await _service.UpdateAuditAsync(id, dto);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.UpdateAuditAsync(id, dto, userId);
                 if (result == null)
                 {
                     return NotFound(new { message = $"Audit with ID {id} not found" });
@@ -202,7 +202,13 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Invalid audit ID" });
                 }
 
-                var result = await _service.DeleteAuditAsync(id);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.DeleteAuditAsync(id, userId);
                 if (!result)
                 {
                     return NotFound(new { message = $"Audit with ID {id} not found" });
