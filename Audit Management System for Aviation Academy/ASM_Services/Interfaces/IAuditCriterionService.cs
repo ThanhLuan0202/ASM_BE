@@ -11,8 +11,8 @@ namespace ASM_Services.Interfaces
     {
         Task<IEnumerable<ViewAuditCriterion>> GetAllAsync();
         Task<ViewAuditCriterion?> GetByIdAsync(Guid id);
-        Task<ViewAuditCriterion> CreateAsync(CreateAuditCriterion dto);
-        Task<ViewAuditCriterion?> UpdateAsync(Guid id, UpdateAuditCriterion dto);
-        Task<bool> SoftDeleteAsync(Guid id);
+        Task<ViewAuditCriterion> CreateAsync(CreateAuditCriterion dto, Guid userId);
+        Task<ViewAuditCriterion?> UpdateAsync(Guid id, UpdateAuditCriterion dto, Guid userId);
+        Task<bool> SoftDeleteAsync(Guid id, Guid userId);
     }
 }
