@@ -507,7 +507,7 @@ namespace ASM_Services.Services
                 throw new InvalidOperationException($"Finding not found for ActionId = {actionId}");
             var beforeFinding = await _findingRepo.GetFindingByIdAsync(findingId.Value);
 
-            await _repo.UpdateStatusToRejectedAsync(actionId, reviewFeedback);
+            await _repo.UpdateStatusToLeadRejectedAsync(actionId, reviewFeedback);
             await _attachmentRepo.UpdateStatusAsync(attachmentId, "Rejected");
             await _findingRepo.UpdateFindingStatusAsync(findingId.Value, "Reopen");
 
@@ -543,7 +543,7 @@ namespace ASM_Services.Services
                 Title = "Your action has been rejected by Lead Auditor",
                 Message = $"Your action '{action.Title}' has been rejected by {user.FullName} ({user.RoleName})." +
                         (!string.IsNullOrEmpty(reviewFeedback) ? $"\nLead Feedback: {reviewFeedback}" : "") +
-                        "\nThe action and attachment is now marked as rejected",
+                        "\nThe action and attachment is now marked as lead rejected",
                 EntityType = "Action",
                 EntityId = action.ActionId,
                 IsRead = false,

@@ -354,6 +354,31 @@ namespace ASM_Repositories.Repositories
             return true;
         }
 
+        public async Task<bool> UpdateStatusToLeadRejectedAsync(Guid id, string reviewFeedback)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("ActionId cannot be empty.");
+
+            var entity = await _context.Actions
+                .FirstOrDefaultAsync(a => a.ActionId == id && a.Status != "Inactive");
+
+            if (entity == null)
+                return false;
+
+            var statusExists = await _context.ActionStatuses
+                .AnyAsync(s => s.ActionStatus1 == "LeadRejected");
+
+            if (!statusExists)
+                throw new InvalidOperationException("Status 'LeadRejected' does not exist in ActionStatus.");
+
+            entity.Status = "LeadRejected";
+            entity.ReviewFeedback = reviewFeedback;
+            entity.ProgressPercent = 0;
+            _context.Actions.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> UpdateStatusToVerifiedAsync(Guid id, string reviewFeedback)
         {
             if (id == Guid.Empty)

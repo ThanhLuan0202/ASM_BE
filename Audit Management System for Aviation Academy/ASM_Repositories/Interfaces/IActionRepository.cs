@@ -23,6 +23,7 @@ namespace ASM_Repositories.Interfaces
         Task<bool> UpdateStatusToApprovedAsync(Guid id, string reviewFeedback);
         Task<bool> UpdateStatusToCompletedAsync(Guid id, string reviewFeedback);
         Task<bool> UpdateStatusToRejectedAsync(Guid id, string reviewFeedback);
+        Task<bool> UpdateStatusToLeadRejectedAsync(Guid id, string reviewFeedback);
         Task<bool> UpdateStatusToVerifiedAsync(Guid id, string reviewFeedback);
         Task<bool> UpdateStatusToDeclinedAsync(Guid id, string reviewFeedback);
         Task UpdateActionStatusAsync(Guid actionId, string status);
