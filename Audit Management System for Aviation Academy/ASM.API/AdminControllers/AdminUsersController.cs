@@ -2,6 +2,8 @@
 using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.AdminInterfaces.AdminServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -55,7 +57,11 @@ namespace ASM.API.AdminControllers
 
             try
             {
-                var created = await _service.CreateAsync(model);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var created = await _service.CreateAsync(model, userId);
                 return CreatedAtAction(nameof(GetById), new { id = created.UserId }, created);
             }
             catch (Exception ex)
@@ -73,7 +79,11 @@ namespace ASM.API.AdminControllers
 
             try
             {
-                var updated = await _service.UpdateAsync(id, model);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var updated = await _service.UpdateAsync(id, model, userId);
                 if (updated == null) return NotFound("User not found.");
 
                 return Ok(updated);
@@ -89,7 +99,11 @@ namespace ASM.API.AdminControllers
         {
             try
             {
-                var result = await _service.DeleteAsync(id);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.DeleteAsync(id, userId);
                 if (!result)
                     return NotFound("User not found or already inactive.");
                 return Ok("User has been set to inactive.");

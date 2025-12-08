@@ -12,9 +12,9 @@ namespace ASM_Services.Interfaces.AdminInterfaces
     {
         Task<IEnumerable<ViewUser>> GetAllAsync();
         Task<ViewUser> GetByIdAsync(Guid id);
-        Task<ViewUser> CreateAsync(CreateUser dto);
-        Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task<ViewUser> CreateAsync(CreateUser dto, Guid userId);
+        Task<ViewUser> UpdateAsync(Guid id, UpdateUser dto, Guid userId);
+        Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId);
     }
 }
