@@ -77,18 +77,22 @@ namespace ASM.API.Controllers
 
                 dto.AssignBy = userIdGuid;
 
-                var notif = await _service.CreateWithNotificationAsync(dto);
+                var (assignment, notif) = await _service.CreateWithNotificationAsync(dto, userIdGuid);
 
-                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+                if (notif != null)
+                {
+                    await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+                }
 
                 return Ok(new
                 {
                     Message = $"AuditPlanAssignment created successfully.",
-                    Notification = new
+                    Assignment = assignment,
+                    Notification = notif != null ? new
                     {
                         UserId = notif.UserId,
                         NotificationId = notif.NotificationId
-                    }
+                    } : null
                 });
             }
             catch (ArgumentException ex)
@@ -114,7 +118,11 @@ namespace ASM.API.Controllers
                 if (existing == null)
                     return NotFound(new { message = "Audit plan assignment not found." });
 
-                var result = await _service.UpdateAsync(id, dto);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.UpdateAsync(id, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "Audit plan assignment not found." });
 
@@ -139,7 +147,11 @@ namespace ASM.API.Controllers
                 if (id == Guid.Empty)
                     return BadRequest(new { message = "Invalid AssignmentId" });
 
-                var success = await _service.DeleteAsync(id);
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var success = await _service.DeleteAsync(id, userId);
                 if (!success)
                     return NotFound("Audit plan assignment not found or already inactive.");
 

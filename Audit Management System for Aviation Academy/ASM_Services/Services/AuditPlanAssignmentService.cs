@@ -2,6 +2,7 @@ using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 using ASM_Services.Interfaces;
+using ASM_Services.Interfaces.AdminInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +16,19 @@ namespace ASM_Services.Services
         private readonly IAuditPlanAssignmentRepository _repo;
         private readonly IUsersRepository _userRepo;
         private readonly INotificationRepository _notificationRepo;
+        private readonly IAuditLogService _logService;
 
-        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo, IUsersRepository usersRepo, INotificationRepository notificationRepo)
+        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo, IUsersRepository usersRepo, INotificationRepository notificationRepo, IAuditLogService logService)
         {
             _repo = repo;
             _notificationRepo = notificationRepo;
             _userRepo = usersRepo;
+            _logService = logService;
         }
 
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAllAsync() => _repo.GetAllAsync();
         public Task<ViewAuditPlanAssignment?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
-        public async Task<Notification?> CreateWithNotificationAsync(CreateAuditPlanAssignment dto)
+        public async Task<(ViewAuditPlanAssignment Assignment, Notification? Notification)> CreateWithNotificationAsync(CreateAuditPlanAssignment dto, Guid userId)
         {
             var assignment = await _repo.CreateAsync(dto);
             if (assignment == null)
@@ -54,11 +57,31 @@ namespace ASM_Services.Services
                 Status = "Active"
             });
 
-            return notification;
+            await _logService.LogCreateAsync(assignment, assignment.AssignmentId, userId, "AuditPlanAssignment");
+
+            return (assignment, notification);
         }
 
-        public Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto) => _repo.UpdateAsync(id, dto);
-        public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
+        public async Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var updated = await _repo.UpdateAsync(id, dto);
+            if (before != null && updated != null)
+            {
+                await _logService.LogUpdateAsync(before, updated, id, userId, "AuditPlanAssignment");
+            }
+            return updated;
+        }
+        public async Task<bool> DeleteAsync(Guid id, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(id);
+            var success = await _repo.DeleteAsync(id);
+            if (success && before != null)
+            {
+                await _logService.LogDeleteAsync(before, id, userId, "AuditPlanAssignment");
+            }
+            return success;
+        }
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate) => _repo.GetAssignmentsByPeriodAsync(startDate, endDate);
 
         public async Task<ValidateAssignmentResponse> ValidateAssignmentAsync(ValidateAssignmentRequest request)

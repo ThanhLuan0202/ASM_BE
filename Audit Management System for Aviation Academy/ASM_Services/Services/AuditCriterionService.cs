@@ -26,7 +26,7 @@ namespace ASM_Services.Services
         public async Task<ViewAuditCriterion> CreateAsync(CreateAuditCriterion dto, Guid userId)
         {
             var created = await _repo.CreateAsync(dto);
-            await _logService.LogCreateAsync(created, created.CriterionId, userId, "AuditCriterion");
+            await _logService.LogCreateAsync(created, created.CriteriaId, userId, "AuditCriterion");
             return created;
         }
         public async Task<ViewAuditCriterion?> UpdateAsync(Guid id, UpdateAuditCriterion dto, Guid userId)
