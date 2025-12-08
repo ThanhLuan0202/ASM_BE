@@ -373,6 +373,11 @@ namespace ASM_Services.Services
             return new List<Notification> { notif1, notif2 };
         }
 
+        public async Task<AvailableCAPAOwnerResponse> GetAvailableCAPAOwnersAsync(DateTime date, int? deptId = null)
+        {
+            return await _repo.GetAvailableCAPAOwnersAsync(date, deptId);
+        }
+
     }
 
 }
