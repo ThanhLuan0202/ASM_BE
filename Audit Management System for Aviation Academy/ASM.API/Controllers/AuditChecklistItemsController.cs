@@ -56,6 +56,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -66,7 +70,7 @@ namespace ASM.API.Controllers
                 if (dto.AuditId == Guid.Empty) return BadRequest(new { message = "AuditId is required" });
                 if (string.IsNullOrWhiteSpace(dto.QuestionTextSnapshot)) return BadRequest(new { message = "QuestionTextSnapshot is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { auditItemId = result.AuditItemId }, result);
             }
             catch (InvalidOperationException ex)
@@ -84,6 +88,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditItemId == Guid.Empty) return BadRequest(new { message = "Invalid item ID" });
                 if (!ModelState.IsValid)
                 {
@@ -92,7 +100,7 @@ namespace ASM.API.Controllers
                         .ToList();
                     return BadRequest(new { message = "Validation failed", errors });
                 }
-                var result = await _service.UpdateAsync(auditItemId, dto);
+                var result = await _service.UpdateAsync(auditItemId, dto, userId);
                 if (result == null) return NotFound(new { message = "Audit checklist item not found" });
                 return Ok(result);
             }
@@ -111,8 +119,12 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditItemId == Guid.Empty) return BadRequest(new { message = "Invalid item ID" });
-                var ok = await _service.DeleteAsync(auditItemId);
+                var ok = await _service.DeleteAsync(auditItemId, userId);
                 if (!ok) return NotFound(new { message = "Audit checklist item not found" });
                 return Ok(new { message = "Audit checklist item deleted successfully" });
             }
@@ -176,10 +188,14 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditItemId == Guid.Empty)
                     return BadRequest(new { message = "Invalid item ID" });
 
-                var result = await _service.SetCompliantAsync(auditItemId);
+                var result = await _service.SetCompliantAsync(auditItemId, userId);
                 if (result == null)
                     return NotFound(new { message = "Audit checklist item not found" });
 
@@ -200,10 +216,14 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditItemId == Guid.Empty)
                     return BadRequest(new { message = "Invalid item ID" });
 
-                var result = await _service.SetNonCompliantAsync(auditItemId);
+                var result = await _service.SetNonCompliantAsync(auditItemId, userId);
                 if (result == null)
                     return NotFound(new { message = "Audit checklist item not found" });
 
@@ -224,13 +244,17 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (auditId == Guid.Empty)
                     return BadRequest(new { message = "Invalid audit ID" });
 
                 if (deptId <= 0)
                     return BadRequest(new { message = "Invalid department ID" });
 
-                var result = await _service.CreateFromTemplateAsync(auditId, deptId);
+                var result = await _service.CreateFromTemplateAsync(auditId, deptId, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)

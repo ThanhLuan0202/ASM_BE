@@ -9,13 +9,13 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
     {
         Task<IEnumerable<ViewAuditChecklistItem>> GetByAuditIdAsync(Guid auditId);
         Task<ViewAuditChecklistItem?> GetByIdAsync(Guid auditItemId);
-        Task<ViewAuditChecklistItem> CreateAsync(CreateAuditChecklistItem dto);
-        Task<ViewAuditChecklistItem?> UpdateAsync(Guid auditItemId, UpdateAuditChecklistItem dto);
-        Task<bool> DeleteAsync(Guid auditItemId);
+        Task<ViewAuditChecklistItem> CreateAsync(CreateAuditChecklistItem dto, Guid userId);
+        Task<ViewAuditChecklistItem?> UpdateAsync(Guid auditItemId, UpdateAuditChecklistItem dto, Guid userId);
+        Task<bool> DeleteAsync(Guid auditItemId, Guid userId);
         Task<IEnumerable<ViewAuditChecklistItem>> GetBySectionAsync(int departmentId);
         Task<IEnumerable<ViewAuditChecklistItem>> GetByUserIdAsync(Guid userId);
-        Task<ViewAuditChecklistItem?> SetCompliantAsync(Guid auditItemId);
-        Task<ViewAuditChecklistItem?> SetNonCompliantAsync(Guid auditItemId);
-        Task<IEnumerable<ViewAuditChecklistItem>> CreateFromTemplateAsync(Guid auditId, int deptId);
+        Task<ViewAuditChecklistItem?> SetCompliantAsync(Guid auditItemId, Guid userId);
+        Task<ViewAuditChecklistItem?> SetNonCompliantAsync(Guid auditItemId, Guid userId);
+        Task<IEnumerable<ViewAuditChecklistItem>> CreateFromTemplateAsync(Guid auditId, int deptId, Guid userId);
     }
 }
