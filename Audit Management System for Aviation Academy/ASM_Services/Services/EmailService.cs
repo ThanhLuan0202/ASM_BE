@@ -339,7 +339,6 @@ namespace ASM_Services.Services
             <div class='warning'>
                 <p><strong>⚠️ Lưu ý quan trọng:</strong></p>
                 <ul style='margin: 10px 0; padding-left: 20px;'>
-                    <li>Vui lòng <strong>đổi mật khẩu</strong> ngay sau lần đăng nhập đầu tiên để bảo mật tài khoản.</li>
                     <li>Không chia sẻ thông tin đăng nhập với người khác.</li>
                     <li>Nếu bạn không yêu cầu tạo tài khoản này, vui lòng liên hệ quản trị viên ngay lập tức.</li>
                 </ul>
@@ -349,7 +348,7 @@ namespace ASM_Services.Services
             <ol>
                 <li>Truy cập hệ thống Audit Management System</li>
                 <li>Sử dụng Email và Mật khẩu được cung cấp ở trên để đăng nhập</li>
-                <li>Thay đổi mật khẩu trong lần đăng nhập đầu tiên</li>
+
             </ol>
 
             <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với quản trị viên hệ thống.</p>

@@ -28,21 +28,33 @@ namespace ASM.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            var result = await _service.LoginAsync(request);
-            if (result == null)
-                return Unauthorized(new { message = "Invalid email or password" });
-
-            // Set JWT to cookie for subsequent requests
-            Response.Cookies.Append("authToken", result.Token, new CookieOptions
+            try
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddHours(6),
-                Path = "/"
-            });
+                var result = await _service.LoginAsync(request);
+                if (result == null)
+                    return Unauthorized(new { message = "Invalid email or password" });
 
-            return Ok(result);
+                // Set JWT to cookie for subsequent requests
+                Response.Cookies.Append("authToken", result.Token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTimeOffset.UtcNow.AddHours(6),
+                    Path = "/"
+                });
+
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Trả về thông báo lỗi cụ thể cho trường hợp tài khoản bị blocked
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while logging in", error = ex.Message });
+            }
         }
         
         [HttpPost("register")]

@@ -38,7 +38,7 @@ namespace ASM_Repositories.Repositories
 
             // Check if account is blocked
             if (user.Status == "Blocked")
-                return null;
+                throw new InvalidOperationException("Account has been blocked. Please contact administrator for support");
 
             // Verify password
             bool isPasswordCorrect = VerifyPassword(loginRequest.Password, user.PasswordHash, user.PasswordSalt);
