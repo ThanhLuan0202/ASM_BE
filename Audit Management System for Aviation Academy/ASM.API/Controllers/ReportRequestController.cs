@@ -39,9 +39,12 @@ namespace ASM.API.Controllers
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("User not authenticated");
 
-                dto.RequestedBy = Guid.Parse(userIdClaim);
+                if (!Guid.TryParse(userIdClaim, out Guid userId))
+                    return BadRequest(new { message = "Invalid UserId format in token." });
 
-                var result = await _service.CreateAsync(dto);
+                dto.RequestedBy = userId;
+
+                var result = await _service.CreateAsync(dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -71,7 +74,7 @@ namespace ASM.API.Controllers
                 if (existing.RequestedBy != userId)
                     return Forbid("You are not authorized to update this request.");
 
-                var result = await _service.UpdateAsync(id, dto);
+                var result = await _service.UpdateAsync(id, dto, userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -87,7 +90,11 @@ namespace ASM.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _service.SoftDeleteAsync(id);
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+            var success = await _service.SoftDeleteAsync(id, userId);
             if (!success) return NotFound();
             return Ok(new { message = "Deleted successfully" });
         }

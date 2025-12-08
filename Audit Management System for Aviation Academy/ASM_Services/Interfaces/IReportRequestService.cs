@@ -11,9 +11,9 @@ namespace ASM_Services.Interfaces
     {
         Task<IEnumerable<ViewReportRequest>> GetAllAsync();
         Task<ViewReportRequest?> GetByIdAsync(Guid id);
-        Task<ViewReportRequest> CreateAsync(CreateReportRequest dto);
-        Task<ViewReportRequest?> UpdateAsync(Guid id, UpdateReportRequest dto);
-        Task<bool> SoftDeleteAsync(Guid id);
+        Task<ViewReportRequest> CreateAsync(CreateReportRequest dto, Guid userId);
+        Task<ViewReportRequest?> UpdateAsync(Guid id, UpdateReportRequest dto, Guid userId);
+        Task<bool> SoftDeleteAsync(Guid id, Guid userId);
         Task<string?> GetNoteByAuditIdAsync(Guid auditId);
     }
 }
