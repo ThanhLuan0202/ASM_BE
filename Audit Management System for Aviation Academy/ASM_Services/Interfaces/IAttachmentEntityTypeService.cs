@@ -9,9 +9,9 @@ namespace ASM_Services.Interfaces.AdminInterfaces
     {
         Task<IEnumerable<ViewAttachmentEntityType>> GetAllAsync();
         Task<ViewAttachmentEntityType?> GetByIdAsync(string entityType);
-        Task<ViewAttachmentEntityType> CreateAsync(CreateAttachmentEntityType dto);
-        Task<ViewAttachmentEntityType?> UpdateAsync(string entityType, UpdateAttachmentEntityType dto);
-        Task<bool> DeleteAsync(string entityType);
+        Task<ViewAttachmentEntityType> CreateAsync(CreateAttachmentEntityType dto, Guid userId);
+        Task<ViewAttachmentEntityType?> UpdateAsync(string entityType, UpdateAttachmentEntityType dto, Guid userId);
+        Task<bool> DeleteAsync(string entityType, Guid userId);
     }
 }
 

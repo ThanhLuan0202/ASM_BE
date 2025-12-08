@@ -58,6 +58,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -69,7 +73,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.EntityType))
                     return BadRequest(new { message = "EntityType is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { entityType = result.EntityType }, result);
             }
             catch (InvalidOperationException ex)
@@ -87,6 +91,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (string.IsNullOrWhiteSpace(entityType))
                     return BadRequest(new { message = "EntityType is required" });
 
@@ -101,7 +109,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.EntityType))
                     return BadRequest(new { message = "EntityType is required" });
 
-                var result = await _service.UpdateAsync(entityType, dto);
+                var result = await _service.UpdateAsync(entityType, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "AttachmentEntityType not found" });
 
@@ -122,10 +130,14 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (string.IsNullOrWhiteSpace(entityType))
                     return BadRequest(new { message = "EntityType is required" });
 
-                var result = await _service.DeleteAsync(entityType);
+                var result = await _service.DeleteAsync(entityType, userId);
                 if (!result)
                     return NotFound(new { message = "AttachmentEntityType not found" });
 
