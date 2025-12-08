@@ -172,7 +172,7 @@ namespace ASM_Services.Services
             {
                 UserId = leadId.Value,
                 Title = "Audit Plan has been created by Auditor",
-                Message = $"Audit '{audit.Title}' has been submitted to you by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Audit '{auditBefore.Title}' has been submitted to you by {user.FullName} ({user.RoleName}).\n" +
                         "Please proceed with the next steps.",
                 EntityType = "Audit",
                 EntityId = auditId,
@@ -216,7 +216,7 @@ namespace ASM_Services.Services
             {
                 UserId = directorId.Value,
                 Title = "Audit Plan Requires Your Review",
-                Message = $"The audit plan '{audit.Title}' has completed Lead Auditor approval and has been forwarded to you by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"The audit plan '{auditBefore.Title}' has completed Lead Auditor approval and has been forwarded to you by {user.FullName} ({user.RoleName}).\n" +
                         "Your review and approval are kindly requested.",
                 EntityType = "Audit",
                 EntityId = auditId,
@@ -226,9 +226,9 @@ namespace ASM_Services.Services
 
             var notif2 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
-                UserId = audit.CreatedBy.Value,
+                UserId = auditBefore.CreatedBy.Value,
                 Title = "Your Audit Plan Has Been Approved",
-                Message = $"Your audit plan '{audit.Title}' has been approved by {user.FullName} ({user.RoleName}) and forwarded to Director for review.",
+                Message = $"Your audit plan '{auditBefore.Title}' has been approved by {user.FullName} ({user.RoleName}) and forwarded to Director for review.",
                 EntityType = "Audit",
                 EntityId = auditId,
                 IsRead = false,
@@ -238,7 +238,7 @@ namespace ASM_Services.Services
             await _emailService.SendAuditPlanForwardedToDirectorAsync(
                 directorInfo.Email,
                 directorInfo.FullName,
-                audit.Title ?? "Audit Plan",
+                auditBefore.Title ?? "Audit Plan",
                 user.FullName,
                 user.RoleName,
                 comment);
@@ -269,9 +269,9 @@ namespace ASM_Services.Services
 
             var notif = await _notificationRepo.CreateNotificationAsync(new Notification
             {
-                UserId = audit.CreatedBy.Value,
+                UserId = auditBefore.CreatedBy.Value,
                 Title = "Your Audit Plan Has Been Declined",
-                Message = $"Your audit plan '{audit.Title}' has been declined by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Your audit plan '{auditBefore.Title}' has been declined by {user.FullName} ({user.RoleName}).\n" +
                         $"Reason: {comment}",
                 EntityType = "Audit",
                 EntityId = auditId,
@@ -307,13 +307,13 @@ namespace ASM_Services.Services
 
             var notifications = new List<Notification>();
             var emailTasks = new List<Task>();
-            var auditTitle = string.IsNullOrWhiteSpace(audit.Title) ? "Audit Plan" : audit.Title;
+            var auditTitle = string.IsNullOrWhiteSpace(auditBefore.Title) ? "Audit Plan" : auditBefore.Title;
 
             var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
-                UserId = audit.CreatedBy.Value,
+                UserId = auditBefore.CreatedBy.Value,
                 Title = "Your Audit Plan Has Been Approved By Director",
-                Message = $"Your audit plan '{audit.Title}' has been approved by {user.FullName} ({user.RoleName}).",
+                Message = $"Your audit plan '{auditBefore.Title}' has been approved by {user.FullName} ({user.RoleName}).",
                 EntityType = "Audit",
                 EntityId = auditId,
                 IsRead = false,
@@ -321,7 +321,7 @@ namespace ASM_Services.Services
             });
             notifications.Add(notif1);
 
-            var creatorInfo = await _userRepo.GetUserShortInfoAsync(audit.CreatedBy.Value);
+            var creatorInfo = await _userRepo.GetUserShortInfoAsync(auditBefore.CreatedBy.Value);
             if (creatorInfo != null && !string.IsNullOrWhiteSpace(creatorInfo.Email))
             {
                 emailTasks.Add(_emailService.SendAuditPlanApprovedForCreatorAsync(
@@ -329,7 +329,7 @@ namespace ASM_Services.Services
                     creatorInfo.FullName,
                     auditTitle,
                     user.FullName,
-                    audit.StartDate,
+                    auditBefore.StartDate,
                     comment));
             }
 
@@ -343,7 +343,7 @@ namespace ASM_Services.Services
             {
                 UserId = leadId.Value,
                 Title = "Your Audit Plan Has Been Approved By Director",
-                Message = $"Your audit plan '{audit.Title}' has been approve by {user.FullName} ({user.RoleName}).",
+                Message = $"Your audit plan '{auditBefore.Title}' has been approve by {user.FullName} ({user.RoleName}).",
                 EntityType = "Audit",
                 EntityId = auditId,
                 IsRead = false,
@@ -358,7 +358,7 @@ namespace ASM_Services.Services
                     leadInfo.FullName,
                     auditTitle,
                     user.FullName,
-                    audit.StartDate,
+                    auditBefore.StartDate,
                     comment));
             }
 
@@ -374,7 +374,7 @@ namespace ASM_Services.Services
                     auditTitle,
                     leadInfo?.FullName ?? "Lead Auditor",
                     user.FullName,
-                    audit.StartDate,
+                    auditBefore.StartDate,
                     comment));
             }
 
@@ -391,7 +391,7 @@ namespace ASM_Services.Services
                 {
                     UserId = auditeeOwnerInfo.UserId,
                     Title = "New Audit Assigned to Your Department",
-                    Message = $"The audit plan '{audit.Title}' has been approved and assigned to your department ({scope.Dept.Name}).\n" +
+                    Message = $"The audit plan '{auditBefore.Title}' has been approved and assigned to your department ({scope.Dept.Name}).\n" +
                               "Please prepare for the upcoming audit activities.",
                     EntityType = "Audit",
                     EntityId = auditId,
@@ -408,7 +408,7 @@ namespace ASM_Services.Services
                     auditeeOwnerInfo.FullName,
                     scope.Dept?.Name ?? $"Department {scope.DeptId}",
                     auditTitle,
-                    audit.StartDate,
+                    auditBefore.StartDate,
                     comment));
             }
 
@@ -450,9 +450,9 @@ namespace ASM_Services.Services
 
             var notif1 = await _notificationRepo.CreateNotificationAsync(new Notification
             {
-                UserId = audit.CreatedBy.Value,
+                UserId = auditBefore.CreatedBy.Value,
                 Title = "Your Audit Plan Has Been Rejected By Director",
-                Message = $"Your audit plan '{audit.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Your audit plan '{auditBefore.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
                         $"Reason: {comment}",
                 EntityType = "Audit",
                 EntityId = auditId,
@@ -468,7 +468,7 @@ namespace ASM_Services.Services
             {
                 UserId = leadId.Value,
                 Title = "Your Audit Plan Has Been Rejected By Director",
-                Message = $"Your audit plan '{audit.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Your audit plan '{auditBefore.Title}' has been rejected by {user.FullName} ({user.RoleName}).\n" +
                         $"Reason: {comment}",
                 EntityType = "Audit",
                 EntityId = auditId,
@@ -477,7 +477,7 @@ namespace ASM_Services.Services
             });
 
             // Send email to creator (auditor who created the audit)
-            var creatorInfo = await _userRepo.GetUserShortInfoAsync(audit.CreatedBy.Value);
+            var creatorInfo = await _userRepo.GetUserShortInfoAsync(auditBefore.CreatedBy.Value);
             if (creatorInfo != null && !string.IsNullOrWhiteSpace(creatorInfo.Email))
             {
                 try
@@ -485,7 +485,7 @@ namespace ASM_Services.Services
                     await _emailService.SendAuditPlanRejectedForCreatorAsync(
                         creatorInfo.Email,
                         creatorInfo.FullName,
-                        audit.Title,
+                        auditBefore.Title,
                         user.FullName,
                         comment);
                 }
@@ -646,7 +646,7 @@ namespace ASM_Services.Services
             {
                 UserId = leadId.Value,
                 Title = "Audit Report Submitted – Review Required",
-                Message = $"Audit report for '{audit.Title}' has been submitted by {user.FullName} ({user.RoleName}).\n" +
+                Message = $"Audit report for '{auditBefore.Title}' has been submitted by {user.FullName} ({user.RoleName}).\n" +
                         "Kindly review and provide your feedback.",
                 EntityType = "ReportRequest",
                 EntityId = rr.ReportRequestId,
