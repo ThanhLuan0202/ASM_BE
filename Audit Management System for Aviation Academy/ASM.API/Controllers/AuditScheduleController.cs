@@ -77,6 +77,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -91,7 +95,7 @@ namespace ASM.API.Controllers
                 if (string.IsNullOrWhiteSpace(dto.MilestoneName))
                     return BadRequest(new { message = "MilestoneName is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { scheduleId = result.ScheduleId }, result);
             }
             catch (InvalidOperationException ex)
@@ -109,6 +113,10 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (scheduleId == Guid.Empty)
                     return BadRequest(new { message = "Invalid ScheduleId" });
 
@@ -123,7 +131,7 @@ namespace ASM.API.Controllers
                 if (string.IsNullOrWhiteSpace(dto.MilestoneName))
                     return BadRequest(new { message = "MilestoneName is required" });
 
-                var result = await _service.UpdateAsync(scheduleId, dto);
+                var result = await _service.UpdateAsync(scheduleId, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "Audit schedule not found" });
 
@@ -144,10 +152,14 @@ namespace ASM.API.Controllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
                 if (scheduleId == Guid.Empty)
                     return BadRequest(new { message = "Invalid ScheduleId" });
 
-                var result = await _service.DeleteAsync(scheduleId);
+                var result = await _service.DeleteAsync(scheduleId, userId);
                 if (!result)
                     return NotFound(new { message = "Audit schedule not found" });
 

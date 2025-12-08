@@ -1,5 +1,6 @@
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditScheduleDTO;
+using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,43 @@ namespace ASM_Services.Services
     public class AuditScheduleService : IAuditScheduleService
     {
         private readonly IAuditScheduleRepository _repo;
+        private readonly IAuditLogService _logService;
 
-        public AuditScheduleService(IAuditScheduleRepository repo)
+        public AuditScheduleService(IAuditScheduleRepository repo, IAuditLogService logService)
         {
             _repo = repo;
+            _logService = logService;
         }
 
         public Task<IEnumerable<ViewAuditSchedule>> GetAllAsync() => _repo.GetAllAsync();
         public Task<ViewAuditSchedule?> GetByIdAsync(Guid scheduleId) => _repo.GetByIdAsync(scheduleId);
         public Task<IEnumerable<ViewAuditSchedule>> GetByAuditIdAsync(Guid auditId) => _repo.GetByAuditIdAsync(auditId);
-        public Task<ViewAuditSchedule> CreateAsync(CreateAuditSchedule dto) => _repo.CreateAsync(dto);
-        public Task<ViewAuditSchedule?> UpdateAsync(Guid scheduleId, UpdateAuditSchedule dto) => _repo.UpdateAsync(scheduleId, dto);
-        public Task<bool> DeleteAsync(Guid scheduleId) => _repo.DeleteAsync(scheduleId);
+        public async Task<ViewAuditSchedule> CreateAsync(CreateAuditSchedule dto, Guid userId)
+        {
+            var created = await _repo.CreateAsync(dto);
+            await _logService.LogCreateAsync(created, created.ScheduleId, userId, "AuditSchedule");
+            return created;
+        }
+        public async Task<ViewAuditSchedule?> UpdateAsync(Guid scheduleId, UpdateAuditSchedule dto, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(scheduleId);
+            var updated = await _repo.UpdateAsync(scheduleId, dto);
+            if (before != null && updated != null)
+            {
+                await _logService.LogUpdateAsync(before, updated, scheduleId, userId, "AuditSchedule");
+            }
+            return updated;
+        }
+        public async Task<bool> DeleteAsync(Guid scheduleId, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(scheduleId);
+            var success = await _repo.DeleteAsync(scheduleId);
+            if (success && before != null)
+            {
+                await _logService.LogDeleteAsync(before, scheduleId, userId, "AuditSchedule");
+            }
+            return success;
+        }
     }
 }
 
