@@ -2,6 +2,7 @@
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.FindingDTO;
 using ASM_Repositories.Repositories;
+using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace ASM_Services.Services
     public class FindingService : IFindingService
     {
         private readonly IFindingRepository _repo;
+        private readonly IAuditLogService _logService;
         
-        public FindingService(IFindingRepository repo)
+        public FindingService(IFindingRepository repo, IAuditLogService logService)
         {
             _repo = repo;
+            _logService = logService;
         }
 
         public async Task<IEnumerable<ViewFinding>> GetAllFindingAsync()
@@ -28,19 +31,37 @@ namespace ASM_Services.Services
             return await _repo.GetFindingByIdAsync(id);
         }
 
-        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto, Guid? createdByUserId)
+        public async Task<ViewFinding> CreateFindingAsync(CreateFinding dto, Guid userId)
         {
-            return await _repo.CreateFindingAsync(dto, createdByUserId);
+            var created = await _repo.CreateFindingAsync(dto, userId);
+            await _logService.LogCreateAsync(created, created.FindingId, userId, "Finding");
+            return created;
         }
 
-        public async Task<ViewFinding?> UpdateFindingAsync(Guid id, UpdateFinding dto)
+        public async Task<ViewFinding?> UpdateFindingAsync(Guid id, UpdateFinding dto, Guid userId)
         {
-            return await _repo.UpdateFindingAsync(id, dto);
+            var existing = await _repo.GetFindingByIdAsync(id);
+            var updated = await _repo.UpdateFindingAsync(id, dto);
+            
+            if (updated != null && existing != null)
+            {
+                await _logService.LogUpdateAsync(existing, updated, id, userId, "Finding");
+            }
+            
+            return updated;
         }
 
-        public async Task<bool> DeleteFindingAsync(Guid id)
+        public async Task<bool> DeleteFindingAsync(Guid id, Guid userId)
         {
-            return await _repo.DeleteFindingAsync(id);
+            var existing = await _repo.GetFindingByIdAsync(id);
+            var deleted = await _repo.DeleteFindingAsync(id);
+            
+            if (deleted && existing != null)
+            {
+                await _logService.LogDeleteAsync(existing, id, userId, "Finding");
+            }
+            
+            return deleted;
         }
 
         public Task<List<Finding>> GetFindingsAsync(Guid auditId) => _repo.GetFindingsAsync(auditId);
@@ -83,9 +104,17 @@ namespace ASM_Services.Services
             return await _repo.GetByAuditItemIdAsync(auditItemId);
         }
 
-        public async Task<ViewFinding?> SetReceivedAsync(Guid findingId)
+        public async Task<ViewFinding?> SetReceivedAsync(Guid findingId, Guid userId)
         {
-            return await _repo.SetReceivedAsync(findingId);
+            var existing = await _repo.GetFindingByIdAsync(findingId);
+            var updated = await _repo.SetReceivedAsync(findingId);
+            
+            if (updated != null && existing != null)
+            {
+                await _logService.LogUpdateAsync(existing, updated, findingId, userId, "Finding");
+            }
+            
+            return updated;
         }
 
         public async Task<IEnumerable<ViewFinding>> GetFindingsByAuditIdAsync(Guid auditId)

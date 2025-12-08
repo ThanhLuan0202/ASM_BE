@@ -100,10 +100,9 @@ namespace ASM.API.Controllers
                 }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                Guid? userId = null;
-                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
-                    userId = parsedUserId;
+                    return Unauthorized(new { message = "User ID not found in token" });
                 }
 
                 var result = await _service.CreateFindingAsync(dto, userId);
@@ -154,7 +153,13 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "WitnessId cannot be empty" });
                 }
 
-                var result = await _service.UpdateFindingAsync(id, dto);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.UpdateFindingAsync(id, dto, userId);
                 if (result == null)
                 {
                     return NotFound(new { message = $"Finding with ID {id} not found" });
@@ -209,7 +214,13 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Invalid finding ID" });
                 }
 
-                var result = await _service.DeleteFindingAsync(id);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.DeleteFindingAsync(id, userId);
                 if (!result)
                 {
                     return NotFound(new { message = $"Finding with ID {id} not found" });
@@ -260,7 +271,13 @@ namespace ASM.API.Controllers
                     return BadRequest(new { message = "Invalid finding ID" });
                 }
 
-                var result = await _service.SetReceivedAsync(findingId);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                var result = await _service.SetReceivedAsync(findingId, userId);
                 if (result == null)
                 {
                     return NotFound(new { message = $"Finding with ID {findingId} not found" });
