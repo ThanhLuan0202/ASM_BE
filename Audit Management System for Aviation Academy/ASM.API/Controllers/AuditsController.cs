@@ -1,5 +1,6 @@
 using ASM.API.Helper;
 using ASM_Repositories.Entities;
+using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditDTO;
 using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
@@ -34,7 +35,8 @@ namespace ASM.API.Controllers
         private readonly IPdfGeneratorService _pdfService;
         private readonly IFirebaseUploadService _firebaseService;
         private readonly NotificationHelper _notificationHelper;
-        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService, IFirebaseUploadService firebaseService, NotificationHelper notificationHelper)
+        private readonly IAuditPlanAssignmentRepository _auditPlanAssignmentRepository;
+        public AuditsController(IAuditService service, IWebHostEnvironment env, IFindingService findingService, IAttachmentService attachmentService, IPdfGeneratorService pdfService, IFirebaseUploadService firebaseService, NotificationHelper notificationHelper, IAuditPlanAssignmentRepository auditPlanAssignmentRepository)
         {
             _service = service;
             _env = env;
@@ -43,6 +45,7 @@ namespace ASM.API.Controllers
             _pdfService = pdfService;
             _firebaseService = firebaseService;
             _notificationHelper = notificationHelper;
+            _auditPlanAssignmentRepository = auditPlanAssignmentRepository;
         }
 
         [HttpGet]
@@ -116,6 +119,18 @@ namespace ASM.API.Controllers
                 if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid parsedUserId))
                 {
                     userId = parsedUserId;
+                }
+
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                // Kiểm tra xem user có trong AuditPlanAssignment với status = "Active" không
+                var hasActiveAssignment = await _auditPlanAssignmentRepository.HasActiveAssignmentByAuditorIdAsync(userId.Value);
+                if (hasActiveAssignment)
+                {
+                    return BadRequest(new { message = "You have used the plan creation permission." });
                 }
 
                 var result = await _service.CreateAuditAsync(dto, userId);

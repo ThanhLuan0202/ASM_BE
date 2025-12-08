@@ -131,5 +131,13 @@ namespace ASM_Repositories.Repositories
 
             return count;
         }
+
+        public async Task<bool> HasActiveAssignmentByAuditorIdAsync(Guid auditorId)
+        {
+            var exists = await _context.AuditPlanAssignments
+                .AnyAsync(apa => apa.AuditorId == auditorId && apa.Status == "Active");
+            
+            return exists;
+        }
     }
 }
