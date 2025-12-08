@@ -139,5 +139,36 @@ namespace ASM_Repositories.Repositories
             
             return exists;
         }
+
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            if (auditId == Guid.Empty)
+                throw new ArgumentException("AuditId cannot be empty.");
+
+            // AuditPlanAssignment doesn't have AuditId directly, so we update assignments
+            // for auditors who created the audit (CreatedBy = AuditorId)
+            var audit = await _context.Audits
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.AuditId == auditId);
+
+            if (audit == null)
+                return;
+
+            // Update all active assignments for the auditor who created this audit
+            var entities = await _context.AuditPlanAssignments
+                .Where(apa => apa.AuditorId == audit.CreatedBy && apa.Status == "Active")
+                .ToListAsync();
+
+            if (!entities.Any())
+                return;
+
+            foreach (var entity in entities)
+            {
+                entity.Status = "Archived";
+                _context.Entry(entity).Property(x => x.Status).IsModified = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

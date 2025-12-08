@@ -98,5 +98,10 @@ namespace ASM_Repositories.Repositories
 
             return true;
         }
+
+        public async Task UpdateStatusToArchivedAsync(Guid auditId)
+        {
+            await Task.CompletedTask;
+        }
     }
 }

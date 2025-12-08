@@ -46,6 +46,8 @@ namespace ASM_Services.Services
         private readonly IAuditChecklistItemRepository _auditChecklistItemRepo;
         private readonly IActionRepository _actionRepo;
         private readonly IAuditLogService _logService;
+        private readonly IChecklistItemNoFindingRepository _checklistItemNoFindingRepo;
+        private readonly IAuditPlanAssignmentRepository _auditPlanAssignmentRepo;
 
         public AuditService(
             IAuditRepository repo,
@@ -68,7 +70,9 @@ namespace ASM_Services.Services
             IAuditAssignmentRepository auditAssignmentRepo,
             IAuditChecklistItemRepository auditChecklistItemRepo,
             IActionRepository actionRepo,
-            IAuditLogService logService)
+            IAuditLogService logService,
+            IChecklistItemNoFindingRepository checklistItemNoFindingRepo,
+            IAuditPlanAssignmentRepository auditPlanAssignmentRepo)
         {
             _repo = repo;
             _findingRepo = findingRepo;
@@ -91,6 +95,8 @@ namespace ASM_Services.Services
             _auditChecklistItemRepo = auditChecklistItemRepo;
             _actionRepo = actionRepo;
             _logService = logService;
+            _checklistItemNoFindingRepo = checklistItemNoFindingRepo;
+            _auditPlanAssignmentRepo = auditPlanAssignmentRepo;
         }
 
         public async Task<IEnumerable<ViewAudit>> GetAllAuditAsync()
@@ -845,6 +851,8 @@ namespace ASM_Services.Services
             await _actionRepo.UpdateStatusToArchivedAsync(auditId);
             await _attachmentRepo.UpdateStatusToArchivedAsync(auditId);
             await _auditDocumentRepo.UpdateStatusToArchivedAsync(auditId);
+            await _checklistItemNoFindingRepo.UpdateStatusToArchivedAsync(auditId);
+            await _auditPlanAssignmentRepo.UpdateStatusToArchivedAsync(auditId);
         }
 
         public async Task<ViewAudit?> UpdateAuditCompleteAsync(Guid auditId, UpdateAuditComplete dto)

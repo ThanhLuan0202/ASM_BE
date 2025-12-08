@@ -14,5 +14,6 @@ namespace ASM_Repositories.Interfaces
         Task<ViewChecklistItemNoFinding> CreateAsync(CreateChecklistItemNoFinding dto);
         Task<ViewChecklistItemNoFinding?> UpdateAsync(int id, UpdateChecklistItemNoFinding dto);
         Task<bool> DeleteAsync(int id);
+        Task UpdateStatusToArchivedAsync(Guid auditId);
     }
 }
