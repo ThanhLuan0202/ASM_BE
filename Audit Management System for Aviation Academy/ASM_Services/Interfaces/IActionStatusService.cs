@@ -9,8 +9,8 @@ namespace ASM_Services.Interfaces.AdminInterfaces
     {
         Task<IEnumerable<ViewActionStatus>> GetAllAsync();
         Task<ViewActionStatus?> GetByIdAsync(string actionStatus);
-        Task<ViewActionStatus> CreateAsync(CreateActionStatus dto);
-        Task<ViewActionStatus?> UpdateAsync(string actionStatus, UpdateActionStatus dto);
-        Task<bool> DeleteAsync(string actionStatus);
+        Task<ViewActionStatus> CreateAsync(CreateActionStatus dto, Guid userId);
+        Task<ViewActionStatus?> UpdateAsync(string actionStatus, UpdateActionStatus dto, Guid userId);
+        Task<bool> DeleteAsync(string actionStatus, Guid userId);
     }
 }

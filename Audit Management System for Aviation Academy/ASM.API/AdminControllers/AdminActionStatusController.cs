@@ -58,6 +58,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -69,7 +73,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.ActionStatus1))
                     return BadRequest(new { message = "ActionStatus is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { actionStatus = result.ActionStatus1 }, result);
             }
             catch (InvalidOperationException ex)
@@ -87,6 +91,10 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (string.IsNullOrWhiteSpace(actionStatus))
                     return BadRequest(new { message = "ActionStatus is required" });
 
@@ -101,7 +109,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.ActionStatus1))
                     return BadRequest(new { message = "ActionStatus is required" });
 
-                var result = await _service.UpdateAsync(actionStatus, dto);
+                var result = await _service.UpdateAsync(actionStatus, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "ActionStatus not found" });
 
@@ -122,10 +130,14 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing user token" });
+
                 if (string.IsNullOrWhiteSpace(actionStatus))
                     return BadRequest(new { message = "ActionStatus is required" });
 
-                var result = await _service.DeleteAsync(actionStatus);
+                var result = await _service.DeleteAsync(actionStatus, userId);
                 if (!result)
                     return NotFound(new { message = "ActionStatus not found" });
 
