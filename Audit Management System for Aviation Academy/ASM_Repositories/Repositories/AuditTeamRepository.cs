@@ -218,10 +218,15 @@ namespace ASM_Repositories.Repositories
 
         public async Task<List<Guid>> GetUsersInPeriodAsync(DateTime startDate, DateTime endDate)
         {
+            // Get users who participated in audits that overlap with the period
+            // An audit overlaps if: StartDate <= endDate AND EndDate >= startDate
             var userIds = await _context.AuditTeams
                 .Include(at => at.Audit)
-                .Where(at => at.Audit.StartDate >= startDate 
-                    && at.Audit.EndDate <= endDate
+                .Where(at => at.Audit != null
+                    && at.Audit.StartDate.HasValue
+                    && at.Audit.EndDate.HasValue
+                    && at.Audit.StartDate.Value <= endDate
+                    && at.Audit.EndDate.Value >= startDate
                     && at.Status == "Active"
                     && at.Audit.Status != "Inactive")
                 .Select(at => at.UserId)

@@ -13,7 +13,7 @@ namespace ASM.API.BackgroundServices
     {
         private readonly ILogger<AuditStatusUpdateService> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10); // Check every hour
+        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1); 
 
         public AuditStatusUpdateService(
             ILogger<AuditStatusUpdateService> logger,
