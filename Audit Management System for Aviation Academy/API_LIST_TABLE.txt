@@ -1,0 +1,209 @@
+API Name	Method	Endpoint	Description
+Auth - Login	POST	/api/Auth/login	Đăng nhập người dùng
+Auth - Register	POST	/api/Auth/register	Đăng ký người dùng mới
+Auth - Bulk Register	POST	/api/Auth/bulk-register	Đăng ký hàng loạt từ file Excel
+Auth - Reset Password	POST	/api/Auth/reset-password	Đặt lại mật khẩu
+Audits - Get All	GET	/api/Audits	Lấy danh sách tất cả audits
+Audits - Get By ID	GET	/api/Audits/{id}	Lấy thông tin audit theo ID
+Audits - Create	POST	/api/Audits	Tạo audit mới
+Audits - Update	PUT	/api/Audits/{id}	Cập nhật audit
+Audits - Delete	DELETE	/api/Audits/{id}	Xóa audit (soft delete)
+Audits - Submit To Lead Auditor	POST	/api/Audits/{id}/submit-to-lead-auditor	Gửi audit cho Lead Auditor
+Audits - Approve Forward Director	POST	/api/Audits/{id}/approve-forward-director	Phê duyệt và chuyển cho Director
+Audits - Declined Plan Content	POST	/api/Audits/{id}/declined-plan-content	Từ chối nội dung kế hoạch
+Audits - Approve Plan	POST	/api/Audits/{id}/approve-plan	Phê duyệt kế hoạch
+Audits - Reject Plan Content	POST	/api/Audits/{id}/reject-plan-content	Từ chối nội dung kế hoạch
+Audits - Get Summary	GET	/api/Audits/Summary/{auditId}	Lấy tóm tắt audit
+Audits - Submit	POST	/api/Audits/Submit/{auditId}	Gửi audit (tạo PDF và upload)
+Audits - Archive	PUT	/api/Audits/archive/{auditId}	Lưu trữ audit
+Audits - Complete Update	PUT	/api/Audits/{id}/complete-update	Cập nhật toàn bộ audit và các entities liên quan
+Audits - Chart Line	GET	/api/Audits/{auditId}/chart/line	Lấy dữ liệu biểu đồ line (findings theo tháng)
+Audits - Chart Pie	GET	/api/Audits/{auditId}/chart/pie	Lấy dữ liệu biểu đồ pie (severity breakdown)
+Audits - Chart Bar	GET	/api/Audits/{auditId}/chart/bar	Lấy dữ liệu biểu đồ bar (findings theo department)
+Audits - Export PDF	GET	/api/Audits/ExportPdf/{auditId}	Xuất PDF audit report
+Audits - Export Excel	GET	/api/Audits/ExportExcel/{auditId}	Xuất Excel audit report
+Audits - Get By Period	GET	/api/Audits/by-period	Lấy audits theo khoảng thời gian
+Audits - Validate Department	POST	/api/Audits/validate-department	Validate department uniqueness
+Audits - Period Status	GET	/api/Audits/period-status	Lấy trạng thái theo khoảng thời gian
+AuditPlan - Get All	GET	/api/AuditPlan	Lấy danh sách audit plans
+AuditPlan - Get By ID	GET	/api/AuditPlan/{auditId}	Lấy chi tiết audit plan
+AuditPlan - Update	PUT	/api/AuditPlan/{auditId}	Cập nhật audit plan
+AuditPlanAssignment - Get All	GET	/api/AuditPlanAssignment	Lấy danh sách tất cả assignments
+AuditPlanAssignment - Get By ID	GET	/api/AuditPlanAssignment/{id}	Lấy assignment theo ID
+AuditPlanAssignment - Create	POST	/api/AuditPlanAssignment	Tạo assignment mới
+AuditPlanAssignment - Update	PUT	/api/AuditPlanAssignment/{id}	Cập nhật assignment
+AuditPlanAssignment - Delete	DELETE	/api/AuditPlanAssignment/{id}	Xóa assignment
+AuditPlanAssignment - Get By Period	GET	/api/AuditPlanAssignment/by-period	Lấy assignments theo khoảng thời gian
+AuditPlanAssignment - Validate	POST	/api/AuditPlanAssignment/validate	Validate assignment
+AuditAssignment - Get All	GET	/api/AuditAssignment	Lấy danh sách tất cả assignments
+AuditAssignment - Get By ID	GET	/api/AuditAssignment/{assignmentId}	Lấy assignment theo ID
+AuditAssignment - Get By Audit	GET	/api/AuditAssignment/audit/{auditId}	Lấy assignments theo audit ID
+AuditAssignment - Get By Auditor	GET	/api/AuditAssignment/auditor/{auditorId}	Lấy assignments theo auditor ID
+AuditAssignment - Get By Department	GET	/api/AuditAssignment/department/{deptId}	Lấy assignments theo department ID
+AuditAssignment - Get My Assignments	GET	/api/AuditAssignment/my-assignments	Lấy assignments của user hiện tại
+AuditAssignment - Create	POST	/api/AuditAssignment	Tạo assignment mới
+AuditAssignment - Update	PUT	/api/AuditAssignment/{assignmentId}	Cập nhật assignment
+AuditAssignment - Delete	DELETE	/api/AuditAssignment/{assignmentId}	Xóa assignment
+AuditAssignment - Get Auditors With Schedule	GET	/api/AuditAssignment/auditors-with-schedule	Lấy danh sách auditors có schedule
+AuditTeam - Get All	GET	/api/AuditTeam	Lấy danh sách tất cả audit teams
+AuditTeam - Get By ID	GET	/api/AuditTeam/{id}	Lấy audit team theo ID
+AuditTeam - Create	POST	/api/AuditTeam	Tạo audit team mới
+AuditTeam - Update	PUT	/api/AuditTeam/{id}	Cập nhật audit team
+AuditTeam - Delete	DELETE	/api/AuditTeam/{id}	Xóa audit team (soft delete)
+AuditTeam - Check Lead Auditor	GET	/api/AuditTeam/check-lead-auditor/{auditId}	Kiểm tra user có phải Lead Auditor không
+AuditScopeDepartment - Get All	GET	/api/AuditScopeDepartment	Lấy danh sách tất cả scope departments
+AuditScopeDepartment - Get By ID	GET	/api/AuditScopeDepartment/{id}	Lấy scope department theo ID
+AuditScopeDepartment - Create	POST	/api/AuditScopeDepartment	Tạo scope department mới
+AuditScopeDepartment - Update	PUT	/api/AuditScopeDepartment/{id}	Cập nhật scope department
+AuditScopeDepartment - Delete	DELETE	/api/AuditScopeDepartment/{id}	Xóa scope department
+AuditSchedule - Get All	GET	/api/AuditSchedule	Lấy danh sách tất cả schedules
+AuditSchedule - Get By ID	GET	/api/AuditSchedule/{id}	Lấy schedule theo ID
+AuditSchedule - Create	POST	/api/AuditSchedule	Tạo schedule mới
+AuditSchedule - Update	PUT	/api/AuditSchedule/{id}	Cập nhật schedule
+AuditSchedule - Delete	DELETE	/api/AuditSchedule/{id}	Xóa schedule
+Findings - Get All	GET	/api/Findings	Lấy danh sách tất cả findings
+Findings - Get By ID	GET	/api/Findings/{id}	Lấy finding theo ID
+Findings - Create	POST	/api/Findings	Tạo finding mới
+Findings - Update	PUT	/api/Findings/{id}	Cập nhật finding
+Findings - Delete	DELETE	/api/Findings/{id}	Xóa finding (soft delete)
+Findings - Get By Department	GET	/api/Findings/by-department/{deptId}	Lấy findings theo department
+Findings - Get By Audit Item	GET	/api/Findings/by-audit-item/{auditItemId}	Lấy findings theo audit item
+Findings - Received	PUT	/api/Findings/{findingId}/received	Đánh dấu finding đã nhận
+Findings - Get By Audit	GET	/api/Findings/by-audit/{auditId}	Lấy findings theo audit
+Findings - Get By Created By	GET	/api/Findings/by-created-by/{createdBy}	Lấy findings theo người tạo
+Findings - Get My Findings	GET	/api/Findings/my-findings	Lấy findings của user hiện tại
+FindingStatus - Get All	GET	/api/FindingStatus	Lấy danh sách tất cả finding statuses
+FindingStatus - Get By Name	GET	/api/FindingStatus/{status}	Lấy finding status theo tên
+FindingStatus - Create	POST	/api/FindingStatus	Tạo finding status mới
+FindingStatus - Update	PUT	/api/FindingStatus/{status}	Cập nhật finding status
+FindingStatus - Delete	DELETE	/api/FindingStatus/{status}	Xóa finding status
+FindingSeverity - Get All	GET	/api/FindingSeverity	Lấy danh sách tất cả finding severities
+FindingSeverity - Get By Name	GET	/api/FindingSeverity/{severity}	Lấy finding severity theo tên
+FindingSeverity - Create	POST	/api/FindingSeverity	Tạo finding severity mới
+FindingSeverity - Update	PUT	/api/FindingSeverity/{severity}	Cập nhật finding severity
+FindingSeverity - Delete	DELETE	/api/FindingSeverity/{severity}	Xóa finding severity
+Action - Get All	GET	/api/Action	Lấy danh sách tất cả actions
+Action - Get By ID	GET	/api/Action/{id}	Lấy action theo ID
+Action - Get My Assigned	GET	/api/Action/my-assigned	Lấy actions được gán cho user hiện tại
+Action - Create	POST	/api/Action	Tạo action mới
+Action - Update	PUT	/api/Action/{id}	Cập nhật action
+Action - Delete	DELETE	/api/Action/{id}	Xóa action
+Action - Status In Progress	POST	/api/Action/{id}/status/in-progress	Cập nhật status thành InProgress
+Action - Status Reviewed	POST	/api/Action/{id}/status/reviewed	Cập nhật status thành Reviewed
+Action - Status Approved	POST	/api/Action/{id}/status/approved	Cập nhật status thành Approved
+Action - Status Rejected	POST	/api/Action/{id}/status/rejected	Cập nhật status thành Rejected
+Action - Update Progress	PUT	/api/Action/{id}/progress-percent	Cập nhật phần trăm tiến độ
+Action - Status Closed	POST	/api/Action/{id}/status/closed	Cập nhật status thành Closed
+Action - Approve By Auditor	PUT	/api/Action/{id}/approve-by-auditor	Phê duyệt bởi auditor
+Action - Get By Finding	GET	/api/Action/by-finding/{findingId}	Lấy actions theo finding
+Action - Get By Department	GET	/api/Action/by-assigned-dept/{assignedDeptId}	Lấy actions theo department
+Action - Reject	PUT	/api/Action/{id}/reject	Từ chối action
+ActionReview - Verified	POST	/api/ActionReview/{actionId}/verified	Xác nhận action đã verified
+ActionReview - Declined	POST	/api/ActionReview/{actionId}/declined	Từ chối action
+ChecklistTemplates - Get All	GET	/api/ChecklistTemplates	Lấy danh sách tất cả checklist templates
+ChecklistTemplates - Get By ID	GET	/api/ChecklistTemplates/{id}	Lấy checklist template theo ID
+ChecklistTemplates - Create	POST	/api/ChecklistTemplates	Tạo checklist template mới
+ChecklistTemplates - Update	PUT	/api/ChecklistTemplates/{id}	Cập nhật checklist template
+ChecklistTemplates - Delete	DELETE	/api/ChecklistTemplates/{id}	Xóa checklist template
+ChecklistItems - Get All	GET	/api/ChecklistItems	Lấy danh sách tất cả checklist items
+ChecklistItems - Get By ID	GET	/api/ChecklistItems/{id}	Lấy checklist item theo ID
+ChecklistItems - Create	POST	/api/ChecklistItems	Tạo checklist item mới
+ChecklistItems - Update	PUT	/api/ChecklistItems/{id}	Cập nhật checklist item
+ChecklistItems - Delete	DELETE	/api/ChecklistItems/{id}	Xóa checklist item
+ChecklistItemNoFinding - Get All	GET	/api/ChecklistItemNoFinding	Lấy danh sách tất cả no findings
+ChecklistItemNoFinding - Get By ID	GET	/api/ChecklistItemNoFinding/{id}	Lấy no finding theo ID
+ChecklistItemNoFinding - Create	POST	/api/ChecklistItemNoFinding	Tạo no finding mới
+ChecklistItemNoFinding - Update	PUT	/api/ChecklistItemNoFinding/{id}	Cập nhật no finding
+ChecklistItemNoFinding - Delete	DELETE	/api/ChecklistItemNoFinding/{id}	Xóa no finding
+AuditChecklistItems - Get All	GET	/api/AuditChecklistItems	Lấy danh sách tất cả audit checklist items
+AuditChecklistItems - Get By ID	GET	/api/AuditChecklistItems/{id}	Lấy audit checklist item theo ID
+AuditChecklistItems - Create	POST	/api/AuditChecklistItems	Tạo audit checklist item mới
+AuditChecklistItems - Update	PUT	/api/AuditChecklistItems/{id}	Cập nhật audit checklist item
+AuditChecklistItems - Delete	DELETE	/api/AuditChecklistItems/{id}	Xóa audit checklist item
+AuditChecklistTemplateMaps - Get All	GET	/api/AuditChecklistTemplateMaps	Lấy danh sách tất cả template maps
+AuditChecklistTemplateMaps - Get By ID	GET	/api/AuditChecklistTemplateMaps/{id}	Lấy template map theo ID
+AuditChecklistTemplateMaps - Create	POST	/api/AuditChecklistTemplateMaps	Tạo template map mới
+AuditChecklistTemplateMaps - Update	PUT	/api/AuditChecklistTemplateMaps/{id}	Cập nhật template map
+AuditChecklistTemplateMaps - Delete	DELETE	/api/AuditChecklistTemplateMaps/{id}	Xóa template map
+AuditCriterion - Get All	GET	/api/AuditCriterion	Lấy danh sách tất cả audit criteria
+AuditCriterion - Get By ID	GET	/api/AuditCriterion/{id}	Lấy audit criterion theo ID
+AuditCriterion - Create	POST	/api/AuditCriterion	Tạo audit criterion mới
+AuditCriterion - Update	PUT	/api/AuditCriterion/{id}	Cập nhật audit criterion
+AuditCriterion - Delete	DELETE	/api/AuditCriterion/{id}	Xóa audit criterion
+AuditCriteriaMap - Get All	GET	/api/AuditCriteriaMap	Lấy danh sách tất cả criteria maps
+AuditCriteriaMap - Get By ID	GET	/api/AuditCriteriaMap/{id}	Lấy criteria map theo ID
+AuditCriteriaMap - Create	POST	/api/AuditCriteriaMap	Tạo criteria map mới
+AuditCriteriaMap - Update	PUT	/api/AuditCriteriaMap/{id}	Cập nhật criteria map
+AuditCriteriaMap - Delete	DELETE	/api/AuditCriteriaMap/{id}	Xóa criteria map
+AuditApproval - Get All	GET	/api/AuditApproval	Lấy danh sách tất cả approvals
+AuditApproval - Get By ID	GET	/api/AuditApproval/{id}	Lấy approval theo ID
+AuditApproval - Create	POST	/api/AuditApproval	Tạo approval mới
+AuditApproval - Update	PUT	/api/AuditApproval/{id}	Cập nhật approval
+AuditApproval - Delete	DELETE	/api/AuditApproval/{id}	Xóa approval
+AuditDocuments - Get All	GET	/api/AuditDocuments	Lấy danh sách tất cả audit documents
+AuditDocuments - Get By ID	GET	/api/AuditDocuments/{id}	Lấy audit document theo ID
+RootCauses - Get All	GET	/api/RootCauses	Lấy danh sách tất cả root causes
+RootCauses - Get By ID	GET	/api/RootCauses/{id}	Lấy root cause theo ID
+RootCauses - Create	POST	/api/RootCauses	Tạo root cause mới
+RootCauses - Update	PUT	/api/RootCauses/{id}	Cập nhật root cause
+RootCauses - Delete	DELETE	/api/RootCauses/{id}	Xóa root cause
+Role - Get All	GET	/api/Role	Lấy danh sách tất cả roles
+Role - Get By Name	GET	/api/Role/{roleName}	Lấy role theo tên
+Role - Create	POST	/api/Role	Tạo role mới
+Role - Update	PUT	/api/Role/{roleName}	Cập nhật role
+Role - Delete	DELETE	/api/Role/{roleName}	Xóa role
+AuditReports - Get All	GET	/api/AuditReports	Lấy danh sách tất cả audit reports
+ReportRequest - Get All	GET	/api/ReportRequest	Lấy danh sách tất cả report requests
+ReportRequest - Get By ID	GET	/api/ReportRequest/{id}	Lấy report request theo ID
+ReportRequest - Create	POST	/api/ReportRequest	Tạo report request mới
+ReportRequest - Update	PUT	/api/ReportRequest/{id}	Cập nhật report request
+ReportRequest - Delete	DELETE	/api/ReportRequest/{id}	Xóa report request
+AdminUsers - Get All	GET	/api/AdminUsers	Lấy danh sách users (Admin)
+AdminUsers - Get By ID	GET	/api/AdminUsers/{id}	Lấy user theo ID (Admin)
+AdminUsers - Create	POST	/api/AdminUsers	Tạo user mới (Admin)
+AdminUsers - Update	PUT	/api/AdminUsers/{id}	Cập nhật user (Admin)
+AdminUsers - Delete	DELETE	/api/AdminUsers/{id}	Xóa user (Admin)
+AdminDepartments - Get All	GET	/api/AdminDepartments	Lấy danh sách departments (Admin)
+AdminDepartments - Get By ID	GET	/api/AdminDepartments/{id}	Lấy department theo ID (Admin)
+AdminDepartments - Create	POST	/api/AdminDepartments	Tạo department mới (Admin)
+AdminDepartments - Update	PUT	/api/AdminDepartments/{id}	Cập nhật department (Admin)
+AdminDepartments - Delete	DELETE	/api/AdminDepartments/{id}	Xóa department (Admin)
+AdminDepartmentHead - Get All	GET	/api/AdminDepartmentHead	Lấy danh sách department heads (Admin)
+AdminDepartmentHead - Get By ID	GET	/api/AdminDepartmentHead/{id}	Lấy department head theo ID (Admin)
+AdminDepartmentHead - Create	POST	/api/AdminDepartmentHead	Tạo department head mới (Admin)
+AdminDepartmentHead - Update	PUT	/api/AdminDepartmentHead/{id}	Cập nhật department head (Admin)
+AdminDepartmentHead - Delete	DELETE	/api/AdminDepartmentHead/{id}	Xóa department head (Admin)
+AdminNotification - Get All	GET	/api/AdminNotification	Lấy danh sách notifications (Admin)
+AdminNotification - Get By ID	GET	/api/AdminNotification/{id}	Lấy notification theo ID (Admin)
+AdminNotification - Create	POST	/api/AdminNotification	Tạo notification mới (Admin)
+AdminNotification - Update	PUT	/api/AdminNotification/{id}	Cập nhật notification (Admin)
+AdminNotification - Delete	DELETE	/api/AdminNotification/{id}	Xóa notification (Admin)
+AdminAttachment - Get All	GET	/api/AdminAttachment	Lấy danh sách attachments (Admin)
+AdminAttachment - Get By ID	GET	/api/AdminAttachment/{id}	Lấy attachment theo ID (Admin)
+AdminAttachment - Create	POST	/api/AdminAttachment	Tạo attachment mới (Admin)
+AdminAttachment - Update	PUT	/api/AdminAttachment/{id}	Cập nhật attachment (Admin)
+AdminAttachment - Delete	DELETE	/api/AdminAttachment/{id}	Xóa attachment (Admin)
+AdminAttachmentEntityType - Get All	GET	/api/AdminAttachmentEntityType	Lấy danh sách attachment entity types (Admin)
+AdminAttachmentEntityType - Get By ID	GET	/api/AdminAttachmentEntityType/{id}	Lấy attachment entity type theo ID (Admin)
+AdminAttachmentEntityType - Create	POST	/api/AdminAttachmentEntityType	Tạo attachment entity type mới (Admin)
+AdminAttachmentEntityType - Update	PUT	/api/AdminAttachmentEntityType/{id}	Cập nhật attachment entity type (Admin)
+AdminAttachmentEntityType - Delete	DELETE	/api/AdminAttachmentEntityType/{id}	Xóa attachment entity type (Admin)
+AdminAuditStatus - Get All	GET	/api/AdminAuditStatus	Lấy danh sách audit statuses (Admin)
+AdminAuditStatus - Get By ID	GET	/api/AdminAuditStatus/{id}	Lấy audit status theo ID (Admin)
+AdminAuditStatus - Create	POST	/api/AdminAuditStatus	Tạo audit status mới (Admin)
+AdminAuditStatus - Update	PUT	/api/AdminAuditStatus/{id}	Cập nhật audit status (Admin)
+AdminAuditStatus - Delete	DELETE	/api/AdminAuditStatus/{id}	Xóa audit status (Admin)
+AdminAuditLog - Get All	GET	/api/AdminAuditLog	Lấy danh sách audit logs (Admin)
+AdminAuditLog - Get By ID	GET	/api/AdminAuditLog/{id}	Lấy audit log theo ID (Admin)
+AdminAuditLog - Create	POST	/api/AdminAuditLog	Tạo audit log mới (Admin)
+AdminAuditLog - Update	PUT	/api/AdminAuditLog/{id}	Cập nhật audit log (Admin)
+AdminAuditLog - Delete	DELETE	/api/AdminAuditLog/{id}	Xóa audit log (Admin)
+AdminActionStatus - Get All	GET	/api/AdminActionStatus	Lấy danh sách action statuses (Admin)
+AdminActionStatus - Get By ID	GET	/api/AdminActionStatus/{id}	Lấy action status theo ID (Admin)
+AdminActionStatus - Create	POST	/api/AdminActionStatus	Tạo action status mới (Admin)
+AdminActionStatus - Update	PUT	/api/AdminActionStatus/{id}	Cập nhật action status (Admin)
+AdminActionStatus - Delete	DELETE	/api/AdminActionStatus/{id}	Xóa action status (Admin)
+DepartmentHeadFinding - Get All	GET	/api/DepartmentHeadFinding	Lấy danh sách findings cho Department Head
+DepartmentHeadFinding - Get By ID	GET	/api/DepartmentHeadFinding/{id}	Lấy finding theo ID cho Department Head
+DepartmentHeadFinding - Update	PUT	/api/DepartmentHeadFinding/{id}	Cập nhật finding cho Department Head
+

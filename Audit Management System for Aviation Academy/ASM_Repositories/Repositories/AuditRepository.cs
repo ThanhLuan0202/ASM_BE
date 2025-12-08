@@ -731,6 +731,7 @@ namespace ASM_Repositories.Repositories
         public async Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate)
         {
             var audits = await _DbContext.Audits
+                .AsNoTracking()
                 .Include(a => a.CreatedByNavigation)
                 .Include(a => a.Template)
                 .Include(a => a.StatusNavigation)
@@ -740,6 +741,16 @@ namespace ASM_Repositories.Repositories
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<ViewAudit>>(audits);
+        }
+
+        public async Task<int> GetAuditsCountByPeriodAsync(DateTime startDate, DateTime endDate)
+        {
+            // Đếm trực tiếp từ database để tránh duplicate
+            return await _DbContext.Audits
+                .Where(a => a.StartDate >= startDate 
+                    && a.EndDate <= endDate 
+                    && a.Status != "Inactive")
+                .CountAsync();
         }
 
         public async Task<List<int>> GetUsedDepartmentsByPeriodAsync(DateTime startDate, DateTime endDate, Guid? excludeAuditId = null)

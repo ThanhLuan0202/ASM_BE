@@ -854,8 +854,8 @@ namespace ASM_Services.Services
             var isExpired = endDate < now;
             var isActive = startDate <= now && endDate >= now;
             
-            var audits = await _repo.GetAuditsByPeriodAsync(startDate, endDate);
-            var currentCount = audits.Count();
+            // Đếm trực tiếp từ database để tránh duplicate, chính xác hơn
+            var currentCount = await _repo.GetAuditsCountByPeriodAsync(startDate, endDate);
             const int maxAllowed = 5;
             var remainingSlots = Math.Max(0, maxAllowed - currentCount);
             
