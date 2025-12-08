@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 using ASM_Services.Interfaces;
@@ -12,15 +13,50 @@ namespace ASM_Services.Services
     public class AuditPlanAssignmentService : IAuditPlanAssignmentService
     {
         private readonly IAuditPlanAssignmentRepository _repo;
+        private readonly IUsersRepository _userRepo;
+        private readonly INotificationRepository _notificationRepo;
 
-        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo)
+        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo, IUsersRepository usersRepo, INotificationRepository notificationRepo)
         {
             _repo = repo;
+            _notificationRepo = notificationRepo;
+            _userRepo = usersRepo;
         }
 
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAllAsync() => _repo.GetAllAsync();
         public Task<ViewAuditPlanAssignment?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
-        public Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto) => _repo.CreateAsync(dto);
+        public async Task<Notification?> CreateWithNotificationAsync(CreateAuditPlanAssignment dto)
+        {
+            var assignment = await _repo.CreateAsync(dto);
+            if (assignment == null)
+                throw new Exception("Failed to create audit plan assignment.");
+
+            var assignByUser = await _userRepo.GetUserShortInfoAsync(dto.AssignBy);
+            if (assignByUser == null)
+                throw new Exception($"AssignBy user not found: {dto.AssignBy}");
+
+            var auditorUser = await _userRepo.GetUserShortInfoAsync(dto.AuditorId);
+            if (auditorUser == null)
+                throw new Exception($"Auditor user not found: {dto.AuditorId}");
+
+            var message =$"You have been assigned a task to create an audit plan by {assignByUser.FullName} ({assignByUser.RoleName}).\n" +
+                        $"Assigned Date: {dto.AssignedDate:yyyy-MM-dd}\n" +
+                        (!string.IsNullOrWhiteSpace(dto.Remarks) ? $"Remarks: {dto.Remarks}" : "");
+
+            var notification = await _notificationRepo.CreateNotificationAsync(new Notification
+            {
+                UserId = auditorUser.UserId,
+                Title = "Audit Plan Assignment",
+                Message = message,
+                EntityType = "AuditPlanAssignment",
+                EntityId = assignment.AssignmentId,
+                IsRead = false,
+                Status = "Active"
+            });
+
+            return notification;
+        }
+
         public Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto) => _repo.UpdateAsync(id, dto);
         public Task<bool> DeleteAsync(Guid id) => _repo.DeleteAsync(id);
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate) => _repo.GetAssignmentsByPeriodAsync(startDate, endDate);

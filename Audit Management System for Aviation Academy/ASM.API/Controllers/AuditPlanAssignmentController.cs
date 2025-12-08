@@ -1,3 +1,5 @@
+using ASM.API.Helper;
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +16,13 @@ namespace ASM.API.Controllers
     {
         private readonly IAuditPlanAssignmentService _service;
         private readonly ILogger<AuditPlanAssignmentController> _logger;
+        private readonly NotificationHelper _notificationHelper;
 
-        public AuditPlanAssignmentController(IAuditPlanAssignmentService service, ILogger<AuditPlanAssignmentController> logger)
+        public AuditPlanAssignmentController(IAuditPlanAssignmentService service, ILogger<AuditPlanAssignmentController> logger, NotificationHelper notificationHelper)
         {
             _service = service;
             _logger = logger;
+            _notificationHelper = notificationHelper;
         }
 
         [HttpGet]
@@ -62,7 +66,6 @@ namespace ASM.API.Controllers
         {
             try
             {
-                // Lấy UserId từ token
                 var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("User not authenticated");
@@ -74,8 +77,19 @@ namespace ASM.API.Controllers
 
                 dto.AssignBy = userIdGuid;
 
-                var result = await _service.CreateAsync(dto);
-                return CreatedAtAction(nameof(GetById), new { id = result.AssignmentId }, result);
+                var notif = await _service.CreateWithNotificationAsync(dto);
+
+                await _notificationHelper.SendToUserAsync(notif.UserId.ToString(), notif);
+
+                return Ok(new
+                {
+                    Message = $"AuditPlanAssignment created successfully.",
+                    Notification = new
+                    {
+                        UserId = notif.UserId,
+                        NotificationId = notif.NotificationId
+                    }
+                });
             }
             catch (ArgumentException ex)
             {
