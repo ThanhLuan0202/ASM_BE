@@ -1,4 +1,4 @@
-﻿using ASM_Repositories.Entities;
+using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Services.Interfaces;
@@ -31,14 +31,14 @@ namespace ASM_Services.Services
         public Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId) => _repo.GetAuditIdsByLeadAuditorAsync(userId);
         public Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId) => _repo.GetAuditorsByAuditIdAsync(auditId);
 
-        public async Task<IEnumerable<UserAccount>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null)
+        public async Task<IEnumerable<AvailableTeamMemberDto>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null)
         {
             // Lấy tất cả users có role Auditor hoặc LeadAuditor
             var allUsers = await _userRepo.GetUsersByRolesAsync(new[] { "Auditor", "LeadAuditor" });
             
             if (!excludePreviousPeriod || !previousPeriodStartDate.HasValue || !previousPeriodEndDate.HasValue)
             {
-                return allUsers;
+                return await MapWithLastAuditAsync(allUsers, previousPeriodStartDate, previousPeriodEndDate);
             }
 
             // Lấy danh sách users đã tham gia audits trong thời kỳ trước
@@ -47,7 +47,24 @@ namespace ASM_Services.Services
             // Loại bỏ những users đã tham gia thời kỳ trước
             var availableUsers = allUsers.Where(u => !usersInPreviousPeriod.Contains(u.UserId)).ToList();
             
-            return availableUsers;
+            return await MapWithLastAuditAsync(availableUsers, previousPeriodStartDate, previousPeriodEndDate);
+        }
+
+        private async Task<IEnumerable<AvailableTeamMemberDto>> MapWithLastAuditAsync(IEnumerable<UserAccount> users, DateTime? fromDate, DateTime? toDate)
+        {
+            var userList = users?.ToList() ?? new List<UserAccount>();
+            if (!userList.Any()) return new List<AvailableTeamMemberDto>();
+
+            var lastAudits = await _repo.GetLastAuditByUserIdsAsync(userList.Select(u => u.UserId), fromDate, toDate);
+
+            return userList.Select(u => new AvailableTeamMemberDto
+            {
+                UserId = u.UserId,
+                FullName = u.FullName,
+                Email = u.Email,
+                Role = u.RoleName,
+                LastAudit = lastAudits.TryGetValue(u.UserId, out var la) ? la : null
+            }).ToList();
         }
     }
 }

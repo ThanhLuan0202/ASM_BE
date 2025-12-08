@@ -1,10 +1,11 @@
-﻿using ASM_Repositories.Models.AuditTeamDTO;
+using ASM_Repositories.Models.AuditTeamDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AuditorInfoDto = ASM_Repositories.Models.AuditTeamDTO.AuditorInfoDto;
+using LastAuditDto = ASM_Repositories.Models.AuditTeamDTO.LastAuditDto;
 
 namespace ASM_Repositories.Interfaces
 {
@@ -22,5 +23,6 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId);
         Task UpdateStatusToArchivedAsync(Guid auditId);
         Task<List<Guid>> GetUsersInPeriodAsync(DateTime startDate, DateTime endDate);
+        Task<Dictionary<Guid, LastAuditDto>> GetLastAuditByUserIdsAsync(IEnumerable<Guid> userIds, DateTime? fromDate, DateTime? toDate);
     }
 }

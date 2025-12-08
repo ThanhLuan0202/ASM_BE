@@ -1,4 +1,4 @@
-﻿using ASM_Repositories.DBContext;
+using ASM_Repositories.DBContext;
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditTeamDTO;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LastAuditDto = ASM_Repositories.Models.AuditTeamDTO.LastAuditDto;
 
 namespace ASM_Repositories.Repositories
 {
@@ -228,6 +229,52 @@ namespace ASM_Repositories.Repositories
                 .ToListAsync();
 
             return userIds;
+        }
+
+        public async Task<Dictionary<Guid, LastAuditDto>> GetLastAuditByUserIdsAsync(IEnumerable<Guid> userIds, DateTime? fromDate, DateTime? toDate)
+        {
+            var idList = userIds?.Distinct().ToList() ?? new List<Guid>();
+            if (!idList.Any())
+                return new Dictionary<Guid, LastAuditDto>();
+
+            var query = _context.AuditTeams
+                .Include(at => at.Audit)
+                .Where(at => idList.Contains(at.UserId)
+                    && at.Status == "Active"
+                    && at.Audit != null
+                    && at.Audit.Status != "Inactive");
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(at => (at.Audit.StartDate ?? DateTime.MinValue) >= fromDate.Value);
+            }
+
+            if (toDate.HasValue)
+            {
+                query = query.Where(at => (at.Audit.EndDate ?? at.Audit.StartDate ?? DateTime.MaxValue) <= toDate.Value);
+            }
+
+            var auditTeams = await query
+                .OrderBy(at => at.UserId)
+                .ThenByDescending(at => at.Audit.EndDate ?? at.Audit.StartDate ?? DateTime.MinValue)
+                .ToListAsync();
+
+            var result = new Dictionary<Guid, LastAuditDto>();
+
+            foreach (var at in auditTeams)
+            {
+                if (result.ContainsKey(at.UserId)) continue;
+
+                result[at.UserId] = new LastAuditDto
+                {
+                    AuditId = at.AuditId,
+                    Title = at.Audit?.Title,
+                    StartDate = at.Audit?.StartDate,
+                    EndDate = at.Audit?.EndDate
+                };
+            }
+
+            return result;
         }
     }
 
