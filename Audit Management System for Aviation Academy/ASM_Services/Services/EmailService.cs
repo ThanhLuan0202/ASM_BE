@@ -365,9 +365,78 @@ namespace ASM_Services.Services
 
             await SendEmailAsync(toEmail, subject, body);
         }
+
+        public async Task SendPasswordResetEmailAsync(string toEmail, string fullName, string newPassword)
+        {
+            string subject = "[Password Reset] Mật khẩu mới của bạn - Audit Management System";
+
+            string body = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background-color: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
+        .content {{ background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }}
+        .credentials {{ background-color: white; padding: 20px; margin: 20px 0; border-left: 4px solid #dc3545; border-radius: 4px; }}
+        .credential-item {{ margin: 10px 0; }}
+        .label {{ font-weight: bold; color: #555; }}
+        .value {{ color: #dc3545; font-size: 16px; font-family: monospace; }}
+        .warning {{ background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .info {{ background-color: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .footer {{ text-align: center; margin-top: 20px; color: #777; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h2>Đặt lại mật khẩu thành công</h2>
+        </div>
+        <div class='content'>
+            <p>Xin chào <strong>{WebUtility.HtmlEncode(fullName)}</strong>,</p>
+
+            <p>Mật khẩu của tài khoản <strong>{WebUtility.HtmlEncode(toEmail)}</strong> trong hệ thống <strong>Audit Management System for Aviation Academy</strong> đã được đặt lại thành công.</p>
+
+            <div class='credentials'>
+                <h3 style='margin-top: 0; color: #dc3545;'>Mật khẩu mới của bạn:</h3>
+                <div class='credential-item'>
+                    <span class='value'>{WebUtility.HtmlEncode(newPassword)}</span>
+                </div>
+            </div>
+
+            <div class='warning'>
+                <p><strong>⚠️ Lưu ý bảo mật:</strong></p>
+                <ul style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Vui lòng đăng nhập ngay và thay đổi mật khẩu này thành mật khẩu mới của riêng bạn.</li>
+                    <li>Không chia sẻ mật khẩu với bất kỳ ai.</li>
+                    <li>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng liên hệ quản trị viên ngay lập tức.</li>
+                </ul>
+            </div>
+
+            <div class='info'>
+                <p><strong>📝 Hướng dẫn:</strong></p>
+                <ol style='margin: 10px 0; padding-left: 20px;'>
+                    <li>Sử dụng email và mật khẩu mới ở trên để đăng nhập vào hệ thống</li>
+                    <li>Sau khi đăng nhập, hãy đổi mật khẩu sang mật khẩu mới của riêng bạn để đảm bảo bảo mật</li>
+                </ol>
+            </div>
+
+            <p>Nếu bạn có bất kỳ câu hỏi nào hoặc gặp vấn đề khi đăng nhập, vui lòng liên hệ với quản trị viên hệ thống.</p>
+
+            <p>Trân trọng,<br/>
+            <strong>Hệ thống Audit Management System</strong></p>
+        </div>
+        <div class='footer'>
+            <p><em>Hệ thống Audit Management System for Aviation Academy</em></p>
+            <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(toEmail, subject, body);
+        }
     }
 }
-//< p >
-//Bạn có thể truy cập trực tiếp bằng đường link sau:< br />
-//< a href = '{reviewUrl}' style = 'color:#0b70ff;' > Mở Audit Plan</a>
-//</p>

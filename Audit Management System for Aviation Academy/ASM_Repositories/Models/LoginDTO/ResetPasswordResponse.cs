@@ -16,6 +16,11 @@ namespace ASM_Repositories.Models.LoginDTO
         public string? NewPassword { get; set; }
 
         /// <summary>
+        /// Tên đầy đủ của user
+        /// </summary>
+        public string FullName { get; set; } = string.Empty;
+
+        /// <summary>
         /// Thông báo
         /// </summary>
         public string Message { get; set; } = string.Empty;

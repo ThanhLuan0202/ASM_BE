@@ -366,14 +366,21 @@ namespace ASM_Repositories.Repositories
             var response = new ResetPasswordResponse
             {
                 Email = user.Email,
+                FullName = user.FullName,
                 Message = "Password has been reset successfully"
             };
 
-            // Chỉ trả về password mới nếu được generate tự động (không có trong request)
+            // Trả về password mới trong response (luôn trả về để có thể gửi email)
+            response.NewPassword = newPassword;
+
+            // Cập nhật message
             if (string.IsNullOrWhiteSpace(request.NewPassword))
             {
-                response.NewPassword = newPassword;
                 response.Message = "Password has been reset successfully. Please use the new password provided.";
+            }
+            else
+            {
+                response.Message = "Password has been reset successfully.";
             }
 
             return response;

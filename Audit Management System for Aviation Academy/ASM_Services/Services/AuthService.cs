@@ -84,7 +84,29 @@ namespace ASM_Services.Services
 
         public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            return await _authRepository.ResetPasswordAsync(request);
+            var result = await _authRepository.ResetPasswordAsync(request);
+            
+            // Gửi email thông báo mật khẩu mới cho user sau khi reset thành công
+            if (result != null && !string.IsNullOrWhiteSpace(result.NewPassword))
+            {
+                try
+                {
+                    await _emailService.SendPasswordResetEmailAsync(
+                        toEmail: result.Email,
+                        fullName: result.FullName,
+                        newPassword: result.NewPassword
+                    );
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi nhưng không throw để không ảnh hưởng đến quá trình reset password
+                    // Password đã được reset thành công, chỉ có phần gửi email bị lỗi
+                    // Có thể log vào file hoặc logging service
+                    // _logger.LogError(ex, "Failed to send password reset email to {Email}", result.Email);
+                }
+            }
+            
+            return result;
         }
 
         public async Task<AuditorWithScheduleResponse> GetAuditorsWithScheduleAsync()
