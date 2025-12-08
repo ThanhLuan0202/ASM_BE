@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditLogDTO;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace ASM_Repositories.Interfaces
         Task<ViewAuditLog> CreateAsync(CreateAuditLog dto);
         Task<ViewAuditLog?> UpdateAsync(Guid logId, UpdateAuditLog dto);
         Task<bool> DeleteAsync(Guid logId);
+        Task CreateLogAsync(AuditLog log);
     }
 }
 

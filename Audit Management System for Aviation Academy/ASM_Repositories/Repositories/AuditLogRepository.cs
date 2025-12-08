@@ -96,6 +96,12 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task CreateLogAsync(AuditLog log)
+        {
+            _context.AuditLogs.Add(log);
+            await _context.SaveChangesAsync();
+        }
     }
 }
 
