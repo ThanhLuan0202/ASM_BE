@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASM.API.AdminControllers
@@ -58,6 +59,12 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
@@ -69,7 +76,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.AuditStatus1))
                     return BadRequest(new { message = "AuditStatus is required" });
 
-                var result = await _service.CreateAsync(dto);
+                var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { auditStatus = result.AuditStatus1 }, result);
             }
             catch (InvalidOperationException ex)
@@ -87,6 +94,12 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (string.IsNullOrWhiteSpace(auditStatus))
                     return BadRequest(new { message = "AuditStatus is required" });
 
@@ -101,7 +114,7 @@ namespace ASM.API.AdminControllers
                 if (string.IsNullOrWhiteSpace(dto.AuditStatus1))
                     return BadRequest(new { message = "AuditStatus is required" });
 
-                var result = await _service.UpdateAsync(auditStatus, dto);
+                var result = await _service.UpdateAsync(auditStatus, dto, userId);
                 if (result == null)
                     return NotFound(new { message = "AuditStatus not found" });
 
@@ -122,10 +135,16 @@ namespace ASM.API.AdminControllers
         {
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
                 if (string.IsNullOrWhiteSpace(auditStatus))
                     return BadRequest(new { message = "AuditStatus is required" });
 
-                var result = await _service.DeleteAsync(auditStatus);
+                var result = await _service.DeleteAsync(auditStatus, userId);
                 if (!result)
                     return NotFound(new { message = "AuditStatus not found" });
 

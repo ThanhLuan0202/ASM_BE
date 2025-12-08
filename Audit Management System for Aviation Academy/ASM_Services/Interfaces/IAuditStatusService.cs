@@ -9,9 +9,9 @@ namespace ASM_Services.Interfaces.AdminInterfaces
     {
         Task<IEnumerable<ViewAuditStatus>> GetAllAsync();
         Task<ViewAuditStatus?> GetByIdAsync(string auditStatus);
-        Task<ViewAuditStatus> CreateAsync(CreateAuditStatus dto);
-        Task<ViewAuditStatus?> UpdateAsync(string auditStatus, UpdateAuditStatus dto);
-        Task<bool> DeleteAsync(string auditStatus);
+        Task<ViewAuditStatus> CreateAsync(CreateAuditStatus dto, Guid userId);
+        Task<ViewAuditStatus?> UpdateAsync(string auditStatus, UpdateAuditStatus dto, Guid userId);
+        Task<bool> DeleteAsync(string auditStatus, Guid userId);
     }
 }
 
