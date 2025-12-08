@@ -427,4 +427,25 @@ public class ActionController : ControllerBase
             return StatusCode(500, new { message = "Internal server error.", error = ex.Message });
         }
     }
+
+    [HttpPost("available-capa-owners")]
+    public async Task<IActionResult> GetAvailableCAPAOwners([FromBody] GetAvailableCAPAOwnersRequest request)
+    {
+        try
+        {
+            if (request == null)
+                return BadRequest(new { message = "Request body is required" });
+
+            if (request.Date == default(DateTime))
+                return BadRequest(new { message = "Date is required" });
+
+            var result = await _service.GetAvailableCAPAOwnersAsync(request.Date, request.DeptId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving available CAPA owners");
+            return StatusCode(500, new { message = "An error occurred while retrieving available CAPA owners", error = ex.Message });
+        }
+    }
 }

@@ -32,5 +32,6 @@ namespace ASM_Services.Interfaces
         Task<bool> UpdateStatusToApprovedAuditorAsync(Guid id);
         Task<IEnumerable<ViewAction>> GetByFindingIdAsync(Guid findingId);
         Task<IEnumerable<ViewAction>> GetByAssignedDeptIdAsync(int assignedDeptId);
+        Task<AvailableCAPAOwnerResponse> GetAvailableCAPAOwnersAsync(DateTime date, int? deptId = null);
     }
 }

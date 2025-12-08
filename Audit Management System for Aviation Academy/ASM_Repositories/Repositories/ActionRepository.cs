@@ -539,5 +539,59 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<AvailableCAPAOwnerResponse> GetAvailableCAPAOwnersAsync(DateTime date, int? deptId = null)
+        {
+            // Chỉ lấy phần ngày (không có giờ)
+            var dateOnly = date.Date;
+
+            // Lấy tất cả User có role "CAPAOwner" và status "Active"
+            // Nếu có DeptId thì filter theo DeptId
+            var capaOwnersQuery = _context.UserAccounts
+                .AsNoTracking()
+                .Where(u => u.RoleName == "CAPAOwner" && u.Status == "Active");
+
+            // Filter theo DeptId nếu có
+            if (deptId.HasValue)
+            {
+                capaOwnersQuery = capaOwnersQuery.Where(u => u.DeptId == deptId.Value);
+            }
+
+            var capaOwners = await capaOwnersQuery.ToListAsync();
+
+            // Lấy tất cả Action có AssignedTo là các CAPAOwner và có DueDate không null
+            // Kiểm tra xem date có nằm trong khoảng [CreatedAt.Date, DueDate.Value.Date] không (chỉ so sánh ngày)
+            var actionsWithDateConflict = await _context.Actions
+                .AsNoTracking()
+                .Where(a => a.AssignedTo.HasValue 
+                    && a.DueDate.HasValue 
+                    && a.CreatedAt.Date <= dateOnly 
+                    && a.DueDate.Value.Date >= dateOnly)
+                .Select(a => a.AssignedTo.Value)
+                .Distinct()
+                .ToListAsync();
+
+            // Lọc ra những CAPAOwner KHÔNG có Action nào chứa date trong khoảng [CreatedAt.Date, DueDate.Date]
+            var availableCAPAOwners = capaOwners
+                .Where(u => !actionsWithDateConflict.Contains(u.UserId))
+                .ToList();
+
+            // Map sang response
+            var response = new AvailableCAPAOwnerResponse();
+            foreach (var owner in availableCAPAOwners)
+            {
+                response.CAPAOwners.Add(new AvailableCAPAOwnerItem
+                {
+                    UserId = owner.UserId,
+                    Email = owner.Email,
+                    FullName = owner.FullName,
+                    RoleName = owner.RoleName,
+                    DeptId = owner.DeptId,
+                    Status = owner.Status
+                });
+            }
+
+            return response;
+        }
+
     }
 }
