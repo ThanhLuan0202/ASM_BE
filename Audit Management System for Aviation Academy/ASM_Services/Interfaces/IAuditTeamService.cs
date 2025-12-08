@@ -19,6 +19,6 @@ namespace ASM_Services.Interfaces
         Task<bool> IsLeadAuditorAsync(Guid userId, Guid auditId);
         Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId);
         Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId);
-        Task<IEnumerable<ASM_Repositories.Models.AuditTeamDTO.AvailableTeamMemberDto>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null);
+        Task<IEnumerable<ASM_Repositories.Models.AuditTeamDTO.AvailableTeamMemberDto>> GetAvailableTeamMembersAsync(bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null);
     }
 }

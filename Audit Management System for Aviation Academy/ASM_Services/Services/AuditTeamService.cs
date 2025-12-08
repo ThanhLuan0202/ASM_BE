@@ -31,7 +31,7 @@ namespace ASM_Services.Services
         public Task<IEnumerable<Guid>> GetAuditIdsByLeadAuditorAsync(Guid userId) => _repo.GetAuditIdsByLeadAuditorAsync(userId);
         public Task<IEnumerable<AuditorInfoDto>> GetAuditorsByAuditIdAsync(Guid auditId) => _repo.GetAuditorsByAuditIdAsync(auditId);
 
-        public async Task<IEnumerable<AvailableTeamMemberDto>> GetAvailableTeamMembersAsync(Guid currentAuditId, bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null)
+        public async Task<IEnumerable<AvailableTeamMemberDto>> GetAvailableTeamMembersAsync(bool excludePreviousPeriod = false, DateTime? previousPeriodStartDate = null, DateTime? previousPeriodEndDate = null)
         {
             // Lấy tất cả users có role Auditor hoặc LeadAuditor
             var allUsers = await _userRepo.GetUsersByRolesAsync(new[] { "Auditor", "LeadAuditor" });

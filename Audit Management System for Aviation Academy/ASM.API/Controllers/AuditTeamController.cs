@@ -1,4 +1,4 @@
-﻿using ASM_Repositories.Models.AuditTeamDTO;
+using ASM_Repositories.Models.AuditTeamDTO;
 using ASM_Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -172,18 +172,12 @@ namespace ASM.API.Controllers
 
         [HttpGet("available-members")]
         public async Task<IActionResult> GetAvailableTeamMembers(
-            [FromQuery] Guid auditId,
             [FromQuery] bool excludePreviousPeriod = false,
             [FromQuery] DateTime? previousPeriodStartDate = null,
             [FromQuery] DateTime? previousPeriodEndDate = null)
         {
             try
             {
-                if (auditId == Guid.Empty)
-                {
-                    return BadRequest(new { message = "Invalid audit ID" });
-                }
-
                 if (excludePreviousPeriod)
                 {
                     if (!previousPeriodStartDate.HasValue || !previousPeriodEndDate.HasValue)
@@ -198,7 +192,6 @@ namespace ASM.API.Controllers
                 }
 
                 var result = await _service.GetAvailableTeamMembersAsync(
-                    auditId, 
                     excludePreviousPeriod, 
                     previousPeriodStartDate, 
                     previousPeriodEndDate);
