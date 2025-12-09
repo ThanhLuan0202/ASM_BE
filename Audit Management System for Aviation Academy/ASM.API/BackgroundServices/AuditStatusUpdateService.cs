@@ -26,9 +26,13 @@ namespace ASM.API.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var firstRun = true;
             while (!stoppingToken.IsCancellationRequested)
             {
-                var delay = GetDelayUntilNextRun(DateTime.UtcNow);
+                var delay = firstRun
+                    ? TimeSpan.Zero
+                    : ScheduleRunHelper.GetDelayUntilNextRunUtc(DateTime.UtcNow, DailyTargetUtc, HourlyInterval);
+                firstRun = false;
                 var nextRun = DateTime.UtcNow.Add(delay);
 
                 _logger.LogInformation("Next audit status update scheduled at {nextRun} UTC (in {delay})", nextRun, delay);
@@ -64,16 +68,6 @@ namespace ASM.API.BackgroundServices
 
         }
 
-        private static TimeSpan GetDelayUntilNextRun(DateTime nowUtc)
-        {
-            var nextHourly = nowUtc.Add(HourlyInterval);
-
-            var todayTarget = new DateTime(nowUtc.Year, nowUtc.Month, nowUtc.Day, 0, 1, 0, DateTimeKind.Utc);
-            var nextDaily = nowUtc < todayTarget ? todayTarget : todayTarget.AddDays(1);
-
-            var next = nextHourly < nextDaily ? nextHourly : nextDaily;
-            return next - nowUtc;
-        }
     }
 }
 

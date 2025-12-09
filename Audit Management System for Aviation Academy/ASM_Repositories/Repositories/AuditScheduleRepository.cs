@@ -1,6 +1,7 @@
 using ASM_Repositories.DBContext;
 using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
+using ASM_Repositories.Helper;
 using ASM_Repositories.Models.AuditScheduleDTO;
 using ASM_Repositories.Utils;
 using AutoMapper;
@@ -205,13 +206,13 @@ namespace ASM_Repositories.Repositories
 
         public async Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default)
         {
-            var now = DateTime.UtcNow;
+            var startOfTodayUtc = GetStartOfTodayUtc();
 
             var updated = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "Evidence Due" &&
                     x.Status == "Active" &&
-                    x.DueDate < now)
+                    x.DueDate < startOfTodayUtc)
                 .ExecuteUpdateAsync(
                     setters => setters.SetProperty(s => s.Status, "Overdue"),
                     ct);
@@ -221,13 +222,13 @@ namespace ASM_Repositories.Repositories
 
         public async Task<int> MarkCapaDueOverdueAsync(CancellationToken ct = default)
         {
-            var now = DateTime.UtcNow;
+            var startOfTodayUtc = GetStartOfTodayUtc();
 
             var updated = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "CAPA Due" &&
                     x.Status == "Active" &&
-                    x.DueDate < now)
+                    x.DueDate < startOfTodayUtc)
                 .ExecuteUpdateAsync(
                     setters => setters.SetProperty(s => s.Status, "Overdue"),
                     ct);
@@ -237,13 +238,13 @@ namespace ASM_Repositories.Repositories
 
         public async Task<int> MarkDraftReportDueOverdueAsync(CancellationToken ct = default)
         {
-            var now = DateTime.UtcNow;
+            var startOfTodayUtc = GetStartOfTodayUtc();
 
             var updated = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "Draft Report Due" &&
                     x.Status == "Active" &&
-                    x.DueDate < now)
+                    x.DueDate < startOfTodayUtc)
                 .ExecuteUpdateAsync(
                     setters => setters.SetProperty(s => s.Status, "Overdue"),
                     ct);
@@ -253,9 +254,7 @@ namespace ASM_Repositories.Repositories
 
         public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetDraftReportDueTomorrowAssignmentsAsync(CancellationToken ct = default)
         {
-            var tomorrow = DateTime.UtcNow.Date.AddDays(1);
-            var start = tomorrow;
-            var end = tomorrow.AddDays(1);
+            var (start, end) = GetLocalTomorrowRangeUtc();
 
             var results = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
@@ -282,9 +281,7 @@ namespace ASM_Repositories.Repositories
 
         public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetCapaDueTomorrowAssignmentsAsync(CancellationToken ct = default)
         {
-            var tomorrow = DateTime.UtcNow.Date.AddDays(1);
-            var start = tomorrow;
-            var end = tomorrow.AddDays(1);
+            var (start, end) = GetLocalTomorrowRangeUtc();
 
             var results = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
@@ -311,9 +308,7 @@ namespace ASM_Repositories.Repositories
 
         public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetEvidenceDueTomorrowAssignmentsAsync(CancellationToken ct = default)
         {
-            var tomorrow = DateTime.UtcNow.Date.AddDays(1);
-            var start = tomorrow;
-            var end = tomorrow.AddDays(1);
+            var (start, end) = GetLocalTomorrowRangeUtc();
 
             var results = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
@@ -336,6 +331,24 @@ namespace ASM_Repositories.Repositories
             return results
                 .Select(x => (x.AuditId, x.AuditorId, x.DueDate))
                 .ToList();
+        }
+
+        private static DateTime GetStartOfTodayUtc()
+        {
+            var nowUtc = DateTime.UtcNow;
+            var todayLocal = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, TimeZoneHelper.TimeZone).Date;
+            return TimeZoneInfo.ConvertTimeToUtc(todayLocal, TimeZoneHelper.TimeZone);
+        }
+
+        private static (DateTime StartUtc, DateTime EndUtc) GetLocalTomorrowRangeUtc()
+        {
+            var nowUtc = DateTime.UtcNow;
+            var todayLocal = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, TimeZoneHelper.TimeZone).Date;
+            var startTomorrowLocal = todayLocal.AddDays(1);
+            var endTomorrowLocal = startTomorrowLocal.AddDays(1);
+            var startUtc = TimeZoneInfo.ConvertTimeToUtc(startTomorrowLocal, TimeZoneHelper.TimeZone);
+            var endUtc = TimeZoneInfo.ConvertTimeToUtc(endTomorrowLocal, TimeZoneHelper.TimeZone);
+            return (startUtc, endUtc);
         }
     }
 }
