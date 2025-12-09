@@ -234,6 +234,22 @@ namespace ASM_Repositories.Repositories
 
             return updated;
         }
+
+        public async Task<int> MarkDraftReportDueOverdueAsync(CancellationToken ct = default)
+        {
+            var now = DateTime.UtcNow;
+
+            var updated = await _context.AuditSchedules.AsNoTracking()
+                .Where(x =>
+                    x.MilestoneName == "Draft Report Due" &&
+                    x.Status == "Active" &&
+                    x.DueDate < now)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(s => s.Status, "Overdue"),
+                    ct);
+
+            return updated;
+        }
     }
 }
 
