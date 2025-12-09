@@ -15,6 +15,7 @@ namespace ASM_Services.Interfaces.AdminInterfaces
         Task<bool> DeleteAsync(Guid notificationId);
         Task MarkAsReadAsync(Guid notificationId);
         Task<Notification> CreateNotificationAsync(Notification create);
+        Task<bool> NotificationExistsAsync(string title, Guid userId, Guid? entityId, string entityType, DateTime? fromDate = null);
     }
 }
 

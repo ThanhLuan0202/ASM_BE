@@ -24,6 +24,8 @@ namespace ASM_Services.Services
         public Task<bool> DeleteAsync(Guid notificationId) => _repo.DeleteAsync(notificationId);
         public async Task MarkAsReadAsync(Guid notificationId) => await _repo.MarkAsReadAsync(notificationId);
         public Task<Notification> CreateNotificationAsync(Notification create) => _repo.CreateNotificationAsync(create);
+        public Task<bool> NotificationExistsAsync(string title, Guid userId, Guid? entityId, string entityType, DateTime? fromDate = null) 
+            => _repo.NotificationExistsAsync(title, userId, entityId, entityType, fromDate);
     }
 }
 

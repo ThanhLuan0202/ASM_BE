@@ -31,5 +31,6 @@ namespace ASM_Services.Interfaces.SQAStaffInterfaces
         Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate);
         Task<ValidateDepartmentResponse> ValidateDepartmentUniquenessAsync(Guid? auditId, List<int> departmentIds, DateTime periodStart, DateTime periodEnd);
         Task<PeriodStatusResponse> GetPeriodStatusAsync(DateTime startDate, DateTime endDate);
+        Task<UserAccount?> GetLeadAuditorAsync(Guid auditId);
     }
 }

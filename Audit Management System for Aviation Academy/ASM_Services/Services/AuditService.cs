@@ -953,5 +953,7 @@ namespace ASM_Services.Services
                 RemainingSlots = remainingSlots
             };
         }
+
+        public Task<UserAccount?> GetLeadAuditorAsync(Guid auditId) => _repo.GetLeadAuditorAsync(auditId);
     }
 }

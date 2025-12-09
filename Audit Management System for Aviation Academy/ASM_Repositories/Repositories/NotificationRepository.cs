@@ -148,6 +148,27 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<bool> NotificationExistsAsync(string title, Guid userId, Guid? entityId, string entityType, DateTime? fromDate = null)
+        {
+            var query = _context.Notifications
+                .Where(n => n.Title == title
+                    && n.UserId == userId
+                    && n.EntityType == entityType
+                    && n.Status == "Active");
+
+            if (entityId.HasValue)
+            {
+                query = query.Where(n => n.EntityId == entityId.Value);
+            }
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(n => n.CreatedAt >= fromDate.Value);
+            }
+
+            return await query.AnyAsync();
+        }
+
     }
 }
 

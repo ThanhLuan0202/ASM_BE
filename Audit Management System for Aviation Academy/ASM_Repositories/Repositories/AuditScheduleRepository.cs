@@ -204,52 +204,199 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default)
+        public async Task<List<Guid>> MarkEvidenceDueOverdueAsync(CancellationToken ct = default)
         {
-            var startOfTodayUtc = GetStartOfTodayUtc();
-
-            var updated = await _context.AuditSchedules.AsNoTracking()
+            // Lấy danh sách schedules
+            var schedules = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "Evidence Due" &&
-                    x.Status == "Active" &&
-                    x.DueDate < startOfTodayUtc)
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(s => s.Status, "Overdue"),
-                    ct);
+                    x.Status == "Active")
+                .ToListAsync(ct);
 
-            return updated;
+            if (!schedules.Any())
+                return new List<Guid>();
+
+            // So sánh với thời gian hiện tại theo local timezone
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneHelper.TimeZone);
+            var todayLocal = nowLocal.Date;
+
+            var overdueAuditIds = schedules
+                .Where(x =>
+                {
+                    // Convert DueDate từ DB sang local time để so sánh
+                    DateTime dueDateLocal;
+                    if (x.DueDate.Kind == DateTimeKind.Utc)
+                    {
+                        dueDateLocal = TimeZoneInfo.ConvertTimeFromUtc(x.DueDate, TimeZoneHelper.TimeZone);
+                    }
+                    else
+                    {
+                        // Unspecified - giả định là local time (date only)
+                        dueDateLocal = x.DueDate;
+                    }
+                    
+                    // Overdue nếu: DueDate < today hoặc (DueDate == today và đã qua 00:00:00 của ngày đó)
+                    // Nếu DueDate chỉ có date (00:00:00), thì nếu today > DueDate hoặc (today == DueDate và nowLocal > dueDateLocal)
+                    var dueDateOnly = dueDateLocal.Date;
+                    
+                    // Nếu ngày hết hạn < ngày hôm nay → overdue
+                    if (dueDateOnly < todayLocal)
+                        return true;
+                    
+                    // Nếu ngày hết hạn == ngày hôm nay, nhưng thời gian hiện tại đã qua 00:00:00 → overdue
+                    if (dueDateOnly == todayLocal && nowLocal > dueDateLocal)
+                        return true;
+                    
+                    return false;
+                })
+                .Select(x => x.AuditId)
+                .Distinct()
+                .ToList();
+
+            // Update status cho các schedules overdue
+            if (overdueAuditIds.Any())
+            {
+                var scheduleIds = schedules
+                    .Where(x => overdueAuditIds.Contains(x.AuditId))
+                    .Select(x => x.ScheduleId)
+                    .ToList();
+
+                await _context.AuditSchedules
+                    .Where(x => scheduleIds.Contains(x.ScheduleId))
+                    .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(s => s.Status, "Overdue"),
+                        ct);
+            }
+
+            return overdueAuditIds;
         }
 
-        public async Task<int> MarkCapaDueOverdueAsync(CancellationToken ct = default)
+        public async Task<List<Guid>> MarkCapaDueOverdueAsync(CancellationToken ct = default)
         {
-            var startOfTodayUtc = GetStartOfTodayUtc();
-
-            var updated = await _context.AuditSchedules.AsNoTracking()
+            // Lấy danh sách schedules
+            var schedules = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "CAPA Due" &&
-                    x.Status == "Active" &&
-                    x.DueDate < startOfTodayUtc)
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(s => s.Status, "Overdue"),
-                    ct);
+                    x.Status == "Active")
+                .ToListAsync(ct);
 
-            return updated;
+            if (!schedules.Any())
+                return new List<Guid>();
+
+            // So sánh với thời gian hiện tại theo local timezone
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneHelper.TimeZone);
+            var todayLocal = nowLocal.Date;
+
+            var overdueAuditIds = schedules
+                .Where(x =>
+                {
+                    // Convert DueDate từ DB sang local time để so sánh
+                    DateTime dueDateLocal;
+                    if (x.DueDate.Kind == DateTimeKind.Utc)
+                    {
+                        dueDateLocal = TimeZoneInfo.ConvertTimeFromUtc(x.DueDate, TimeZoneHelper.TimeZone);
+                    }
+                    else
+                    {
+                        // Unspecified - giả định là local time (date only)
+                        dueDateLocal = x.DueDate;
+                    }
+                    
+                    // Overdue nếu: DueDate < today hoặc (DueDate == today và đã qua 00:00:00 của ngày đó)
+                    var dueDateOnly = dueDateLocal.Date;
+                    
+                    if (dueDateOnly < todayLocal)
+                        return true;
+                    
+                    if (dueDateOnly == todayLocal && nowLocal > dueDateLocal)
+                        return true;
+                    
+                    return false;
+                })
+                .Select(x => x.AuditId)
+                .Distinct()
+                .ToList();
+
+            // Update status cho các schedules overdue
+            if (overdueAuditIds.Any())
+            {
+                var scheduleIds = schedules
+                    .Where(x => overdueAuditIds.Contains(x.AuditId))
+                    .Select(x => x.ScheduleId)
+                    .ToList();
+
+                await _context.AuditSchedules
+                    .Where(x => scheduleIds.Contains(x.ScheduleId))
+                    .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(s => s.Status, "Overdue"),
+                        ct);
+            }
+
+            return overdueAuditIds;
         }
 
-        public async Task<int> MarkDraftReportDueOverdueAsync(CancellationToken ct = default)
+        public async Task<List<Guid>> MarkDraftReportDueOverdueAsync(CancellationToken ct = default)
         {
-            var startOfTodayUtc = GetStartOfTodayUtc();
-
-            var updated = await _context.AuditSchedules.AsNoTracking()
+            // Lấy danh sách schedules
+            var schedules = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "Draft Report Due" &&
-                    x.Status == "Active" &&
-                    x.DueDate < startOfTodayUtc)
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(s => s.Status, "Overdue"),
-                    ct);
+                    x.Status == "Active")
+                .ToListAsync(ct);
 
-            return updated;
+            if (!schedules.Any())
+                return new List<Guid>();
+
+            // So sánh với thời gian hiện tại theo local timezone
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneHelper.TimeZone);
+            var todayLocal = nowLocal.Date;
+
+            var overdueAuditIds = schedules
+                .Where(x =>
+                {
+                    // Convert DueDate từ DB sang local time để so sánh
+                    DateTime dueDateLocal;
+                    if (x.DueDate.Kind == DateTimeKind.Utc)
+                    {
+                        dueDateLocal = TimeZoneInfo.ConvertTimeFromUtc(x.DueDate, TimeZoneHelper.TimeZone);
+                    }
+                    else
+                    {
+                        // Unspecified - giả định là local time (date only)
+                        dueDateLocal = x.DueDate;
+                    }
+                    
+                    // Overdue nếu: DueDate < today hoặc (DueDate == today và đã qua 00:00:00 của ngày đó)
+                    var dueDateOnly = dueDateLocal.Date;
+                    
+                    if (dueDateOnly < todayLocal)
+                        return true;
+                    
+                    if (dueDateOnly == todayLocal && nowLocal > dueDateLocal)
+                        return true;
+                    
+                    return false;
+                })
+                .Select(x => x.AuditId)
+                .Distinct()
+                .ToList();
+
+            // Update status cho các schedules overdue
+            if (overdueAuditIds.Any())
+            {
+                var scheduleIds = schedules
+                    .Where(x => overdueAuditIds.Contains(x.AuditId))
+                    .Select(x => x.ScheduleId)
+                    .ToList();
+
+                await _context.AuditSchedules
+                    .Where(x => scheduleIds.Contains(x.ScheduleId))
+                    .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(s => s.Status, "Overdue"),
+                        ct);
+            }
+
+            return overdueAuditIds;
         }
 
         public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetDraftReportDueTomorrowAssignmentsAsync(CancellationToken ct = default)
@@ -283,27 +430,93 @@ namespace ASM_Repositories.Repositories
         {
             var (start, end) = GetLocalTomorrowRangeUtc();
 
-            var results = await _context.AuditSchedules.AsNoTracking()
+            // Lấy schedules với CAPA Due due tomorrow
+            var schedules = await _context.AuditSchedules.AsNoTracking()
                 .Where(x =>
                     x.MilestoneName == "CAPA Due" &&
                     x.Status == "Active" &&
                     x.DueDate >= start &&
                     x.DueDate < end)
-                .Join(
-                    _context.AuditAssignments.AsNoTracking(),
-                    schedule => schedule.AuditId,
-                    assignment => assignment.AuditId,
-                    (schedule, assignment) => new
-                    {
-                        schedule.AuditId,
-                        assignment.AuditorId,
-                        schedule.DueDate
-                    })
                 .ToListAsync(ct);
 
-            return results
-                .Select(x => (x.AuditId, x.AuditorId, x.DueDate))
+            if (!schedules.Any())
+                return new List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>();
+
+            var auditIds = schedules.Select(s => s.AuditId).Distinct().ToList();
+
+            // Lấy tất cả Findings của các audits này
+            var findings = await _context.Findings.AsNoTracking()
+                .Where(f => auditIds.Contains(f.AuditId))
+                .ToListAsync(ct);
+
+            if (!findings.Any())
+                return new List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>();
+
+            var findingIds = findings.Select(f => f.FindingId).ToList();
+
+            // Lấy tất cả Actions của các findings này
+            var actions = await _context.Actions.AsNoTracking()
+                .Where(a => findingIds.Contains(a.FindingId))
+                .ToListAsync(ct);
+
+            // Lấy tất cả DeptIds từ findings (cả có và không có action)
+            var deptIds = findings
+                .Where(f => f.DeptId.HasValue)
+                .Select(f => f.DeptId.Value)
+                .Distinct()
                 .ToList();
+
+            // Lấy tất cả UserAccounts có RoleName = "AuditeeOwner" và DeptId trong danh sách
+            var userAccounts = new List<UserAccount>();
+            if (deptIds.Any())
+            {
+                userAccounts = await _context.UserAccounts.AsNoTracking()
+                    .Where(u => u.DeptId.HasValue && deptIds.Contains(u.DeptId.Value) && u.RoleName == "AuditeeOwner")
+                    .ToListAsync(ct);
+            }
+
+            // Tạo dictionary để lookup nhanh
+            var actionsByFindingId = actions
+                .Where(a => a.AssignedTo.HasValue)
+                .GroupBy(a => a.FindingId)
+                .ToDictionary(g => g.Key, g => g.First().AssignedTo.Value);
+
+            var userAccountsByDeptId = userAccounts
+                .GroupBy(u => u.DeptId.Value)
+                .ToDictionary(g => g.Key, g => g.First().UserId);
+
+            var results = new List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>();
+
+            foreach (var schedule in schedules)
+            {
+                var auditFindings = findings.Where(f => f.AuditId == schedule.AuditId);
+
+                foreach (var finding in auditFindings)
+                {
+                    var userIds = new HashSet<Guid>();
+
+                    // Nếu có Action với AssignedTo, thêm AssignedTo vào danh sách
+                    if (actionsByFindingId.TryGetValue(finding.FindingId, out var assignedTo))
+                    {
+                        userIds.Add(assignedTo);
+                    }
+
+                    // Vẫn lấy UserAccount theo DeptId (nếu có)
+                    if (finding.DeptId.HasValue && userAccountsByDeptId.TryGetValue(finding.DeptId.Value, out var deptOwnerId))
+                    {
+                        userIds.Add(deptOwnerId);
+                    }
+
+                    // Thêm tất cả userIds vào kết quả
+                    foreach (var userId in userIds)
+                    {
+                        results.Add((schedule.AuditId, userId, schedule.DueDate));
+                    }
+                }
+            }
+
+            // Loại bỏ duplicates
+            return results.Distinct().ToList();
         }
 
         public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetEvidenceDueTomorrowAssignmentsAsync(CancellationToken ct = default)

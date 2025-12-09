@@ -4,6 +4,7 @@ using ASM_Services.Interfaces.AdminInterfaces;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ASM_Services.Services
@@ -48,6 +49,13 @@ namespace ASM_Services.Services
             }
             return success;
         }
+
+        public Task<List<Guid>> MarkEvidenceDueOverdueAsync(CancellationToken ct = default) => _repo.MarkEvidenceDueOverdueAsync(ct);
+        public Task<List<Guid>> MarkCapaDueOverdueAsync(CancellationToken ct = default) => _repo.MarkCapaDueOverdueAsync(ct);
+        public Task<List<Guid>> MarkDraftReportDueOverdueAsync(CancellationToken ct = default) => _repo.MarkDraftReportDueOverdueAsync(ct);
+        public Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetDraftReportDueTomorrowAssignmentsAsync(CancellationToken ct = default) => _repo.GetDraftReportDueTomorrowAssignmentsAsync(ct);
+        public Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetCapaDueTomorrowAssignmentsAsync(CancellationToken ct = default) => _repo.GetCapaDueTomorrowAssignmentsAsync(ct);
+        public Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetEvidenceDueTomorrowAssignmentsAsync(CancellationToken ct = default) => _repo.GetEvidenceDueTomorrowAssignmentsAsync(ct);
     }
 }
 

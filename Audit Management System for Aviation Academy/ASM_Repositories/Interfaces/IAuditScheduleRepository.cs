@@ -1,6 +1,7 @@
 using ASM_Repositories.Models.AuditScheduleDTO;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ASM_Repositories.Interfaces
@@ -16,9 +17,9 @@ namespace ASM_Repositories.Interfaces
         Task<bool> ExistsAsync(Guid scheduleId);
         Task UpdateSchedulesAsync(Guid auditId, List<UpdateAuditSchedule>? list);
         Task UpdateStatusToArchivedAsync(Guid auditId);
-        Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default);
-        Task<int> MarkCapaDueOverdueAsync(CancellationToken ct = default);
-        Task<int> MarkDraftReportDueOverdueAsync(CancellationToken ct = default);
+        Task<List<Guid>> MarkEvidenceDueOverdueAsync(CancellationToken ct = default);
+        Task<List<Guid>> MarkCapaDueOverdueAsync(CancellationToken ct = default);
+        Task<List<Guid>> MarkDraftReportDueOverdueAsync(CancellationToken ct = default);
         Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetDraftReportDueTomorrowAssignmentsAsync(CancellationToken ct = default);
         Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetCapaDueTomorrowAssignmentsAsync(CancellationToken ct = default);
         Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetEvidenceDueTomorrowAssignmentsAsync(CancellationToken ct = default);

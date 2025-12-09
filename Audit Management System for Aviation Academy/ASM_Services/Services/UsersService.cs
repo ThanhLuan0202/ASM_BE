@@ -56,5 +56,7 @@ namespace ASM_Services.Services
         }
         
         public Task<IEnumerable<ViewUser>> GetByDeptIdAsync(int deptId) => _repo.GetByDeptIdAsync(deptId);
+
+        public Task<Guid?> GetLeadAuditorIdAsync() => _repo.GetLeadAuditorIdAsync();
     }
 }
