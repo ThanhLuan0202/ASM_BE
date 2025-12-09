@@ -17,6 +17,7 @@ namespace ASM_Repositories.Interfaces
         Task UpdateSchedulesAsync(Guid auditId, List<UpdateAuditSchedule>? list);
         Task UpdateStatusToArchivedAsync(Guid auditId);
         Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default);
+        Task<int> MarkCapaDueOverdueAsync(CancellationToken ct = default);
     }
 }
 

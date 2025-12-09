@@ -49,11 +49,13 @@ namespace ASM.API.BackgroundServices
 
                     _logger.LogInformation("Running overdue check at {time} UTC", DateTime.UtcNow);
 
-                    var updated = await repo.MarkEvidenceDueOverdueAsync(stoppingToken);
+                    var evidenceUpdated = await repo.MarkEvidenceDueOverdueAsync(stoppingToken);
+                    var capaUpdated = await repo.MarkCapaDueOverdueAsync(stoppingToken);
 
                     _logger.LogInformation(
-                        "Overdue update completed. Updated rows: {count}",
-                        updated);
+                        "Overdue update completed. Evidence updated: {evidenceCount}, CAPA updated: {capaCount}",
+                        evidenceUpdated,
+                        capaUpdated);
                 }
                 catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
                 {
