@@ -14,7 +14,7 @@ namespace ASM.API.BackgroundServices
         private readonly ILogger<AuditStatusUpdateService> _logger;
         private readonly IServiceProvider _serviceProvider;
         private static readonly TimeSpan DailyTargetUtc = new TimeSpan(0, 1, 0); 
-        private static readonly TimeSpan HourlyInterval = TimeSpan.FromHours(1);
+        private static readonly TimeSpan HourlyInterval = TimeSpan.FromHours(12);
 
         public AuditStatusUpdateService(
             ILogger<AuditStatusUpdateService> logger,

@@ -20,7 +20,7 @@ namespace ASM.API.BackgroundServices
         private readonly ILogger<AuditScheduleOverdueService> _logger;
         private readonly NotificationHelper _notificationHelper;
         private static readonly TimeSpan DailyTargetUtc = new TimeSpan(0, 1, 0);
-        private static readonly TimeSpan HourlyInterval = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan HourlyInterval = TimeSpan.FromHours(12);
 
         public AuditScheduleOverdueService(
             IServiceProvider provider,
