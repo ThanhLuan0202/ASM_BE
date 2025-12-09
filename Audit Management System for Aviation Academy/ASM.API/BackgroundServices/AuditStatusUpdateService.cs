@@ -26,8 +26,6 @@ namespace ASM.API.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("AuditStatusUpdateService BackgroundService is starting.");
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var delay = GetDelayUntilNextRun(DateTime.UtcNow);
@@ -64,7 +62,6 @@ namespace ASM.API.BackgroundServices
                 }
             }
 
-            _logger.LogInformation("AuditStatusUpdateService is stopping.");
         }
 
         private static TimeSpan GetDelayUntilNextRun(DateTime nowUtc)

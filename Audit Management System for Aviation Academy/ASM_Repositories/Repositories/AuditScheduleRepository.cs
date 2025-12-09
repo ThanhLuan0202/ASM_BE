@@ -279,6 +279,35 @@ namespace ASM_Repositories.Repositories
                 .Select(x => (x.AuditId, x.AuditorId, x.DueDate))
                 .ToList();
         }
+
+        public async Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetCapaDueTomorrowAssignmentsAsync(CancellationToken ct = default)
+        {
+            var tomorrow = DateTime.UtcNow.Date.AddDays(1);
+            var start = tomorrow;
+            var end = tomorrow.AddDays(1);
+
+            var results = await _context.AuditSchedules.AsNoTracking()
+                .Where(x =>
+                    x.MilestoneName == "CAPA Due" &&
+                    x.Status == "Active" &&
+                    x.DueDate >= start &&
+                    x.DueDate < end)
+                .Join(
+                    _context.AuditAssignments.AsNoTracking(),
+                    schedule => schedule.AuditId,
+                    assignment => assignment.AuditId,
+                    (schedule, assignment) => new
+                    {
+                        schedule.AuditId,
+                        assignment.AuditorId,
+                        schedule.DueDate
+                    })
+                .ToListAsync(ct);
+
+            return results
+                .Select(x => (x.AuditId, x.AuditorId, x.DueDate))
+                .ToList();
+        }
     }
 }
 
