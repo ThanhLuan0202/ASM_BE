@@ -806,6 +806,36 @@ namespace ASM.API.Controllers
             }
         }
 
+        [HttpGet("check-audit-plan-permission")]
+        public async Task<ActionResult<bool>> CheckAuditPlanPermission()
+        {
+            try
+            {
+                // Kiểm tra role của user
+                var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (string.IsNullOrEmpty(roleClaim) || !roleClaim.Equals("auditor", StringComparison.OrdinalIgnoreCase))
+                {
+                    return BadRequest(new { message = "This endpoint is only available for users with 'auditor' role" });
+                }
+
+                // Lấy userId từ token
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "User ID not found in token" });
+                }
+
+                // Kiểm tra quyền tạo audit plan
+                var canCreate = await _auditPlanAssignmentRepository.CanCreateAuditPlanAsync(userId);
+                
+                return Ok(canCreate);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while checking audit plan permission", error = ex.Message });
+            }
+        }
+
         // ================= Helpers =================
 
         private byte[]? GetLogoBytes(string relativePath)

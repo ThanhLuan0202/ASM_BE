@@ -170,5 +170,21 @@ namespace ASM_Repositories.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> CanCreateAuditPlanAsync(Guid auditorId)
+        {
+            // Kiểm tra xem có assignment với status = "Archived" không (ưu tiên - trả về false)
+            var archivedAssignment = await _context.AuditPlanAssignments
+                .AnyAsync(apa => apa.AuditorId == auditorId && apa.Status == "Archived");
+            
+            if (archivedAssignment)
+                return false;
+
+            // Nếu không có Archived, kiểm tra Active (trả về true)
+            var activeAssignment = await _context.AuditPlanAssignments
+                .AnyAsync(apa => apa.AuditorId == auditorId && apa.Status == "Active");
+            
+            return activeAssignment;
+        }
     }
 }

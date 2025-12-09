@@ -18,5 +18,6 @@ namespace ASM_Repositories.Interfaces
         Task<int> GetAssignmentCountByPeriodAsync(DateTime startDate, DateTime endDate);
         Task<bool> HasActiveAssignmentByAuditorIdAsync(Guid auditorId);
         Task UpdateStatusToArchivedAsync(Guid auditId);
+        Task<bool> CanCreateAuditPlanAsync(Guid auditorId);
     }
 }
