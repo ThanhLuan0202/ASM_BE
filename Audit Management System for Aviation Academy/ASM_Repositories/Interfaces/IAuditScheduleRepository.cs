@@ -19,6 +19,7 @@ namespace ASM_Repositories.Interfaces
         Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default);
         Task<int> MarkCapaDueOverdueAsync(CancellationToken ct = default);
         Task<int> MarkDraftReportDueOverdueAsync(CancellationToken ct = default);
+        Task<List<(Guid AuditId, Guid AuditorId, DateTime DueDate)>> GetDraftReportDueTomorrowAssignmentsAsync(CancellationToken ct = default);
     }
 }
 

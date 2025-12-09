@@ -1,3 +1,4 @@
+using ASM_Repositories.Entities;
 using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.NotificationDTO;
 using ASM_Services.Interfaces.AdminInterfaces;
@@ -22,6 +23,7 @@ namespace ASM_Services.Services
         public Task<ViewNotification?> UpdateAsync(Guid notificationId, UpdateNotification dto) => _repo.UpdateAsync(notificationId, dto);
         public Task<bool> DeleteAsync(Guid notificationId) => _repo.DeleteAsync(notificationId);
         public async Task MarkAsReadAsync(Guid notificationId) => await _repo.MarkAsReadAsync(notificationId);
+        public Task<Notification> CreateNotificationAsync(Notification create) => _repo.CreateNotificationAsync(create);
     }
 }
 
