@@ -65,14 +65,16 @@ namespace ASM.API.BackgroundServices
                     var draftUpdated = await repo.MarkDraftReportDueOverdueAsync(stoppingToken);
                     var draftDueTomorrow = await repo.GetDraftReportDueTomorrowAssignmentsAsync(stoppingToken);
                     var capaDueTomorrow = await repo.GetCapaDueTomorrowAssignmentsAsync(stoppingToken);
+                    var evidenceDueTomorrow = await repo.GetEvidenceDueTomorrowAssignmentsAsync(stoppingToken);
 
                     _logger.LogInformation(
-                        "Overdue update completed. Evidence updated: {evidenceCount}, CAPA updated: {capaCount}, Draft updated: {draftCount}, Draft due tomorrow notifications: {draftDueTomorrowCount}, CAPA due tomorrow notifications: {capaDueTomorrowCount}",
+                        "Overdue update completed. Evidence updated: {evidenceCount}, CAPA updated: {capaCount}, Draft updated: {draftCount}, Draft due tomorrow notifications: {draftDueTomorrowCount}, CAPA due tomorrow notifications: {capaDueTomorrowCount}, Evidence due tomorrow notifications: {evidenceDueTomorrowCount}",
                         evidenceUpdated,
                         capaUpdated,
                         draftUpdated,
                         draftDueTomorrow.Count,
-                        capaDueTomorrow.Count);
+                        capaDueTomorrow.Count,
+                        evidenceDueTomorrow.Count);
 
                     foreach (var (auditId, auditorId, dueDate) in draftDueTomorrow)
                     {
@@ -97,6 +99,22 @@ namespace ASM.API.BackgroundServices
                             UserId = auditorId,
                             Title = "CAPA due tomorrow",
                             Message = $"CAPA is due on {dueDate:yyyy-MM-dd HH:mm} UTC.",
+                            EntityType = "Audit",
+                            EntityId = auditId,
+                            IsRead = false,
+                            Status = "Active",
+                        });
+
+                        await _notificationHelper.SendToUserAsync(auditorId.ToString(), notif);
+                    }
+
+                    foreach (var (auditId, auditorId, dueDate) in evidenceDueTomorrow)
+                    {
+                        var notif = await _notificationService.CreateNotificationAsync(new Notification
+                        {
+                            UserId = auditorId,
+                            Title = "Evidence due tomorrow",
+                            Message = $"Evidence is due on {dueDate:yyyy-MM-dd HH:mm} UTC.",
                             EntityType = "Audit",
                             EntityId = auditId,
                             IsRead = false,
