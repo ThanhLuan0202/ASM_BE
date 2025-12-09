@@ -775,46 +775,21 @@ namespace ASM_Repositories.Repositories
             return departmentIds;
         }
 
-        public async Task<List<Guid>> UpdateAuditsToInProgressByStartDateAsync()
+        public async Task<int> UpdateAuditsToInProgressByStartDateAsync()
         {
             var now = DateTime.UtcNow;
             var today = now.Date;
-            
-            
-            var auditsToUpdate = await _DbContext.Audits
-                .Where(a => a.StartDate.HasValue 
-                    && a.StartDate.Value.Date == today 
-                    && a.StartDate.Value <= now
-                    && a.Status == "Approved")
-                .ToListAsync();
 
-            if (!auditsToUpdate.Any())
-                return new List<Guid>();
+            var updatedCount = await _DbContext.Audits
+                .Where(a =>
+                    a.Status == "Approved" &&
+                    a.StartDate.HasValue &&
+                    a.StartDate.Value.Date == today &&
+                    a.StartDate <= now)
+                .ExecuteUpdateAsync(set => set.SetProperty(a => a.Status, "InProgress"));
 
-            var inProgressStatusExists = await _DbContext.AuditStatuses
-                .AnyAsync(s => s.AuditStatus1 == "InProgress");
-
-            if (!inProgressStatusExists)
-            {
-                throw new InvalidOperationException("Status 'InProgress' does not exist in AuditStatus");
-            }
-
-            var updatedAuditIds = new List<Guid>();
-            foreach (var audit in auditsToUpdate)
-            {
-                audit.Status = "InProgress";
-                _DbContext.Entry(audit).State = EntityState.Modified;
-                updatedAuditIds.Add(audit.AuditId);
-            }
-
-            if (updatedAuditIds.Any())
-            {
-                await _DbContext.SaveChangesAsync();
-            }
-
-            return updatedAuditIds;
+            return updatedCount;
         }
-
     }
 }
 

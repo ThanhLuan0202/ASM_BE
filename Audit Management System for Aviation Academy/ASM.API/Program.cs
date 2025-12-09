@@ -44,6 +44,7 @@ builder.Services.AddRepository().AddServices();
 
 // Register Background Services
 builder.Services.AddHostedService<ASM.API.BackgroundServices.AuditStatusUpdateService>();
+builder.Services.AddHostedService<ASM.API.BackgroundServices.AuditScheduleOverdueService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

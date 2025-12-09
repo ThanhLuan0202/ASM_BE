@@ -9,31 +9,29 @@ using System.Threading.Tasks;
 
 namespace ASM.API.BackgroundServices
 {
-    public class AuditStatusUpdateService : BackgroundService
+    public class AuditScheduleOverdueService : BackgroundService
     {
-        private readonly ILogger<AuditStatusUpdateService> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private static readonly TimeSpan DailyTargetUtc = new TimeSpan(0, 1, 0); 
+        private readonly IServiceProvider _provider;
+        private readonly ILogger<AuditScheduleOverdueService> _logger;
+        private static readonly TimeSpan DailyTargetUtc = new TimeSpan(0, 1, 0);
         private static readonly TimeSpan HourlyInterval = TimeSpan.FromHours(1);
 
-        public AuditStatusUpdateService(
-            ILogger<AuditStatusUpdateService> logger,
-            IServiceProvider serviceProvider)
+        public AuditScheduleOverdueService(IServiceProvider provider, ILogger<AuditScheduleOverdueService> logger)
         {
+            _provider = provider;
             _logger = logger;
-            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("AuditStatusUpdateService BackgroundService is starting.");
+            _logger.LogInformation("AuditScheduleOverdueService started");
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 var delay = GetDelayUntilNextRun(DateTime.UtcNow);
                 var nextRun = DateTime.UtcNow.Add(delay);
 
-                _logger.LogInformation("Next audit status update scheduled at {nextRun} UTC (in {delay})", nextRun, delay);
+                _logger.LogInformation("Next overdue check scheduled at {nextRun} UTC (in {delay})", nextRun, delay);
 
                 try
                 {
@@ -46,25 +44,26 @@ namespace ASM.API.BackgroundServices
 
                 try
                 {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var auditRepository = scope.ServiceProvider.GetRequiredService<IAuditRepository>();
-                        
-                        var updatedCount = await auditRepository.UpdateAuditsToInProgressByStartDateAsync();
-                        
-                        if (updatedCount > 0)
-                        {
-                            _logger.LogInformation("Updated {count} audit(s) to InProgress status.", updatedCount);
-                        }
-                    }
+                    using var scope = _provider.CreateScope();
+                    var repo = scope.ServiceProvider.GetRequiredService<IAuditScheduleRepository>();
+
+                    _logger.LogInformation("Running overdue check at {time} UTC", DateTime.UtcNow);
+
+                    var updated = await repo.MarkEvidenceDueOverdueAsync(stoppingToken);
+
+                    _logger.LogInformation(
+                        "Overdue update completed. Updated rows: {count}",
+                        updated);
+                }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                {
+                    _logger.LogInformation("AuditScheduleOverdueService is stopping...");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred while updating audit status to InProgress.");
+                    _logger.LogError(ex, "Unexpected error while processing overdue schedules");
                 }
             }
-
-            _logger.LogInformation("AuditStatusUpdateService is stopping.");
         }
 
         private static TimeSpan GetDelayUntilNextRun(DateTime nowUtc)
@@ -77,6 +76,7 @@ namespace ASM.API.BackgroundServices
             var next = nextHourly < nextDaily ? nextHourly : nextDaily;
             return next - nowUtc;
         }
+
     }
 }
 

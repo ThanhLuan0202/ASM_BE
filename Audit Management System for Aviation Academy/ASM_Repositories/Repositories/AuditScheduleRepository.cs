@@ -203,7 +203,21 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<int> MarkEvidenceDueOverdueAsync(CancellationToken ct = default)
+        {
+            var now = DateTime.UtcNow;
 
+            var updated = await _context.AuditSchedules.AsNoTracking()
+                .Where(x =>
+                    x.MilestoneName == "Evidence Due" &&
+                    x.Status == "Active" &&
+                    x.DueDate < now)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(s => s.Status, "Overdue"),
+                    ct);
+
+            return updated;
+        }
     }
 }
 

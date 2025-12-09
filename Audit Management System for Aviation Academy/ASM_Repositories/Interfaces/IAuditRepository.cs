@@ -32,6 +32,6 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewAudit>> GetAuditsByPeriodAsync(DateTime startDate, DateTime endDate);
         Task<int> GetAuditsCountByPeriodAsync(DateTime startDate, DateTime endDate);
         Task<List<int>> GetUsedDepartmentsByPeriodAsync(DateTime startDate, DateTime endDate, Guid? excludeAuditId = null);
-        Task<List<Guid>> UpdateAuditsToInProgressByStartDateAsync();
+        Task<int> UpdateAuditsToInProgressByStartDateAsync();
     }
 }
