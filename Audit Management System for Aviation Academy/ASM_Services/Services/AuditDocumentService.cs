@@ -50,7 +50,7 @@ namespace ASM_Services.Services
             return updatedDoc;
         }
 
-        public async Task<List<AuditDocument>> UploadMultipleAsync(Guid auditId, List<IFormFile> files, Guid uploadedBy)
+        public async Task<List<AuditDocument>> UploadMultipleAsync(Guid auditId, List<IFormFile> files, Guid uploadedBy, string documentType)
         {
             var audit = await _auditRepo.GetAuditByIdAsync(auditId);
             var uploadedDocs = new List<AuditDocument>();
@@ -63,7 +63,7 @@ namespace ASM_Services.Services
                 {
                     DocId = Guid.NewGuid(),
                     AuditId = auditId,
-                    DocumentType = "Submitted Report",
+                    DocumentType = documentType,
                     Title = $"{audit?.Title} - Submitted Report",
                     BlobPath = blobPath,
                     ContentType = file.ContentType,

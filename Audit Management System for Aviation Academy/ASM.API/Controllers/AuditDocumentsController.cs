@@ -79,10 +79,28 @@ namespace ASM.API.Controllers
         }
 
         [HttpPost("upload-multiple/{auditId:guid}")]
-        public async Task<IActionResult> UploadMultipleAuditDocuments(Guid auditId, List<IFormFile> files)
+        public async Task<IActionResult> UploadMultipleAuditDocuments(
+            Guid auditId, 
+            [FromForm] List<IFormFile> files, 
+            [FromForm] string documentType)
         {
             if (files == null || !files.Any())
                 return BadRequest("No files uploaded");
+
+            if (string.IsNullOrWhiteSpace(documentType))
+                return BadRequest("Document type is required");
+
+            foreach (var file in files)
+            {
+                if (file.Length == 0)
+                    return BadRequest("One or more files are empty");
+
+                if (file.Length > _maxFileSizeBytes)
+                    return BadRequest($"File '{file.FileName}' exceeds {_maxFileSizeBytes / (1024 * 1024)} MB limit.");
+
+                if (!_allowedFileTypes.Contains(file.ContentType))
+                    return BadRequest($"Invalid file type for '{file.FileName}'. Only PDF, DOCX, JPG, PNG are allowed.");
+            }
 
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
@@ -90,12 +108,16 @@ namespace ASM.API.Controllers
 
             try
             {
-                var result = await _auditDocumentService.UploadMultipleAsync(auditId, files, Guid.Parse(userIdClaim));
+                var result = await _auditDocumentService.UploadMultipleAsync(auditId, files, Guid.Parse(userIdClaim), documentType);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    message = "Internal server error",
+                    error = ex.Message
+                });
             }
         }
 
