@@ -13,6 +13,7 @@ namespace ASM_Services.Interfaces
         Task<IEnumerable<ViewAuditAssignment>> GetByAuditorIdAsync(Guid auditorId);
         Task<IEnumerable<ViewAuditAssignment>> GetByDeptIdAsync(int deptId);
         Task<ViewAuditAssignment> CreateAsync(CreateAuditAssignment dto, Guid userId);
+        Task<IEnumerable<BulkCreateAuditAssignmentResponse>> BulkCreateAsync(BulkCreateAuditAssignmentRequest request, Guid userId);
         Task<ViewAuditAssignment?> UpdateAsync(Guid assignmentId, UpdateAuditAssignment dto, Guid userId);
         Task<bool> DeleteAsync(Guid assignmentId, Guid userId);
     }

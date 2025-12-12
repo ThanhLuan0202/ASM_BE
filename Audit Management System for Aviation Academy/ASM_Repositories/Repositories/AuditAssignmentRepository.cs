@@ -217,6 +217,65 @@ namespace ASM_Repositories.Repositories
             };
         }
 
+        public async Task<IEnumerable<BulkCreateAuditAssignmentResponse>> BulkCreateAsync(BulkCreateAuditAssignmentRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            if (request.AuditorIds == null || !request.AuditorIds.Any())
+                throw new ArgumentException("At least one auditor ID is required", nameof(request));
+
+            // Validate Audit exists
+            var auditExists = await _context.Audits.AnyAsync(a => a.AuditId == request.AuditId);
+            if (!auditExists)
+                throw new InvalidOperationException($"Audit with ID {request.AuditId} does not exist");
+
+            // Validate Department exists
+            var deptExists = await _context.Departments.AnyAsync(d => d.DeptId == request.DeptId);
+            if (!deptExists)
+                throw new InvalidOperationException($"Department with ID {request.DeptId} does not exist");
+
+            // Validate all Auditors exist
+            var existingAuditorIds = await _context.UserAccounts
+                .Where(u => request.AuditorIds.Contains(u.UserId))
+                .Select(u => u.UserId)
+                .ToListAsync();
+
+            var missingAuditorIds = request.AuditorIds.Except(existingAuditorIds).ToList();
+            if (missingAuditorIds.Any())
+                throw new InvalidOperationException($"Users with IDs {string.Join(", ", missingAuditorIds)} do not exist");
+
+            // Create assignments for all auditors
+            var assignments = new List<AuditAssignment>();
+            var now = DateTime.UtcNow;
+
+            foreach (var auditorId in request.AuditorIds)
+            {
+                var entity = new AuditAssignment
+                {
+                    AssignmentId = Guid.NewGuid(),
+                    AuditId = request.AuditId,
+                    DeptId = request.DeptId,
+                    AuditorId = auditorId,
+                    Notes = request.Notes,
+                    AssignedAt = now,
+                    Status = "Assigned"
+                };
+                assignments.Add(entity);
+                _context.AuditAssignments.Add(entity);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Return response
+            return assignments.Select(a => new BulkCreateAuditAssignmentResponse
+            {
+                AssignmentId = a.AssignmentId,
+                AuditorId = a.AuditorId,
+                Status = a.Status
+            });
+        }
+
         public async Task<ViewAuditAssignment?> UpdateAsync(Guid assignmentId, UpdateAuditAssignment dto)
         {
             if (assignmentId == Guid.Empty)

@@ -167,6 +167,50 @@ namespace ASM.API.Controllers
             }
         }
 
+        
+        [HttpPost("bulk")]
+        public async Task<ActionResult<IEnumerable<BulkCreateAuditAssignmentResponse>>> BulkCreate([FromBody] BulkCreateAuditAssignmentRequest request)
+        {
+            try
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Where(x => x.Value.Errors.Count > 0)
+                        .SelectMany(x => x.Value.Errors.Select(e => new { Field = x.Key, Message = e.ErrorMessage }))
+                        .ToList();
+                    return BadRequest(new { message = "Validation failed", errors });
+                }
+
+                if (request.AuditId == Guid.Empty)
+                    return BadRequest(new { message = "AuditId is required" });
+
+                if (request.DeptId <= 0)
+                    return BadRequest(new { message = "DeptId is required" });
+
+                if (request.AuditorIds == null || !request.AuditorIds.Any())
+                    return BadRequest(new { message = "At least one AuditorId is required" });
+
+                var result = await _service.BulkCreateAsync(request, userId);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating bulk audit assignments", error = ex.Message });
+            }
+        }
+
         [HttpPut("{assignmentId}")]
         public async Task<ActionResult<ViewAuditAssignment>> Update(Guid assignmentId, [FromBody] UpdateAuditAssignment dto)
         {

@@ -51,6 +51,23 @@ namespace ASM_Services.Services
             return created;
         }
 
+        public async Task<IEnumerable<BulkCreateAuditAssignmentResponse>> BulkCreateAsync(BulkCreateAuditAssignmentRequest request, Guid userId)
+        {
+            var results = await _repository.BulkCreateAsync(request);
+            
+            // Log creation for each assignment
+            foreach (var result in results)
+            {
+                var assignment = await _repository.GetByIdAsync(result.AssignmentId);
+                if (assignment != null)
+                {
+                    await _logService.LogCreateAsync(assignment, result.AssignmentId, userId, "AuditAssignment");
+                }
+            }
+            
+            return results;
+        }
+
         public async Task<ViewAuditAssignment?> UpdateAsync(Guid assignmentId, UpdateAuditAssignment dto, Guid userId)
         {
             var before = await _repository.GetByIdAsync(assignmentId);

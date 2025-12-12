@@ -13,6 +13,7 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewAuditAssignment>> GetByAuditorIdAsync(Guid auditorId);
         Task<IEnumerable<ViewAuditAssignment>> GetByDeptIdAsync(int deptId);
         Task<ViewAuditAssignment> CreateAsync(CreateAuditAssignment dto);
+        Task<IEnumerable<BulkCreateAuditAssignmentResponse>> BulkCreateAsync(BulkCreateAuditAssignmentRequest request);
         Task<ViewAuditAssignment?> UpdateAsync(Guid assignmentId, UpdateAuditAssignment dto);
         Task<bool> DeleteAsync(Guid assignmentId);
         Task<bool> ExistsAsync(Guid assignmentId);
