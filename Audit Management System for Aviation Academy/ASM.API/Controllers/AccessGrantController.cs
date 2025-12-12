@@ -93,6 +93,77 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while verifying QR token", error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Scan QR token (check validity without verify code)
+        /// </summary>
+        [HttpPost("scan")]
+        public async Task<IActionResult> ScanQrToken([FromBody] ScanQrTokenRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest(new { message = "Request body is required" });
+                }
+
+                if (string.IsNullOrEmpty(request.QrToken))
+                {
+                    return BadRequest(new { message = "QR token is required" });
+                }
+
+                var result = await _service.ScanQrTokenAsync(request.QrToken, request.ScannerUserId);
+                
+                if (!result.IsValid)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while scanning QR token", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Verify code for scanned QR token
+        /// </summary>
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest(new { message = "Request body is required" });
+                }
+
+                if (string.IsNullOrEmpty(request.QrToken))
+                {
+                    return BadRequest(new { message = "QR token is required" });
+                }
+
+                if (string.IsNullOrEmpty(request.VerifyCode))
+                {
+                    return BadRequest(new { message = "Verify code is required" });
+                }
+
+                var result = await _service.VerifyCodeAsync(request.QrToken, request.ScannerUserId, request.VerifyCode);
+                
+                if (!result.IsValid)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while verifying code", error = ex.Message });
+            }
+        }
     }
 }
 

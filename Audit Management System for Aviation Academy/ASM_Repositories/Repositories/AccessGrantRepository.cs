@@ -126,6 +126,84 @@ namespace ASM_Repositories.Repositories
                 Message = "QR token verified successfully"
             };
         }
+
+        public async Task<ScanQrTokenResponse> ScanQrTokenAsync(string qrToken, Guid scannerUserId)
+        {
+            var entity = await _context.AccessGrants
+                .FirstOrDefaultAsync(x => x.QrToken == qrToken && x.Status == "Active");
+
+            if (entity == null)
+            {
+                return new ScanQrTokenResponse
+                {
+                    IsValid = false,
+                    Reason = "Invalid"
+                };
+            }
+
+            // Check if token is expired
+            var now = DateTime.UtcNow;
+            if (now < entity.ValidFrom || now > entity.ValidTo)
+            {
+                return new ScanQrTokenResponse
+                {
+                    IsValid = false,
+                    Reason = "Expired"
+                };
+            }
+
+            return new ScanQrTokenResponse
+            {
+                IsValid = true,
+                AuditId = entity.AuditId,
+                AuditorId = entity.AuditorId,
+                DeptId = entity.DeptId,
+                ExpiresAt = entity.ValidTo,
+                Reason = null
+            };
+        }
+
+        public async Task<VerifyCodeResponse> VerifyCodeAsync(string qrToken, Guid scannerUserId, string verifyCode)
+        {
+            var entity = await _context.AccessGrants
+                .FirstOrDefaultAsync(x => x.QrToken == qrToken && x.Status == "Active");
+
+            if (entity == null)
+            {
+                return new VerifyCodeResponse
+                {
+                    IsValid = false,
+                    Reason = "Invalid"
+                };
+            }
+
+            // Check if token is expired
+            var now = DateTime.UtcNow;
+            if (now < entity.ValidFrom || now > entity.ValidTo)
+            {
+                return new VerifyCodeResponse
+                {
+                    IsValid = false,
+                    Reason = "Expired"
+                };
+            }
+
+            // Verify code
+            if (entity.VerifyCode != verifyCode)
+            {
+                return new VerifyCodeResponse
+                {
+                    IsValid = false,
+                    Reason = "Invalid"
+                };
+            }
+
+            return new VerifyCodeResponse
+            {
+                IsValid = true,
+                Reason = null
+            };
+        }
     }
 }
 

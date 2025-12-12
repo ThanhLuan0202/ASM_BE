@@ -12,6 +12,8 @@ namespace ASM_Repositories.Interfaces
         Task<IssueAccessGrantResponse> IssueAsync(IssueAccessGrantRequest request, string qrToken, string qrUrl);
         Task<IEnumerable<ViewAccessGrant>> GetAccessGrantsAsync(Guid? auditId = null, int? deptId = null);
         Task<VerifyQrTokenResponse> VerifyQrTokenAsync(string qrToken, string verifyCode);
+        Task<ScanQrTokenResponse> ScanQrTokenAsync(string qrToken, Guid scannerUserId);
+        Task<VerifyCodeResponse> VerifyCodeAsync(string qrToken, Guid scannerUserId, string verifyCode);
     }
 }
 

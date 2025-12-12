@@ -47,6 +47,16 @@ namespace ASM_Services.Services
             return _repo.VerifyQrTokenAsync(qrToken, verifyCode);
         }
 
+        public Task<ScanQrTokenResponse> ScanQrTokenAsync(string qrToken, Guid scannerUserId)
+        {
+            return _repo.ScanQrTokenAsync(qrToken, scannerUserId);
+        }
+
+        public Task<VerifyCodeResponse> VerifyCodeAsync(string qrToken, Guid scannerUserId, string verifyCode)
+        {
+            return _repo.VerifyCodeAsync(qrToken, scannerUserId, verifyCode);
+        }
+
         private string GenerateQrToken()
         {
             // Generate a secure random token
