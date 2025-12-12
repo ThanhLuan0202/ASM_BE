@@ -55,6 +55,7 @@ namespace ASM_Services.DependencyInjection
             service.AddTransient<IAuditPlanAssignmentService, AuditPlanAssignmentService>();
             service.AddTransient<IChecklistItemNoFindingService, ChecklistItemNoFindingService>();
             service.AddTransient<IAccessGrantService, AccessGrantService>();
+            service.AddTransient<IDepartmentSensitiveAreaService, DepartmentSensitiveAreaService>();
 
 
 

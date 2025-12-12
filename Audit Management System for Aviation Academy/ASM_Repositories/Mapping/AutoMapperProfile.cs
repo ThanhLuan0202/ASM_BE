@@ -20,6 +20,7 @@ using ASM_Repositories.Models.AuditAssignmentDTO;
 using ASM_Repositories.Models.ChecklistItemDTO;
 using ASM_Repositories.Models.ChecklistTemplateDTO;
 using ASM_Repositories.Models.DepartmentDTO;
+using ASM_Repositories.Models.DepartmentSensitiveAreaDTO;
 using ASM_Repositories.Models.FindingDTO;
 using ASM_Repositories.Models.FindingSeverityDTO;
 using ASM_Repositories.Models.FindingStatusDTO;
@@ -31,6 +32,8 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Encodings.Web;
 using System.Text;
 using System.Threading.Tasks;
 using ASM_Repositories.Models.AuditDocumentDTO;
@@ -385,6 +388,44 @@ namespace ASM_Repositories.Mapping
 
             // AccessGrant
             CreateMap<AccessGrant, ViewAccessGrant>().ReverseMap();
+
+            // DepartmentSensitiveArea
+            CreateMap<DepartmentSensitiveArea, ViewDepartmentSensitiveArea>()
+                .ForMember(dest => dest.SensitiveAreas, opt => opt.Ignore())
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Dept != null ? src.Dept.Name : null))
+                .AfterMap((src, dest) =>
+                {
+                    if (src.SensitiveAreas != null)
+                    {
+                        try
+                        {
+                            dest.SensitiveAreas = JsonSerializer.Deserialize<List<string>>(src.SensitiveAreas) ?? new List<string>();
+                        }
+                        catch
+                        {
+                            dest.SensitiveAreas = new List<string>();
+                        }
+                    }
+                    else
+                    {
+                        dest.SensitiveAreas = new List<string>();
+                    }
+                })
+                .ReverseMap();
+            
+            CreateMap<CreateDepartmentSensitiveArea, DepartmentSensitiveArea>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveAreas != null && src.SensitiveAreas.Any()
+                    ? JsonSerializer.Serialize(src.SensitiveAreas, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
+                    : null))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            
+            CreateMap<UpdateDepartmentSensitiveArea, DepartmentSensitiveArea>()
+                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveAreas != null && src.SensitiveAreas.Any()
+                    ? JsonSerializer.Serialize(src.SensitiveAreas, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
+                    : null))
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }
