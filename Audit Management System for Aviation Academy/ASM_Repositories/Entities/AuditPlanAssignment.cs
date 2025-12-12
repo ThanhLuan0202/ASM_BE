@@ -19,6 +19,8 @@ public partial class AuditPlanAssignment
 
     public string Remarks { get; set; }
 
+    public string FilePaths { get; set; }
+
     public virtual UserAccount AssignByNavigation { get; set; }
 
     public virtual UserAccount Auditor { get; set; }

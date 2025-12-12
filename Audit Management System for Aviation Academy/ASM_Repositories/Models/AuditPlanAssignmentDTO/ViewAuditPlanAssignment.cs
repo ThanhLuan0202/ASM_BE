@@ -14,5 +14,6 @@ namespace ASM_Repositories.Models.AuditPlanAssignmentDTO
         public DateTime AssignedDate { get; set; }
         public string Status { get; set; }
         public string Remarks { get; set; }
+        public string FilePaths { get; set; }
     }
 }

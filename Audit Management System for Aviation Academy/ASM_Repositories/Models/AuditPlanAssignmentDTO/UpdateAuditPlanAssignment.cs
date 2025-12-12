@@ -12,5 +12,6 @@ namespace ASM_Repositories.Models.AuditPlanAssignmentDTO
         public Guid? AssignBy { get; set; }
         public DateTime? AssignedDate { get; set; }
         public string Remarks { get; set; }
+        public string FilePaths { get; set; }
     }
 }
