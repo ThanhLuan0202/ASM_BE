@@ -83,6 +83,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<AccessGrant> AccessGrants { get; set; }
 
+    public virtual DbSet<DepartmentSensitiveArea> DepartmentSensitiveAreas { get; set; }
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -930,6 +932,36 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.DeptId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__AccessGra__DeptI__AccessGrant");
+        });
+
+        modelBuilder.Entity<DepartmentSensitiveArea>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC07A1B2C3D4");
+
+            entity.ToTable("DepartmentSensitiveArea", "ams");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("Id");
+            entity.Property(e => e.DeptId).HasColumnName("DeptID");
+            entity.Property(e => e.SensitiveAreas)
+                .IsRequired()
+                .HasMaxLength(int.MaxValue);
+            entity.Property(e => e.DefaultNotes)
+                .HasMaxLength(500);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(100);
+
+            entity.HasIndex(e => e.DeptId)
+                .IsUnique()
+                .HasDatabaseName("UQ_DeptSensitiveArea_DeptId");
+
+            entity.HasOne(d => d.Dept).WithMany()
+                .HasForeignKey(d => d.DeptId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DeptSensitiveArea_Dept");
         });
 
         OnModelCreatingPartial(modelBuilder);
