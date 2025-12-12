@@ -1,5 +1,6 @@
 using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace ASM_Services.Interfaces
     {
         Task<IEnumerable<ViewAuditPlanAssignment>> GetAllAsync();
         Task<ViewAuditPlanAssignment?> GetByIdAsync(Guid id);
-        Task<(ViewAuditPlanAssignment Assignment, Notification? Notification)> CreateWithNotificationAsync(CreateAuditPlanAssignment dto, Guid userId);
+        Task<(ViewAuditPlanAssignment Assignment, Notification? Notification)> CreateWithNotificationAsync(CreateAuditPlanAssignment dto, Guid userId, List<IFormFile> files);
         Task<ViewAuditPlanAssignment?> UpdateAsync(Guid id, UpdateAuditPlanAssignment dto, Guid userId);
         Task<bool> DeleteAsync(Guid id, Guid userId);
         Task<IEnumerable<ViewAuditPlanAssignment>> GetAssignmentsByPeriodAsync(DateTime startDate, DateTime endDate);

@@ -3,10 +3,14 @@ using ASM_Repositories.Interfaces;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 using ASM_Services.Interfaces;
 using ASM_Services.Interfaces.AdminInterfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace ASM_Services.Services
@@ -17,20 +21,50 @@ namespace ASM_Services.Services
         private readonly IUsersRepository _userRepo;
         private readonly INotificationRepository _notificationRepo;
         private readonly IAuditLogService _logService;
+        private readonly IFirebaseUploadService _firebaseUploadService;
 
-        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo, IUsersRepository usersRepo, INotificationRepository notificationRepo, IAuditLogService logService)
+        public AuditPlanAssignmentService(IAuditPlanAssignmentRepository repo, IUsersRepository usersRepo, INotificationRepository notificationRepo, IAuditLogService logService, IFirebaseUploadService firebaseUploadService)
         {
             _repo = repo;
             _notificationRepo = notificationRepo;
             _userRepo = usersRepo;
             _logService = logService;
+            _firebaseUploadService = firebaseUploadService;
         }
 
         public Task<IEnumerable<ViewAuditPlanAssignment>> GetAllAsync() => _repo.GetAllAsync();
         public Task<ViewAuditPlanAssignment?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
-        public async Task<(ViewAuditPlanAssignment Assignment, Notification? Notification)> CreateWithNotificationAsync(CreateAuditPlanAssignment dto, Guid userId)
+        public async Task<(ViewAuditPlanAssignment Assignment, Notification? Notification)> CreateWithNotificationAsync(CreateAuditPlanAssignment dto, Guid userId, List<IFormFile> files)
         {
-            var assignment = await _repo.CreateAsync(dto);
+            // Upload files if provided
+            string filePathsJson = null;
+            if (files != null && files.Any())
+            {
+                var filePaths = new List<string>();
+                
+                // Upload files lên Firebase
+                foreach (var file in files)
+                {
+                    if (file != null && file.Length > 0)
+                    {
+                        var blobPath = await _firebaseUploadService.UploadFileAsync(file, "AuditPlanAssignments");
+                        filePaths.Add(blobPath);
+                    }
+                }
+                
+                // Serialize file paths thành JSON
+                if (filePaths.Any())
+                {
+                    var jsonOptions = new JsonSerializerOptions
+                    {
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        WriteIndented = false
+                    };
+                    filePathsJson = JsonSerializer.Serialize(filePaths, jsonOptions);
+                }
+            }
+
+            var assignment = await _repo.CreateAsync(dto, filePathsJson);
             if (assignment == null)
                 throw new Exception("Failed to create audit plan assignment.");
 

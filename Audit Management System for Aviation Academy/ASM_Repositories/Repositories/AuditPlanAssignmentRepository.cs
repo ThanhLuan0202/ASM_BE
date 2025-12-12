@@ -41,13 +41,14 @@ namespace ASM_Repositories.Repositories
             return entity == null ? null : _mapper.Map<ViewAuditPlanAssignment>(entity);
         }
 
-        public async Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto)
+        public async Task<ViewAuditPlanAssignment> CreateAsync(CreateAuditPlanAssignment dto, string filePaths = null)
         {
             try
             {
                 var entity = _mapper.Map<AuditPlanAssignment>(dto);
                 entity.AssignmentId = Guid.NewGuid();
                 entity.Status = "Active";
+                entity.FilePaths = filePaths; // Set FilePaths từ parameter
 
                 _context.AuditPlanAssignments.Add(entity);
                 await _context.SaveChangesAsync();

@@ -2,8 +2,10 @@ using ASM.API.Helper;
 using ASM_Repositories.Entities;
 using ASM_Repositories.Models.AuditPlanAssignmentDTO;
 using ASM_Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -62,7 +64,7 @@ namespace ASM.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateAuditPlanAssignment dto)
+        public async Task<IActionResult> Create([FromForm] CreateAuditPlanAssignment dto, [FromForm] List<IFormFile>? files = null)
         {
             try
             {
@@ -77,7 +79,7 @@ namespace ASM.API.Controllers
 
                 dto.AssignBy = userIdGuid;
 
-                var (assignment, notif) = await _service.CreateWithNotificationAsync(dto, userIdGuid);
+                var (assignment, notif) = await _service.CreateWithNotificationAsync(dto, userIdGuid, files ?? new List<IFormFile>());
 
                 if (notif != null)
                 {
