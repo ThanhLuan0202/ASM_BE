@@ -404,7 +404,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.IsFinalVersion).HasDefaultValue(true);
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(300);
-            entity.Property(e => e.FilePaths).HasMaxLength(2000);
             entity.Property(e => e.UploadedAt).HasDefaultValueSql("(sysutcdatetime())");
 
             entity.HasOne(d => d.Audit).WithMany(p => p.AuditDocuments)
