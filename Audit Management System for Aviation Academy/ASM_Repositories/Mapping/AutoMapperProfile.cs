@@ -1,4 +1,5 @@
 using ASM_Repositories.Entities;
+using ASM_Repositories.Models.AccessGrantDTO;
 using ASM_Repositories.Models.ActionDTO;
 using ASM_Repositories.Models.ActionStatusDTO;
 using ASM_Repositories.Models.AttachmentDTO;
@@ -381,6 +382,9 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            // AccessGrant
+            CreateMap<AccessGrant, ViewAccessGrant>().ReverseMap();
         }
     }
 }

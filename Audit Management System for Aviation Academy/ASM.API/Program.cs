@@ -39,6 +39,7 @@ builder.Services.AddDbContext<AuditManagementSystemForAviationAcademyContext>(op
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddRepository().AddServices();
 

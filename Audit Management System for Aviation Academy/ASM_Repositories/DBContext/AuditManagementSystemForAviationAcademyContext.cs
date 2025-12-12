@@ -81,6 +81,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
+    public virtual DbSet<AccessGrant> AccessGrants { get; set; }
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -886,6 +888,48 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.RoleName)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserAccou__RoleN__47DBAE45");
+        });
+
+        modelBuilder.Entity<AccessGrant>(entity =>
+        {
+            entity.HasKey(e => e.GrantId).HasName("PK__AccessGr__90E9FF8A12345678");
+
+            entity.ToTable("AccessGrant", "ams");
+
+            entity.Property(e => e.GrantId)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("GrantID");
+            entity.Property(e => e.AuditId).HasColumnName("AuditID");
+            entity.Property(e => e.AuditorId).HasColumnName("AuditorID");
+            entity.Property(e => e.DeptId).HasColumnName("DeptID");
+            entity.Property(e => e.QrToken)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.QrUrl)
+                .HasMaxLength(1000);
+            entity.Property(e => e.VerifyCode)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasDefaultValue("Active");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.Audit).WithMany()
+                .HasForeignKey(d => d.AuditId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AccessGra__Audit__AccessGrant");
+
+            entity.HasOne(d => d.Auditor).WithMany()
+                .HasForeignKey(d => d.AuditorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AccessGra__Audit__AccessGrant2");
+
+            entity.HasOne(d => d.Dept).WithMany()
+                .HasForeignKey(d => d.DeptId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__AccessGra__DeptI__AccessGrant");
         });
 
         OnModelCreatingPartial(modelBuilder);
