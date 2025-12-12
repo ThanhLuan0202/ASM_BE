@@ -15,6 +15,12 @@ public partial class AuditScopeDepartment
 
     public int DeptId { get; set; }
 
+    public bool? SensitiveFlag { get; set; }
+
+    public string Areas { get; set; }
+
+    public string Notes { get; set; }
+
     public virtual Audit Audit { get; set; }
 
     public virtual Department Dept { get; set; }

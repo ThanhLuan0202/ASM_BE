@@ -18,5 +18,7 @@ namespace ASM_Services.Interfaces
         Task<ViewAuditScopeDepartment?> UpdateAsync(Guid id, UpdateAuditScopeDepartment dto, Guid userId);
         Task<bool> SoftDeleteAsync(Guid id, Guid userId);
         Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId);
+        Task<SensitiveFlagResponse> SetSensitiveFlagAsync(Guid scopeDeptId, SetSensitiveFlagRequest request, Guid userId);
+        Task<IEnumerable<SensitiveFlagResponse>> GetSensitiveFlagsByAuditIdAsync(Guid auditId);
     }
 }

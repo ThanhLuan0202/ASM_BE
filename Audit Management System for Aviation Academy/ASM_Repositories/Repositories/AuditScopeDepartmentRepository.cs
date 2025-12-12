@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 
 namespace ASM_Repositories.Repositories
@@ -163,6 +166,98 @@ namespace ASM_Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<SensitiveFlagResponse> SetSensitiveFlagAsync(Guid scopeDeptId, SetSensitiveFlagRequest request)
+        {
+            var entity = await _context.AuditScopeDepartments
+                .FirstOrDefaultAsync(x => x.AuditScopeId == scopeDeptId);
+
+            if (entity == null)
+                throw new ArgumentException($"AuditScopeDepartment with ID '{scopeDeptId}' not found.");
+
+            // Set sensitive flag và notes
+            entity.SensitiveFlag = request.SensitiveFlag;
+            entity.Notes = request.Notes;
+
+            // Serialize areas thành JSON
+            if (request.Areas != null && request.Areas.Any())
+            {
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = false
+                };
+                entity.Areas = JsonSerializer.Serialize(request.Areas, jsonOptions);
+            }
+            else
+            {
+                entity.Areas = null;
+            }
+
+            _context.AuditScopeDepartments.Update(entity);
+            await _context.SaveChangesAsync();
+
+            // Deserialize areas để trả về
+            List<string> areas = new List<string>();
+            if (!string.IsNullOrWhiteSpace(entity.Areas))
+            {
+                try
+                {
+                    areas = JsonSerializer.Deserialize<List<string>>(entity.Areas) ?? new List<string>();
+                }
+                catch
+                {
+                    areas = new List<string>();
+                }
+            }
+
+            return new SensitiveFlagResponse
+            {
+                ScopeDeptId = entity.AuditScopeId,
+                AuditId = entity.AuditId,
+                DeptId = entity.DeptId,
+                SensitiveFlag = entity.SensitiveFlag ?? false,
+                Areas = areas,
+                Notes = entity.Notes
+            };
+        }
+
+        public async Task<IEnumerable<SensitiveFlagResponse>> GetSensitiveFlagsByAuditIdAsync(Guid auditId)
+        {
+            var entities = await _context.AuditScopeDepartments
+                .Where(x => x.AuditId == auditId && x.SensitiveFlag == true)
+                .ToListAsync();
+
+            var responses = new List<SensitiveFlagResponse>();
+
+            foreach (var entity in entities)
+            {
+                // Deserialize areas
+                List<string> areas = new List<string>();
+                if (!string.IsNullOrWhiteSpace(entity.Areas))
+                {
+                    try
+                    {
+                        areas = JsonSerializer.Deserialize<List<string>>(entity.Areas) ?? new List<string>();
+                    }
+                    catch
+                    {
+                        areas = new List<string>();
+                    }
+                }
+
+                responses.Add(new SensitiveFlagResponse
+                {
+                    ScopeDeptId = entity.AuditScopeId,
+                    AuditId = entity.AuditId,
+                    DeptId = entity.DeptId,
+                    SensitiveFlag = entity.SensitiveFlag ?? false,
+                    Areas = areas,
+                    Notes = entity.Notes
+                });
+            }
+
+            return responses;
+        }
 
     }
 

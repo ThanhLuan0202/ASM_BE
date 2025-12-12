@@ -25,6 +25,23 @@ namespace ASM.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{auditId}/sensitive")]
+        public async Task<IActionResult> GetSensitiveFlagsByAuditId(Guid auditId)
+        {
+            try
+            {
+                if (auditId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid auditId" });
+
+                var result = await _service.GetSensitiveFlagsByAuditIdAsync(auditId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -118,5 +135,31 @@ namespace ASM.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving departments", error = ex.Message });
             }
         }
+
+        [HttpPost("{scopeDeptId}/sensitive")]
+        public async Task<IActionResult> SetSensitiveFlag(Guid scopeDeptId, [FromBody] SetSensitiveFlagRequest request)
+        {
+            try
+            {
+                if (scopeDeptId == Guid.Empty)
+                    return BadRequest(new { message = "Invalid scopeDeptId" });
+
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
+                    return Unauthorized(new { message = "Invalid or missing UserId in token." });
+
+                var result = await _service.SetSensitiveFlagAsync(scopeDeptId, request, userId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
     }
 }

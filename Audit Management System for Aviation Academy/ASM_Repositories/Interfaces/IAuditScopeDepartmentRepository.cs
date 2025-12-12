@@ -20,6 +20,8 @@ namespace ASM_Repositories.Interfaces
         Task UpdateScopeDepartmentsAsync(Guid auditId, List<UpdateAuditScopeDepartment>? list);
         Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId);
         Task UpdateStatusToArchivedAsync(Guid auditId);
+        Task<SensitiveFlagResponse> SetSensitiveFlagAsync(Guid scopeDeptId, SetSensitiveFlagRequest request);
+        Task<IEnumerable<SensitiveFlagResponse>> GetSensitiveFlagsByAuditIdAsync(Guid auditId);
     }
 
     public class DepartmentInfoDto

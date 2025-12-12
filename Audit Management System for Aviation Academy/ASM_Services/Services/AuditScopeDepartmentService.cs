@@ -51,5 +51,27 @@ namespace ASM_Services.Services
             return success;
         }
         public Task<IEnumerable<ViewDepartment>> GetDepartmentsByAuditIdAsync(Guid auditId) => _repo.GetDepartmentsByAuditIdAsync(auditId);
+
+        public async Task<SensitiveFlagResponse> SetSensitiveFlagAsync(Guid scopeDeptId, SetSensitiveFlagRequest request, Guid userId)
+        {
+            var before = await _repo.GetByIdAsync(scopeDeptId);
+            var result = await _repo.SetSensitiveFlagAsync(scopeDeptId, request);
+            
+            if (before != null)
+            {
+                var after = await _repo.GetByIdAsync(scopeDeptId);
+                if (after != null)
+                {
+                    await _logService.LogUpdateAsync(before, after, scopeDeptId, userId, "AuditScopeDepartment");
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<SensitiveFlagResponse>> GetSensitiveFlagsByAuditIdAsync(Guid auditId)
+        {
+            return await _repo.GetSensitiveFlagsByAuditIdAsync(auditId);
+        }
     }
 }

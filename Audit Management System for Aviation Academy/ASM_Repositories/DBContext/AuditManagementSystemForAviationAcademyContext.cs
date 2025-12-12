@@ -498,6 +498,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
             entity.Property(e => e.AuditId).HasColumnName("AuditID");
             entity.Property(e => e.DeptId).HasColumnName("DeptID");
             entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Areas).HasMaxLength(1000);
+            entity.Property(e => e.Notes).HasMaxLength(500);
 
             entity.HasOne(d => d.Audit).WithMany(p => p.AuditScopeDepartments)
                 .HasForeignKey(d => d.AuditId)
