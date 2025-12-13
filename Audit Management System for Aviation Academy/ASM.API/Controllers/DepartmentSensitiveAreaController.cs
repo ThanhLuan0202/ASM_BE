@@ -99,8 +99,8 @@ namespace ASM.API.Controllers
                 if (dto.DeptId <= 0)
                     return BadRequest(new { message = "DeptId is required" });
 
-                if (dto.SensitiveAreas == null || !dto.SensitiveAreas.Any())
-                    return BadRequest(new { message = "At least one sensitive area is required" });
+                if (string.IsNullOrWhiteSpace(dto.SensitiveArea))
+                    return BadRequest(new { message = "Sensitive area is required" });
 
                 var result = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);

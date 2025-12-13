@@ -11,7 +11,7 @@ public partial class DepartmentSensitiveArea
 
     public int DeptId { get; set; }
 
-    public string SensitiveAreas { get; set; } // JSON array: ["Area1", "Area2"]
+    public string SensitiveAreas { get; set; } // Sensitive area string
 
     public string Level { get; set; } // Foreign key to SensitiveAreaLevel
 

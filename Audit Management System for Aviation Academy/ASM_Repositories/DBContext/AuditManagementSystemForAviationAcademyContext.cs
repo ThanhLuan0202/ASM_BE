@@ -969,10 +969,6 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasColumnType("uniqueidentifier")
                 .HasColumnName("CreatedBy");
 
-            entity.HasIndex(e => e.DeptId)
-                .IsUnique()
-                .HasDatabaseName("UQ_DeptSensitiveArea_DeptId");
-
             entity.HasOne(d => d.Dept).WithMany()
                 .HasForeignKey(d => d.DeptId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
