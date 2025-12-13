@@ -1,5 +1,6 @@
 using ASM_Repositories.Models.RootCauseDTO;
 using ASM_Services.Interfaces.SQAStaffInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace ASM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RootCausesController : ControllerBase
     {
         private readonly IRootCauseService _service;
@@ -20,16 +22,106 @@ namespace ASM.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetAll([FromQuery] string status = null, [FromQuery] string category = null)
         {
             try
             {
-                var result = await _service.GetAllAsync();
+                IEnumerable<ViewRootCause> result;
+                
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    result = await _service.GetByStatusAsync(status);
+                }
+                else if (!string.IsNullOrWhiteSpace(category))
+                {
+                    result = await _service.GetByCategoryAsync(category);
+                }
+                else
+                {
+                    result = await _service.GetAllAsync();
+                }
+                
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving root causes", error = ex.Message });
+            }
+        }
+
+        [HttpGet("by-status/{status}")]
+        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetByStatus(string status)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(status))
+                {
+                    return BadRequest(new { message = "Status is required" });
+                }
+
+                var result = await _service.GetByStatusAsync(status);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving root causes by status", error = ex.Message });
+            }
+        }
+
+        [HttpGet("by-category/{category}")]
+        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetByCategory(string category)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(category))
+                {
+                    return BadRequest(new { message = "Category is required" });
+                }
+
+                var result = await _service.GetByCategoryAsync(category);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving root causes by category", error = ex.Message });
+            }
+        }
+
+        [HttpGet("by-department/{deptId}")]
+        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetByDeptId(int deptId)
+        {
+            try
+            {
+                if (deptId <= 0)
+                {
+                    return BadRequest(new { message = "Invalid department ID" });
+                }
+
+                var result = await _service.GetByDeptIdAsync(deptId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving root causes by department", error = ex.Message });
+            }
+        }
+
+        [HttpGet("by-finding/{findingId}")]
+        public async Task<ActionResult<IEnumerable<ViewRootCause>>> GetByFindingId(Guid findingId)
+        {
+            try
+            {
+                if (findingId == Guid.Empty)
+                {
+                    return BadRequest(new { message = "Invalid finding ID" });
+                }
+
+                var result = await _service.GetByFindingIdAsync(findingId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving root causes by finding", error = ex.Message });
             }
         }
 
@@ -83,6 +175,12 @@ namespace ASM.API.Controllers
                 if (string.IsNullOrWhiteSpace(dto.Name))
                 {
                     return BadRequest(new { message = "Name is required" });
+                }
+
+                // Set default status if not provided
+                if (string.IsNullOrWhiteSpace(dto.Status))
+                {
+                    dto.Status = "Active";
                 }
 
                 var result = await _service.CreateAsync(dto);

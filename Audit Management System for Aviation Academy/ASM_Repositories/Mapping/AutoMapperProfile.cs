@@ -199,7 +199,9 @@ namespace ASM_Repositories.Mapping
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
             // RootCause
-            CreateMap<RootCause, ViewRootCause>().ReverseMap();
+            CreateMap<RootCause, ViewRootCause>()
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Dept != null ? src.Dept.Name : string.Empty))
+                .ReverseMap();
             CreateMap<CreateRootCause, RootCause>()
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
             CreateMap<UpdateRootCause, RootCause>()

@@ -182,10 +182,7 @@ namespace ASM_Repositories.Repositories
 
             try
             {
-                if (!isReactivating)
-                {
-                    _DbContext.ChangeTracker.Clear();
-                }
+                
                 await _DbContext.SaveChangesAsync();
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)

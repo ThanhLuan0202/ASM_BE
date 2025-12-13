@@ -21,6 +21,26 @@ namespace ASM_Services.Services
             return await _repo.GetAllAsync();
         }
 
+        public async Task<IEnumerable<ViewRootCause>> GetByStatusAsync(string status)
+        {
+            return await _repo.GetByStatusAsync(status);
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByCategoryAsync(string category)
+        {
+            return await _repo.GetByCategoryAsync(category);
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByDeptIdAsync(int deptId)
+        {
+            return await _repo.GetByDeptIdAsync(deptId);
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByFindingIdAsync(Guid findingId)
+        {
+            return await _repo.GetByFindingIdAsync(findingId);
+        }
+
         public async Task<ViewRootCause?> GetByIdAsync(int id)
         {
             return await _repo.GetByIdAsync(id);

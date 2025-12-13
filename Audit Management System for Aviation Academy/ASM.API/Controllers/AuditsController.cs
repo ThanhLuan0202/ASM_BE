@@ -120,12 +120,7 @@ namespace ASM.API.Controllers
                     return Unauthorized(new { message = "User ID not found in token" });
                 }
 
-                // Kiểm tra xem user có trong AuditPlanAssignment với status = "Active" không
-                var hasActiveAssignment = await _auditPlanAssignmentRepository.HasActiveAssignmentByAuditorIdAsync(userId);
-                if (hasActiveAssignment)
-                {
-                    return BadRequest(new { message = "You have used the plan creation permission." });
-                }
+               
 
                 var result = await _service.CreateAuditAsync(dto, userId);
                 return CreatedAtAction(nameof(GetById), new { id = result.AuditId }, result);
