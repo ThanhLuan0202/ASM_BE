@@ -27,7 +27,11 @@ namespace ASM.API.Controllers
             try
             {
                 IEnumerable<ViewRootCause> result;
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
                 if (!string.IsNullOrWhiteSpace(status))
                 {
                     result = await _service.GetByStatusAsync(status);
@@ -40,7 +44,11 @@ namespace ASM.API.Controllers
                 {
                     result = await _service.GetAllAsync();
                 }
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
                 return Ok(result);
             }
             catch (Exception ex)

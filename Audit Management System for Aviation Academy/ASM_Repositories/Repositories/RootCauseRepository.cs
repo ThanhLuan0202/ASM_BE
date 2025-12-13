@@ -29,7 +29,11 @@ namespace ASM_Repositories.Repositories
                 .Include(r => r.Dept)
                 .Where(r => r.Status != "Inactive")
                 .ToListAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return list.Select(r => new ViewRootCause
             {
                 RootCauseId = r.RootCauseId,
@@ -49,7 +53,11 @@ namespace ASM_Repositories.Repositories
                 .Include(r => r.Dept)
                 .Where(r => r.Status == status)
                 .ToListAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return list.Select(r => new ViewRootCause
             {
                 RootCauseId = r.RootCauseId,
@@ -69,7 +77,11 @@ namespace ASM_Repositories.Repositories
                 .Include(r => r.Dept)
                 .Where(r => r.Category == category && r.Status != "Inactive")
                 .ToListAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return list.Select(r => new ViewRootCause
             {
                 RootCauseId = r.RootCauseId,
@@ -89,7 +101,11 @@ namespace ASM_Repositories.Repositories
                 .Include(r => r.Dept)
                 .Where(r => r.DeptId == deptId && r.Status != "Inactive")
                 .ToListAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return list.Select(r => new ViewRootCause
             {
                 RootCauseId = r.RootCauseId,
@@ -109,7 +125,11 @@ namespace ASM_Repositories.Repositories
                 .Include(r => r.Dept)
                 .Where(r => r.FindingId == findingId && r.Status != "Inactive")
                 .ToListAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return list.Select(r => new ViewRootCause
             {
                 RootCauseId = r.RootCauseId,
@@ -128,9 +148,15 @@ namespace ASM_Repositories.Repositories
             var entity = await _DbContext.RootCauses
                 .Include(r => r.Dept)
                 .FirstOrDefaultAsync(r => r.RootCauseId == id);
+<<<<<<< HEAD
 
             if (entity == null) return null;
 
+=======
+            
+            if (entity == null) return null;
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return new ViewRootCause
             {
                 RootCauseId = entity.RootCauseId,
@@ -149,10 +175,17 @@ namespace ASM_Repositories.Repositories
             var entity = _mapper.Map<RootCause>(dto);
             _DbContext.RootCauses.Add(entity);
             await _DbContext.SaveChangesAsync();
+<<<<<<< HEAD
 
             // Reload with Department to get DepartmentName
             await _DbContext.Entry(entity).Reference(r => r.Dept).LoadAsync();
 
+=======
+            
+            // Reload with Department to get DepartmentName
+            await _DbContext.Entry(entity).Reference(r => r.Dept).LoadAsync();
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return new ViewRootCause
             {
                 RootCauseId = entity.RootCauseId,
@@ -175,7 +208,11 @@ namespace ASM_Repositories.Repositories
 
             _mapper.Map(dto, existing);
             await _DbContext.SaveChangesAsync();
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 84313ad820760eb11d01445964f27b91148ce098
             return new ViewRootCause
             {
                 RootCauseId = existing.RootCauseId,
