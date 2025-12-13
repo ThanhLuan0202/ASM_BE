@@ -63,6 +63,18 @@ namespace ASM_Repositories.Repositories
             if (!deptExists)
                 throw new InvalidOperationException($"Department with ID {dto.DeptId} does not exist");
 
+            // Validate không được trùng tên khu vực trong cùng một phòng
+            if (!string.IsNullOrWhiteSpace(dto.SensitiveArea))
+            {
+                var duplicateExists = await _context.DepartmentSensitiveAreas
+                    .AnyAsync(x => x.DeptId == dto.DeptId && 
+                                   x.SensitiveAreas != null && 
+                                   x.SensitiveAreas.Trim().ToLower() == dto.SensitiveArea.Trim().ToLower());
+                
+                if (duplicateExists)
+                    throw new InvalidOperationException($"Sensitive area '{dto.SensitiveArea}' already exists for department {dto.DeptId}");
+            }
+
             // Validate Level exists if provided
             if (!string.IsNullOrEmpty(dto.Level))
             {
@@ -101,6 +113,19 @@ namespace ASM_Repositories.Repositories
 
             if (entity == null)
                 return null;
+
+            // Validate không được trùng tên khu vực trong cùng một phòng (trừ chính bản ghi đang update)
+            if (!string.IsNullOrWhiteSpace(dto.SensitiveArea))
+            {
+                var duplicateExists = await _context.DepartmentSensitiveAreas
+                    .AnyAsync(x => x.Id != id && 
+                                   x.DeptId == entity.DeptId && 
+                                   x.SensitiveAreas != null && 
+                                   x.SensitiveAreas.Trim().ToLower() == dto.SensitiveArea.Trim().ToLower());
+                
+                if (duplicateExists)
+                    throw new InvalidOperationException($"Sensitive area '{dto.SensitiveArea}' already exists for department {entity.DeptId}");
+            }
 
             // Validate Level exists if provided
             if (!string.IsNullOrEmpty(dto.Level))

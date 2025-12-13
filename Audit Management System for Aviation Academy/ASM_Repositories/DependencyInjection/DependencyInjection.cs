@@ -50,6 +50,7 @@ namespace ASM_Repositories.DependencyInjection
             service.AddTransient<IChecklistItemNoFindingRepository, ChecklistItemNoFindingRepository>();
             service.AddTransient<IAccessGrantRepository, AccessGrantRepository>();
             service.AddTransient<IDepartmentSensitiveAreaRepository, DepartmentSensitiveAreaRepository>();
+            service.AddTransient<ISensitiveAreaLevelRepository, SensitiveAreaLevelRepository>();
 
 
 
