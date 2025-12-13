@@ -17,5 +17,13 @@ public partial class RootCause
 
     public string Description { get; set; }
 
+    public int? DeptId { get; set; }
+
+    public Guid? FindingId { get; set; }
+
     public virtual ICollection<Finding> Findings { get; set; } = new List<Finding>();
+
+    public virtual Department Dept { get; set; }
+
+    public virtual Finding Finding { get; set; }
 }

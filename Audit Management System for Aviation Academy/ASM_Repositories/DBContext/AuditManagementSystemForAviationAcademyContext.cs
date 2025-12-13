@@ -85,6 +85,8 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
 
     public virtual DbSet<DepartmentSensitiveArea> DepartmentSensitiveAreas { get; set; }
 
+    public virtual DbSet<SensitiveAreaLevel> SensitiveAreaLevels { get; set; }
+
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -851,6 +853,16 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .IsRequired()
                 .HasMaxLength(200);
             entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.DeptId).HasColumnName("DeptID");
+            entity.Property(e => e.FindingId).HasColumnName("FindingID");
+
+            entity.HasOne(d => d.Dept).WithMany()
+                .HasForeignKey(d => d.DeptId)
+                .HasConstraintName("FK_RootCause_Dept");
+
+            entity.HasOne(d => d.Finding).WithMany()
+                .HasForeignKey(d => d.FindingId)
+                .HasConstraintName("FK_RootCause_Finding");
         });
 
         modelBuilder.Entity<UserAccount>(entity =>
@@ -949,10 +961,13 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasMaxLength(int.MaxValue);
             entity.Property(e => e.DefaultNotes)
                 .HasMaxLength(500);
+            entity.Property(e => e.Level)
+                .HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.CreatedBy)
-                .HasMaxLength(100);
+                .HasColumnType("uniqueidentifier")
+                .HasColumnName("CreatedBy");
 
             entity.HasIndex(e => e.DeptId)
                 .IsUnique()
@@ -962,6 +977,23 @@ public partial class AuditManagementSystemForAviationAcademyContext : DbContext
                 .HasForeignKey(d => d.DeptId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DeptSensitiveArea_Dept");
+
+            entity.HasOne(d => d.LevelNavigation).WithMany(p => p.DepartmentSensitiveAreas)
+                .HasForeignKey(d => d.Level)
+                .HasConstraintName("FK_DeptSensitiveArea_Level");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany()
+                .HasForeignKey(d => d.CreatedBy)
+                .HasConstraintName("FK_DeptSensitiveArea_CreatedBy");
+        });
+
+        modelBuilder.Entity<SensitiveAreaLevel>(entity =>
+        {
+            entity.HasKey(e => e.Level).HasName("PK_SensitiveAreaLevel");
+
+            entity.ToTable("SensitiveAreaLevel", "ams");
+
+            entity.Property(e => e.Level).HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

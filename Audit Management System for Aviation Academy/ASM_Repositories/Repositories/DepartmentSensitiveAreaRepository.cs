@@ -63,7 +63,7 @@ namespace ASM_Repositories.Repositories
                 throw new InvalidOperationException($"Department with ID {dto.DeptId} does not exist");
 
             var entity = _mapper.Map<DepartmentSensitiveArea>(dto);
-            entity.CreatedBy = createdBy;
+            //entity.CreatedBy = createdBy;
 
             _context.DepartmentSensitiveAreas.Add(entity);
             await _context.SaveChangesAsync();

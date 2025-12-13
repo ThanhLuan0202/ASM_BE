@@ -13,12 +13,18 @@ public partial class DepartmentSensitiveArea
 
     public string SensitiveAreas { get; set; } // JSON array: ["Area1", "Area2"]
 
+    public string Level { get; set; } // Foreign key to SensitiveAreaLevel
+
     public string DefaultNotes { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
-    public string CreatedBy { get; set; }
+    public Guid? CreatedBy { get; set; }
 
     public virtual Department Dept { get; set; }
+
+    public virtual UserAccount CreatedByNavigation { get; set; }
+
+    public virtual SensitiveAreaLevel LevelNavigation { get; set; }
 }
 

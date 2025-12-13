@@ -4,6 +4,7 @@ using ASM_Repositories.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_Repositories.Migrations
 {
     [DbContext(typeof(AuditManagementSystemForAviationAcademyContext))]
-    partial class AuditManagementSystemForAviationAcademyContextModelSnapshot : ModelSnapshot
+    [Migration("20251213082311_AddSensitiveAreaLevelAndUpdateEntities")]
+    partial class AddSensitiveAreaLevelAndUpdateEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
