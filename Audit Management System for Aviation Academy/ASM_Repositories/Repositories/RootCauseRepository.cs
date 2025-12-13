@@ -25,14 +25,123 @@ namespace ASM_Repositories.Repositories
 
         public async Task<IEnumerable<ViewRootCause>> GetAllAsync()
         {
-            var list = await _DbContext.RootCauses.ToListAsync();
-            return _mapper.Map<IEnumerable<ViewRootCause>>(list);
+            var list = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .Where(r => r.Status != "Inactive")
+                .ToListAsync();
+
+            return list.Select(r => new ViewRootCause
+            {
+                RootCauseId = r.RootCauseId,
+                Name = r.Name,
+                Category = r.Category,
+                Status = r.Status,
+                Description = r.Description,
+                DeptId = r.DeptId,
+                DepartmentName = r.Dept?.Name ?? string.Empty,
+                FindingId = r.FindingId
+            });
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByStatusAsync(string status)
+        {
+            var list = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .Where(r => r.Status == status)
+                .ToListAsync();
+
+            return list.Select(r => new ViewRootCause
+            {
+                RootCauseId = r.RootCauseId,
+                Name = r.Name,
+                Category = r.Category,
+                Status = r.Status,
+                Description = r.Description,
+                DeptId = r.DeptId,
+                DepartmentName = r.Dept?.Name ?? string.Empty,
+                FindingId = r.FindingId
+            });
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByCategoryAsync(string category)
+        {
+            var list = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .Where(r => r.Category == category && r.Status != "Inactive")
+                .ToListAsync();
+
+            return list.Select(r => new ViewRootCause
+            {
+                RootCauseId = r.RootCauseId,
+                Name = r.Name,
+                Category = r.Category,
+                Status = r.Status,
+                Description = r.Description,
+                DeptId = r.DeptId,
+                DepartmentName = r.Dept?.Name ?? string.Empty,
+                FindingId = r.FindingId
+            });
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByDeptIdAsync(int deptId)
+        {
+            var list = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .Where(r => r.DeptId == deptId && r.Status != "Inactive")
+                .ToListAsync();
+
+            return list.Select(r => new ViewRootCause
+            {
+                RootCauseId = r.RootCauseId,
+                Name = r.Name,
+                Category = r.Category,
+                Status = r.Status,
+                Description = r.Description,
+                DeptId = r.DeptId,
+                DepartmentName = r.Dept?.Name ?? string.Empty,
+                FindingId = r.FindingId
+            });
+        }
+
+        public async Task<IEnumerable<ViewRootCause>> GetByFindingIdAsync(Guid findingId)
+        {
+            var list = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .Where(r => r.FindingId == findingId && r.Status != "Inactive")
+                .ToListAsync();
+
+            return list.Select(r => new ViewRootCause
+            {
+                RootCauseId = r.RootCauseId,
+                Name = r.Name,
+                Category = r.Category,
+                Status = r.Status,
+                Description = r.Description,
+                DeptId = r.DeptId,
+                DepartmentName = r.Dept?.Name ?? string.Empty,
+                FindingId = r.FindingId
+            });
         }
 
         public async Task<ViewRootCause?> GetByIdAsync(int id)
         {
-            var entity = await _DbContext.RootCauses.FindAsync(id);
-            return entity == null ? null : _mapper.Map<ViewRootCause>(entity);
+            var entity = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .FirstOrDefaultAsync(r => r.RootCauseId == id);
+
+            if (entity == null) return null;
+
+            return new ViewRootCause
+            {
+                RootCauseId = entity.RootCauseId,
+                Name = entity.Name,
+                Category = entity.Category,
+                Status = entity.Status,
+                Description = entity.Description,
+                DeptId = entity.DeptId,
+                DepartmentName = entity.Dept?.Name ?? string.Empty,
+                FindingId = entity.FindingId
+            };
         }
 
         public async Task<ViewRootCause> CreateAsync(CreateRootCause dto)
@@ -40,17 +149,44 @@ namespace ASM_Repositories.Repositories
             var entity = _mapper.Map<RootCause>(dto);
             _DbContext.RootCauses.Add(entity);
             await _DbContext.SaveChangesAsync();
-            return _mapper.Map<ViewRootCause>(entity);
+
+            // Reload with Department to get DepartmentName
+            await _DbContext.Entry(entity).Reference(r => r.Dept).LoadAsync();
+
+            return new ViewRootCause
+            {
+                RootCauseId = entity.RootCauseId,
+                Name = entity.Name,
+                Category = entity.Category,
+                Status = entity.Status,
+                Description = entity.Description,
+                DeptId = entity.DeptId,
+                DepartmentName = entity.Dept?.Name ?? string.Empty,
+                FindingId = entity.FindingId
+            };
         }
 
         public async Task<ViewRootCause?> UpdateAsync(int id, UpdateRootCause dto)
         {
-            var existing = await _DbContext.RootCauses.FindAsync(id);
+            var existing = await _DbContext.RootCauses
+                .Include(r => r.Dept)
+                .FirstOrDefaultAsync(r => r.RootCauseId == id);
             if (existing == null) return null;
 
             _mapper.Map(dto, existing);
             await _DbContext.SaveChangesAsync();
-            return _mapper.Map<ViewRootCause>(existing);
+
+            return new ViewRootCause
+            {
+                RootCauseId = existing.RootCauseId,
+                Name = existing.Name,
+                Category = existing.Category,
+                Status = existing.Status,
+                Description = existing.Description,
+                DeptId = existing.DeptId,
+                DepartmentName = existing.Dept?.Name ?? string.Empty,
+                FindingId = existing.FindingId
+            };
         }
 
         public async Task<bool> DeleteAsync(int id)

@@ -53,7 +53,7 @@ namespace ASM_Repositories.Mapping
             // Department 
             CreateMap<Department, ViewDepartment>().ReverseMap();
             CreateMap<CreateDepartment, Department>()
-                .ForMember(dest => dest.DeptId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.DeptId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.Now));
             CreateMap<UpdateDepartment, Department>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
@@ -80,13 +80,13 @@ namespace ASM_Repositories.Mapping
             // Finding mappings
             CreateMap<Finding, ViewFinding>().ReverseMap();
             CreateMap<CreateFinding, Finding>()
-                .ForMember(dest => dest.FindingId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.FindingId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.AuditId, opt => opt.MapFrom(src => src.AuditId));
             CreateMap<UpdateFinding, Finding>()
                 .ForMember(dest => dest.FindingId, opt => opt.Ignore())
-                .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<Finding, ViewFindingDetail>()
@@ -104,9 +104,9 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.AuditTeams, opt => opt.MapFrom(src => src.AuditTeams))
                 .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.AuditSchedules)).ReverseMap();
             CreateMap<CreateAudit, Audit>()
-                .ForMember(dest => dest.AuditId, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+                .ForMember(dest => dest.AuditId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<UpdateAudit, Audit>()
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
@@ -123,21 +123,21 @@ namespace ASM_Repositories.Mapping
             // ChecklistTemplate mappings
             CreateMap<ChecklistTemplate, ViewChecklistTemplate>().ReverseMap();
             CreateMap<CreateChecklistTemplate, ChecklistTemplate>()
-                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<UpdateChecklistTemplate, ChecklistTemplate>()
                 .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()); 
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
 
             // ChecklistItem mappings
             CreateMap<ChecklistItem, ViewChecklistItem>().ReverseMap();
             CreateMap<CreateChecklistItem, ChecklistItem>()
-                .ForMember(dest => dest.ItemId, opt => opt.Ignore()); 
+                .ForMember(dest => dest.ItemId, opt => opt.Ignore());
             CreateMap<UpdateChecklistItem, ChecklistItem>()
                 .ForMember(dest => dest.ItemId, opt => opt.Ignore())
-                .ForMember(dest => dest.TemplateId, opt => opt.Ignore()); 
+                .ForMember(dest => dest.TemplateId, opt => opt.Ignore());
 
             // Action
             CreateMap<ASM_Repositories.Entities.Action, ViewAction>().ReverseMap();
@@ -145,7 +145,7 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.ActionId, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
-                .ForMember(dest => dest.ClosedAt, opt => opt.Ignore()); 
+                .ForMember(dest => dest.ClosedAt, opt => opt.Ignore());
             CreateMap<UpdateAction, ASM_Repositories.Entities.Action>()
                 .ForMember(dest => dest.ActionId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
@@ -159,8 +159,8 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.AuditApprovalId, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.ApprovedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
-                .ForMember(dest => dest.Approver, opt => opt.Ignore());  
+                .ForMember(dest => dest.ApprovedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Approver, opt => opt.Ignore());
             CreateMap<UpdateAuditApproval, AuditApproval>()
                 .ForMember(dest => dest.AuditApprovalId, opt => opt.Ignore())
                 .ForMember(dest => dest.AuditId, opt => opt.Ignore())
@@ -200,7 +200,9 @@ namespace ASM_Repositories.Mapping
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
             // RootCause
-            CreateMap<RootCause, ViewRootCause>().ReverseMap();
+            CreateMap<RootCause, ViewRootCause>()
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Dept != null ? src.Dept.Name : string.Empty))
+                .ReverseMap();
             CreateMap<CreateRootCause, RootCause>()
                 .ForMember(dest => dest.RootCauseId, opt => opt.Ignore());
             CreateMap<UpdateRootCause, RootCause>()
@@ -220,7 +222,7 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.ReportRequestId, opt => opt.MapFrom(_ => Guid.NewGuid()))
                 .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => "Active"))
-                .ForMember(dest => dest.CompletedAt, opt => opt.Ignore()); 
+                .ForMember(dest => dest.CompletedAt, opt => opt.Ignore());
             CreateMap<UpdateReportRequest, ReportRequest>()
                 .ForMember(dest => dest.CompletedAt, opt => opt.Condition(src => src.CompletedAt != null));
 
@@ -402,13 +404,13 @@ namespace ASM_Repositories.Mapping
                 .ForMember(dest => dest.LevelName, opt => opt.MapFrom(src => src.LevelNavigation != null ? src.LevelNavigation.Level : null))
                 .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByNavigation != null ? src.CreatedByNavigation.FullName : null))
                 .ReverseMap();
-            
+
             CreateMap<CreateDepartmentSensitiveArea, DepartmentSensitiveArea>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
                 .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveArea))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
-            
+
             CreateMap<UpdateDepartmentSensitiveArea, DepartmentSensitiveArea>()
                 .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveArea))
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
