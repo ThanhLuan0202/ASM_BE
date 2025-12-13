@@ -391,39 +391,43 @@ namespace ASM_Repositories.Mapping
 
             // DepartmentSensitiveArea
             CreateMap<DepartmentSensitiveArea, ViewDepartmentSensitiveArea>()
-                .ForMember(dest => dest.SensitiveAreas, opt => opt.Ignore())
+                .ForMember(dest => dest.SensitiveArea, opt => opt.Ignore())
                 .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Dept != null ? src.Dept.Name : null))
+                .ForMember(dest => dest.LevelName, opt => opt.MapFrom(src => src.LevelNavigation != null ? src.LevelNavigation.Level : null))
+                .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByNavigation != null ? src.CreatedByNavigation.FullName : null))
                 .AfterMap((src, dest) =>
                 {
-                    if (src.SensitiveAreas != null)
+                    // Deserialize JSON array and take first element (or empty string)
+                    if (!string.IsNullOrEmpty(src.SensitiveAreas))
                     {
                         try
                         {
-                            dest.SensitiveAreas = JsonSerializer.Deserialize<List<string>>(src.SensitiveAreas) ?? new List<string>();
+                            var areas = JsonSerializer.Deserialize<List<string>>(src.SensitiveAreas);
+                            dest.SensitiveArea = areas != null && areas.Any() ? areas[0] : string.Empty;
                         }
                         catch
                         {
-                            dest.SensitiveAreas = new List<string>();
+                            dest.SensitiveArea = string.Empty;
                         }
                     }
                     else
                     {
-                        dest.SensitiveAreas = new List<string>();
+                        dest.SensitiveArea = string.Empty;
                     }
                 })
                 .ReverseMap();
             
             CreateMap<CreateDepartmentSensitiveArea, DepartmentSensitiveArea>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
-                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveAreas != null && src.SensitiveAreas.Any()
-                    ? JsonSerializer.Serialize(src.SensitiveAreas, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
+                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.SensitiveArea)
+                    ? JsonSerializer.Serialize(new List<string> { src.SensitiveArea }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
                     : null))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             
             CreateMap<UpdateDepartmentSensitiveArea, DepartmentSensitiveArea>()
-                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => src.SensitiveAreas != null && src.SensitiveAreas.Any()
-                    ? JsonSerializer.Serialize(src.SensitiveAreas, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
+                .ForMember(dest => dest.SensitiveAreas, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.SensitiveArea)
+                    ? JsonSerializer.Serialize(new List<string> { src.SensitiveArea }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false })
                     : null))
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }

@@ -41,10 +41,7 @@ namespace ASM_Services.Services
 
         public async Task<ViewDepartmentSensitiveArea> CreateAsync(CreateDepartmentSensitiveArea dto, Guid userId)
         {
-            var user = await _userRepository.GetUserShortInfoAsync(userId);
-            var createdBy = user?.FullName ?? userId.ToString();
-
-            var created = await _repository.CreateAsync(dto, createdBy);
+            var created = await _repository.CreateAsync(dto, userId);
             await _logService.LogCreateAsync(created, created.Id, userId, "DepartmentSensitiveArea");
             return created;
         }

@@ -10,7 +10,7 @@ namespace ASM_Repositories.Interfaces
         Task<IEnumerable<ViewDepartmentSensitiveArea>> GetAllAsync();
         Task<ViewDepartmentSensitiveArea?> GetByIdAsync(Guid id);
         Task<ViewDepartmentSensitiveArea?> GetByDeptIdAsync(int deptId);
-        Task<ViewDepartmentSensitiveArea> CreateAsync(CreateDepartmentSensitiveArea dto, string createdBy);
+        Task<ViewDepartmentSensitiveArea> CreateAsync(CreateDepartmentSensitiveArea dto, Guid? createdBy);
         Task<ViewDepartmentSensitiveArea?> UpdateAsync(Guid id, UpdateDepartmentSensitiveArea dto);
         Task<bool> DeleteAsync(Guid id);
         Task<bool> ExistsByDeptIdAsync(int deptId);

@@ -26,6 +26,8 @@ namespace ASM_Repositories.Repositories
         {
             var entities = await _context.DepartmentSensitiveAreas
                 .Include(x => x.Dept)
+                .Include(x => x.LevelNavigation)
+                .Include(x => x.CreatedByNavigation)
                 .OrderBy(x => x.DeptId)
                 .ToListAsync();
 
@@ -36,6 +38,8 @@ namespace ASM_Repositories.Repositories
         {
             var entity = await _context.DepartmentSensitiveAreas
                 .Include(x => x.Dept)
+                .Include(x => x.LevelNavigation)
+                .Include(x => x.CreatedByNavigation)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return entity == null ? null : _mapper.Map<ViewDepartmentSensitiveArea>(entity);
@@ -45,31 +49,46 @@ namespace ASM_Repositories.Repositories
         {
             var entity = await _context.DepartmentSensitiveAreas
                 .Include(x => x.Dept)
+                .Include(x => x.LevelNavigation)
+                .Include(x => x.CreatedByNavigation)
                 .FirstOrDefaultAsync(x => x.DeptId == deptId);
 
             return entity == null ? null : _mapper.Map<ViewDepartmentSensitiveArea>(entity);
         }
 
-        public async Task<ViewDepartmentSensitiveArea> CreateAsync(CreateDepartmentSensitiveArea dto, string createdBy)
+        public async Task<ViewDepartmentSensitiveArea> CreateAsync(CreateDepartmentSensitiveArea dto, Guid? createdBy)
         {
-            // Check if department already has sensitive area
-            var exists = await _context.DepartmentSensitiveAreas.AnyAsync(x => x.DeptId == dto.DeptId);
-            if (exists)
-                throw new InvalidOperationException($"Department with ID {dto.DeptId} already has sensitive area configuration");
-
             // Validate Department exists
             var deptExists = await _context.Departments.AnyAsync(d => d.DeptId == dto.DeptId);
             if (!deptExists)
                 throw new InvalidOperationException($"Department with ID {dto.DeptId} does not exist");
 
+            // Validate Level exists if provided
+            if (!string.IsNullOrEmpty(dto.Level))
+            {
+                var levelExists = await _context.SensitiveAreaLevels.AnyAsync(l => l.Level == dto.Level);
+                if (!levelExists)
+                    throw new InvalidOperationException($"Level '{dto.Level}' does not exist");
+            }
+
+            // Validate CreatedBy user exists if provided
+            if (createdBy.HasValue)
+            {
+                var userExists = await _context.UserAccounts.AnyAsync(u => u.UserId == createdBy.Value);
+                if (!userExists)
+                    throw new InvalidOperationException($"User with ID {createdBy} does not exist");
+            }
+
             var entity = _mapper.Map<DepartmentSensitiveArea>(dto);
-            //entity.CreatedBy = createdBy;
+            entity.CreatedBy = createdBy;
 
             _context.DepartmentSensitiveAreas.Add(entity);
             await _context.SaveChangesAsync();
 
             var created = await _context.DepartmentSensitiveAreas
                 .Include(x => x.Dept)
+                .Include(x => x.LevelNavigation)
+                .Include(x => x.CreatedByNavigation)
                 .FirstOrDefaultAsync(x => x.Id == entity.Id);
 
             return _mapper.Map<ViewDepartmentSensitiveArea>(created);
@@ -83,6 +102,14 @@ namespace ASM_Repositories.Repositories
             if (entity == null)
                 return null;
 
+            // Validate Level exists if provided
+            if (!string.IsNullOrEmpty(dto.Level))
+            {
+                var levelExists = await _context.SensitiveAreaLevels.AnyAsync(l => l.Level == dto.Level);
+                if (!levelExists)
+                    throw new InvalidOperationException($"Level '{dto.Level}' does not exist");
+            }
+
             _mapper.Map(dto, entity);
 
             _context.DepartmentSensitiveAreas.Update(entity);
@@ -90,6 +117,8 @@ namespace ASM_Repositories.Repositories
 
             var updated = await _context.DepartmentSensitiveAreas
                 .Include(x => x.Dept)
+                .Include(x => x.LevelNavigation)
+                .Include(x => x.CreatedByNavigation)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return _mapper.Map<ViewDepartmentSensitiveArea>(updated);
